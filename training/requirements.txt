@@ -1,0 +1,21 @@
+# Dependencias del pipeline de entrenamiento (Python 3.10+)
+# Instalar con: pip install -r requirements.txt
+
+# Extraccion de landmarks de la mano.
+mediapipe
+
+# Captura de video e interfaz del sistema de grabacion.
+opencv-python
+
+# Entrenamiento de modelos y conversion a TensorFlow Lite.
+tensorflow
+
+# Procesamiento numerico y de datos.
+numpy
+pandas
+
+# Division de datos y metricas de evaluacion.
+scikit-learn
+
+# Generacion de matrices de confusion y graficas para la tesis.
+matplotlib

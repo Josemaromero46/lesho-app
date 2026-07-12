@@ -1,0 +1,105 @@
+# ===========================================================================
+# Entornos y cachés de Python
+# ===========================================================================
+.venv/
+venv/
+env/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.ipynb_checkpoints/
+
+# ===========================================================================
+# Pipeline de entrenamiento
+# ===========================================================================
+# Modelos generados (se copian a app/assets/models cuando estén listos).
+training/exports/*.tflite
+# Videos crudos: NO se versionan nunca (CLAUDE.md). Solo se versiona el CSV.
+*.mp4
+*.avi
+*.mov
+# Excepción: los videos del diccionario visual de la app sí se versionan.
+!app/assets/videos/*.mp4
+
+# ===========================================================================
+# Flutter / Dart
+# ===========================================================================
+app/.dart_tool/
+app/.flutter-plugins
+app/.flutter-plugins-dependencies
+app/build/
+app/.packages
+app/pubspec.lock
+
+# ===========================================================================
+# Artefactos de compilación de LaTeX (docs/)
+# ===========================================================================
+*.aux
+*.bbl
+*.bcf
+*.blg
+*.idx
+*.ilg
+*.ind
+*.lof
+*.log
+*.lot
+*.out
+*.run.xml
+*.toc
+*.synctex.gz
+*.fls
+*.fdb_latexmk
+*.glo
+*.gls
+*.glg
+*.acn
+*.acr
+*.alg
+_minted-*/
+# El PDF final sí puede versionarse o no, según se prefiera. Por defecto se ignora.
+docs/**/main.pdf
+
+# ===========================================================================
+# Sistema operativo / editores
+# ===========================================================================
+Thumbs.db
+desktop.ini
+.DS_Store
+.vscode/
+.idea/
+
+# ===========================================================================
+# Artefactos de compilación adicionales (agregado 2026-07-11)
+# ===========================================================================
+# APKs compilados: grandes, se distribuyen aparte, no se versionan.
+apk/*.apk
+# Android: cachés de Gradle, build y archivos de máquina.
+app/android/.gradle/
+app/android/app/build/
+app/android/build/
+app/android/local.properties
+app/android/.kotlin/
+# Bundle comprimido para colaboradores (artefacto, no fuente).
+LESHO_captura_datos.zip
+
+# ===========================================================================
+# Fuera de este repo: solo app + dataset + training (decision del autor)
+# ===========================================================================
+docs/
+CLAUDE.md
+PLAN_CODIGO.md
+PLAN_DIRECCION2.md
+COMANDOS_MODELO_B.md
+MEMORY.md
+.claude/
+envio_captura_LESHO/
+
+# ===========================================================================
+# Artefactos generados del entrenamiento (se regeneran desde el CSV)
+# ===========================================================================
+training/exports/
+*.npz
+*.keras
+# Copias de respaldo.
+*.bak
