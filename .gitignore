@@ -103,3 +103,6 @@ training/exports/
 *.keras
 # Copias de respaldo.
 *.bak
+
+# Paquetes comprimidos (artefactos para enviar, no fuente).
+*.zip

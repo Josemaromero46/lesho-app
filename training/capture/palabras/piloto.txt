@@ -1,0 +1,16 @@
+# Palabras del PILOTO de la Direccion 2 (Fase 0 de PLAN_DIRECCION2.md).
+# Una palabra por linea; los comentarios con # se ignoran.
+#
+# Criterio de seleccion: senas que ESTRESAN el riesgo real del muneco, la
+# legibilidad de la orientacion de la palma en 2D, mas dos letras para el
+# fallback de deletreo. Ajustar la lista con la asesoria LESHO si conviene.
+
+HOLA        # mano a la frente, palma hacia afuera
+GRACIAS     # palma que va de la boca hacia adelante (orientacion cambia)
+AGUA        # dedos a la boca, palma hacia adentro
+CASA        # dos manos en techo, contacto en las puntas
+NO          # dedos que se juntan, forma fina
+
+# Letras del alfabeto (fallback de deletreo con el mismo muneco):
+A
+B

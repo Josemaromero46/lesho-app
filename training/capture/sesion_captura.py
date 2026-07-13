@@ -27,6 +27,14 @@ from dataclasses import dataclass
 
 import cv2
 
+from comun.clips import (
+    CUERPO_CADERA_DER,
+    CUERPO_CADERA_IZQ,
+    CUERPO_CODO_DER,
+    CUERPO_CODO_IZQ,
+    INDICES_POSE_CLIP,
+)
+from comun.definiciones import VISIBILIDAD_MINIMA_POSE
 from comun.definiciones import LATERALIDAD_DERECHA, LATERALIDAD_IZQUIERDA
 from comun.marco import marco_desde_puntos
 from comun.normalizacion import componer_vector_dos_manos
@@ -63,7 +71,8 @@ class SesionCaptura:
     """Conduce una sesion completa de captura de una persona."""
 
     def __init__(self, modo, clases, persona, escritor, interfaz, detector,
-                 params: ParametrosCaptura, detector_pose=None):
+                 params: ParametrosCaptura, detector_pose=None,
+                 captura_cruda=False):
         self.modo = modo
         self.clases = clases
         self.persona = persona
@@ -76,6 +85,11 @@ class SesionCaptura:
         # vector pasa de 126 a 132 valores. Si es None, la captura es identica a
         # antes (alfabeto: solo manos).
         self.detector_pose = detector_pose
+        # Captura CRUDA (clips del diccionario, Direccion 2): en vez de vectores
+        # normalizados, el buffer acumula fotogramas crudos (landmarks [0,1] de
+        # manos y cuerpo, tal como salen de MediaPipe) para reproducirlos en el
+        # muneco. Apagada por defecto: el dataset (alfabeto y Modelo B) no cambia.
+        self.captura_cruda = captura_cruda
         # Ultimo marco del cuerpo valido. Se mantiene (carry-forward) porque el
         # torso es estable: si un fotograma no detecta bien la pose, se reusa el
         # ultimo marco fiable en vez de perder la ubicacion.
@@ -155,7 +169,12 @@ class SesionCaptura:
             if manos:
                 self._num_manos = len(manos)
                 self._manos_actuales = [m.landmarks for m in manos]
-                if self.estado == GRABANDO:
+            if self.estado == GRABANDO:
+                if self.captura_cruda:
+                    # Clip del diccionario: se guarda TODO fotograma, haya manos
+                    # o no (una mano ausente queda como null y se limpia offline).
+                    self._buffer.append(self._fotograma_crudo(manos))
+                elif manos:
                     self._buffer.append(self._componer_vector(manos))
 
         ctx = self._contexto_base()
@@ -215,6 +234,8 @@ class SesionCaptura:
         else:  # dinamico
             if len(self._buffer) < self.params.min_frames:
                 self._marcar_invalido("Toma muy corta, repita")
+                return
+            if self.captura_cruda and not self._toma_cruda_valida():
                 return
             secuencia = self._buffer[: self.params.max_frames]
             self._pendiente = {
@@ -357,6 +378,71 @@ class SesionCaptura:
             elif derecha is None:
                 derecha = landmarks
         return izquierda, derecha
+
+    def _fotograma_crudo(self, manos) -> dict:
+        """Fotograma crudo para un clip del diccionario (Direccion 2).
+
+        Guarda las coordenadas tal como salen de MediaPipe ([0, 1] de la
+        imagen), sin normalizar respecto a la muneca, porque el objetivo es
+        REPRODUCIR el movimiento sobre el muneco, no entrenar. Incluye el
+        instante de captura para que el escritor calcule el fps real de la toma.
+        """
+        izquierda = derecha = None
+        if manos:
+            izquierda, derecha = self._asignar_lateralidad(manos)
+        cuerpo = None
+        if self._cuerpo_actual:
+            cuerpo = [
+                [p.x, p.y, p.z, p.visibilidad]
+                for p in (self._cuerpo_actual[i] for i in INDICES_POSE_CLIP)
+            ]
+        return {
+            "t": time.time(),
+            "cuerpo": cuerpo,
+            "mano_izq": izquierda,
+            "mano_der": derecha,
+        }
+
+    def _toma_cruda_valida(self) -> bool:
+        """Valida una toma cruda: manos y CUERPO COMPLETO en suficientes frames.
+
+        En la captura cruda el buffer crece con TODOS los fotogramas, asi que el
+        minimo de frames no garantiza que la sena se haya visto. Se exige que al
+        menos la mitad de los fotogramas tengan alguna mano y que al menos la
+        mitad tengan cuerpo (sin cuerpo no hay marco para centrar el muneco).
+
+        Ademas, el muneco dibuja BRAZOS y TORSO COMPLETO, asi que codos y
+        caderas deben verse (el dataset del Modelo B no los necesitaba, por eso
+        este encuadre es mas exigente: la persona debe alejarse un poco mas de
+        la camara que en la captura del dataset).
+        """
+        total = len(self._buffer)
+        con_mano = sum(
+            1 for f in self._buffer
+            if f["mano_izq"] is not None or f["mano_der"] is not None
+        )
+        cuerpos = [f["cuerpo"] for f in self._buffer if f["cuerpo"] is not None]
+        if con_mano < total * 0.5:
+            self._marcar_invalido("Se perdieron las manos, repita")
+            return False
+        if len(cuerpos) < total * 0.5:
+            self._marcar_invalido("No se detecto el cuerpo, repita")
+            return False
+
+        def visibles(indice_a, indice_b) -> int:
+            return sum(
+                1 for c in cuerpos
+                if c[indice_a][3] >= VISIBILIDAD_MINIMA_POSE
+                and c[indice_b][3] >= VISIBILIDAD_MINIMA_POSE
+            )
+
+        if visibles(CUERPO_CODO_IZQ, CUERPO_CODO_DER) < len(cuerpos) * 0.5:
+            self._marcar_invalido("Codos fuera de cuadro, alejese un poco")
+            return False
+        if visibles(CUERPO_CADERA_IZQ, CUERPO_CADERA_DER) < len(cuerpos) * 0.5:
+            self._marcar_invalido("Caderas fuera de cuadro, alejese un poco")
+            return False
+        return True
 
     def _componer_vector(self, manos) -> list:
         """Compone el vector del fotograma a partir de las manos detectadas.

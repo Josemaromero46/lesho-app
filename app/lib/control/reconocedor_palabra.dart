@@ -44,13 +44,6 @@ class ReconocedorPalabra {
   // Tope de fotogramas guardados (memoria): ~30 fps x 7 s.
   static const int _maxCrudos = 210;
 
-  // Solo estas 10 señas están entrenadas en el mini-modelo; la salida del modelo
-  // (50 clases) se enmascara a estas para no elegir una clase sin datos.
-  static const List<String> clasesEntrenadas = [
-    'HOLA', 'AGUA', 'AYUDA', 'MAMA', 'PAPA',
-    'JUGAR', 'CASA', 'HOSPITAL', 'TRABAJO', 'NOCHE',
-  ];
-
   final List<_FrameCrudo> _crudos = [];
   final List<List<double>> _secuencia = [];
   MarcoCuerpo? _ultimoMarco;
@@ -61,8 +54,6 @@ class ReconocedorPalabra {
 
   /// Factor de corrección de aspecto (se fija desde el detector en vivo).
   double correccionAspecto = Constantes.correccionAspectoX;
-
-  List<int>? _idxPresentes;
 
   ReconocedorPalabra(this._modeloB);
 
@@ -119,12 +110,10 @@ class ReconocedorPalabra {
     final procesada = procesarSecuenciaB(_secuencia, dt: dt);
     final probs = _modeloB.predecir(procesada);
 
-    _idxPresentes ??= _calcularPresentes();
+    // Argmax sobre las 50 clases. Ya no hay filtro: el modelo tiene datos de todas.
     var mejor = -1;
     var mejorP = -1.0;
-    var suma = 0.0;
-    for (final i in _idxPresentes!) {
-      suma += probs[i];
+    for (var i = 0; i < probs.length; i++) {
       if (probs[i] > mejorP) {
         mejorP = probs[i];
         mejor = i;
@@ -133,8 +122,8 @@ class ReconocedorPalabra {
     // Diagnóstico liviano: tiempo desde soltar hasta el resultado y ritmo de fps.
     debugPrint('LESHO_T detener ${crono.elapsedMilliseconds}ms '
         'n=$n dt=${dt.toStringAsFixed(4)}');
-    if (mejor < 0 || suma <= 0) return null;
-    return ResultadoPalabra(_modeloB.etiquetas[mejor], mejorP / suma);
+    if (mejor < 0) return null;
+    return ResultadoPalabra(_modeloB.etiquetas[mejor], mejorP);
   }
 
   // Arma el vector de 140 de un fotograma a partir de su detección (manos + pose),
@@ -148,16 +137,6 @@ class ReconocedorPalabra {
     }
     if (_ultimoMarco != null) framesConMarco++;
     _secuencia.add(componerVectorModeloB(izq, der, _ultimoMarco));
-  }
-
-  List<int> _calcularPresentes() {
-    final etiquetas = _modeloB.etiquetas;
-    final indices = <int>[];
-    for (final c in clasesEntrenadas) {
-      final i = etiquetas.indexOf(c);
-      if (i >= 0) indices.add(i);
-    }
-    return indices;
   }
 
   List<Punto>? _corregirMano(List<Punto>? mano) {

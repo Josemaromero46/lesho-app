@@ -69,6 +69,10 @@ POSE_BOCA_IZQ = 9       # comisura izquierda (nivel de la boca = zona baja de la
 POSE_BOCA_DER = 10      # comisura derecha
 POSE_HOMBRO_IZQ = 11    # el centro de los hombros es el origen del marco
 POSE_HOMBRO_DER = 12    # la distancia entre hombros es la escala del marco
+POSE_CODO_IZQ = 13      # brazos del muneco de la Direccion 2 (clips de senas)
+POSE_CODO_DER = 14
+POSE_MUNECA_IZQ = 15    # muneca segun Pose (Hands tiene la suya, mas precisa)
+POSE_MUNECA_DER = 16
 POSE_CADERA_IZQ = 23    # define el tronco (pecho, abdomen, cintura)
 POSE_CADERA_DER = 24
 
@@ -206,7 +210,7 @@ CLASES_DINAMICAS: list[str] = [
     # Personas / familia (7)
     "MAMA", "PAPA", "FAMILIA", "AMIGO", "NIÑO", "MAESTRO", "DOCTOR",
     # Verbos de uso diario (11)
-    "QUERER", "NECESITAR", "TENER", "DAR", "IR", "VENIR", "JUGAR", "ESTUDIAR",
+    "QUERER", "NECESITAR", "TENER", "DAR", "PERDER", "VENIR", "JUGAR", "ESTUDIAR",
     "APRENDER", "COMPRAR", "ESPERAR",
     # Lugares (6)
     "CASA", "ESCUELA", "HOSPITAL", "TIENDA", "CALLE", "TRABAJO",

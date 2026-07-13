@@ -1,9 +1,11 @@
 """
 Punto de entrada: captura del dataset dinamico (Modelo B).
 
-Graba las 50 senas dinamicas. Cada sena se graba 40 veces (una secuencia de
-landmarks por repeticion). Entre repeticiones de la misma sena hay una cuenta
-regresiva corta; al cambiar de sena, una cuenta larga.
+Graba las 50 senas dinamicas. Por defecto cada sena se graba 25 veces (una
+secuencia de landmarks por repeticion). Entre repeticiones de la misma sena hay
+una cuenta regresiva corta; al cambiar de sena, una cuenta larga. La captura
+REANUDA: si una persona ya tiene tomas de una sena, completa hasta el numero
+pedido (por ejemplo, sube de 20 a 25 las que ya tenian el mini).
 
 A diferencia de la captura del alfabeto, esta agrega MediaPipe Pose: cada
 fotograma guarda, ademas de la configuracion de las manos, la UBICACION de cada
@@ -74,7 +76,7 @@ def main(persona: str, clases=None, tomas=None) -> None:
         segundos_grabacion=config.SEGUNDOS_GRABACION,
         segundos_entre_reps=config.SEGUNDOS_ENTRE_REPETICIONES,
         segundos_guardado=config.SEGUNDOS_MOSTRAR_GUARDADO,
-        muestras_por_clase=tomas or config.MUESTRAS_POR_CLASE_PERSONA,
+        muestras_por_clase=tomas or config.MUESTRAS_DINAMICAS_POR_CLASE,
         min_frames=config.MIN_FRAMES_SECUENCIA,
         max_frames=config.MAX_FRAMES_SECUENCIA,
     )
@@ -112,7 +114,7 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--tomas", type=int,
-        help="Tomas por sena (por defecto 40). Menos tomas = mini prueba rapida.",
+        help="Tomas por sena (por defecto 25). Menos tomas = mini prueba rapida.",
     )
     args = parser.parse_args()
     # Las 10 senas de la mini prueba: variadas y con distintos lugares del cuerpo.

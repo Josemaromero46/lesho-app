@@ -65,8 +65,15 @@ RUTA_ETIQUETAS_B = RAIZ_EXPORTS / "etiquetas_b.txt"
 # Parametros de captura del dataset
 # ---------------------------------------------------------------------------
 
-# Repeticiones a grabar por clase y por persona.
+# Repeticiones a grabar por clase y por persona (alfabeto y letras con movimiento).
 MUESTRAS_POR_CLASE_PERSONA = 40
+
+# Repeticiones por clase y por persona para las SEÑAS DINAMICAS (Modelo B, las 50
+# palabras). Es el valor por defecto de captura_dinamica.py. Se puso en 25 como
+# balance para 50 clases con 4 personas (~100 tomas reales por clase, mas la
+# augmentacion); se puede reforzar clases debiles despues con --clases. La captura
+# reanuda: si una persona ya tiene tomas, completa hasta este numero.
+MUESTRAS_DINAMICAS_POR_CLASE = 25
 
 # Numero de TOMAS SEPARADAS por clase estatica. Cada toma es una formacion
 # independiente de la pose: se baja la mano y se vuelve a formar antes de grabar.

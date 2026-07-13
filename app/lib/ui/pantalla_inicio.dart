@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lesho_app/ui/pantalla_palabras.dart';
+import 'package:lesho_app/ui/pantalla_prueba_muneco.dart';
 import 'package:lesho_app/ui/pantalla_reconocimiento.dart';
 import 'package:lesho_app/ui/pantalla_texto_a_sena.dart';
 
@@ -71,6 +72,15 @@ class PantallaInicio extends StatelessWidget {
                 ),
                 icon: const Icon(Icons.science_outlined, size: 18),
                 label: const Text('Probar señas dinámicas (prueba)'),
+              ),
+              TextButton.icon(
+                onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (_) => const PantallaPruebaMuneco()),
+                ),
+                icon: const Icon(Icons.accessibility_new_rounded, size: 18),
+                label: const Text('Probar muñeco de señas (prueba)'),
               ),
               const SizedBox(height: 8),
               _PieVersion(),
