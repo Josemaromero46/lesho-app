@@ -19,9 +19,9 @@ import 'package:lesho_app/landmarks/detector_manos.dart';
 /// letra por letra) con las PALABRAS (Modelo B, señas dinámicas).
 ///
 /// - Deletreo: por defecto, cada letra que se firma se agrega al texto.
-/// - Palabra: al firmar INICIO (dos palmas abiertas) o tocar "Grabar palabra", se
-///   abre una grabación; los fotogramas se guardan y, al firmar FIN (dos puños) o
-///   tocar "Detener", se procesan con el Modelo B y la palabra se agrega al texto.
+/// - Palabra: al tocar "Grabar palabra" se abre una grabación; los fotogramas se
+///   guardan y, al tocar "Detener", se procesan con el Modelo B y la palabra se
+///   agrega al texto. (Las señas INICIO/FIN se quitaron por falsos positivos.)
 /// - Botones: espacio (separa palabras), borrar y limpiar (en la barra superior).
 class PantallaReconocimiento extends StatefulWidget {
   const PantallaReconocimiento({super.key});
@@ -44,10 +44,6 @@ class _EstadoPantallaReconocimiento extends State<PantallaReconocimiento>
   bool _reconocimientoListo = false;
   String? _errorCarga;
   bool _procesandoFrame = false;
-  // Marca de tiempo de la última detección hecha DURANTE la grabación de una
-  // palabra. Sirve para limitarla a ~5 por segundo y no robarle CPU a la captura
-  // de fotogramas (ver _procesarFrame).
-  int _ultimoDetGrabMs = 0;
   // Verdadero mientras se procesa la secuencia de una palabra tras cerrarla.
   bool _reconociendoPalabra = false;
   Timer? _timerHud;
@@ -146,8 +142,16 @@ class _EstadoPantallaReconocimiento extends State<PantallaReconocimiento>
       // El Modelo B (palabras) es opcional: si falta, solo funciona el deletreo.
       if (_cargador.tieneModeloB) {
         _recon = ReconocedorPalabra(ModeloB(_cargador));
-        _maquina!.onInicioSena = _iniciarPalabra; // dos palmas abiertas
-        _maquina!.onFinSena = _terminarPalabra; // dos puños
+        // El esqueleto durante la grabación se dibuja con las detecciones que el
+        // reconocedor ya hace, sin correr detecciones aparte.
+        _recon!.onDeteccionVivo = (d) {
+          _manoIzq = d.manoIzquierda;
+          _manoDer = d.manoDerecha;
+        };
+        // Las señas INICIO/FIN se quitaron: daban falsos positivos (algunas señas
+        // que juntan las puntas de los dedos se confundían con FIN y cerraban la
+        // palabra a media seña). La palabra ahora se abre y se cierra SOLO con el
+        // botón "Grabar palabra" / "Detener".
       }
       // Dos manos (para INICIO/FIN y las señas bimanuales) y Pose (para el Modelo
       // B, que la usa al procesar la palabra al soltar).
@@ -188,43 +192,17 @@ class _EstadoPantallaReconocimiento extends State<PantallaReconocimiento>
     // Mientras se procesa la palabra tras soltar, no correr detección en vivo.
     if (_reconociendoPalabra) return;
 
-    // Durante la grabación de una palabra: se guarda el fotograma crudo SIEMPRE
-    // (rápido, ANTES de cualquier detección) y la detección del deletreo NO corre
-    // en cada fotograma. Correr el Modelo A completo aquí le roba CPU a la cámara,
-    // el A13 captura muchos menos fotogramas de la seña, y eso la vuelve lenta y
-    // arruina el reconocimiento del Modelo B. Solo cada ~200 ms se corre una
-    // detección, apenas para vigilar la seña de FIN (dos puños) y refrescar el
-    // esqueleto. Es lo mismo que hace la pantalla de prueba, y por eso allí sí
-    // funciona bien. Se usa la copia de bytes (no `imagen`) porque la detección es
-    // diferida y la cámara reutiliza su buffer.
+    // Durante la grabación de una palabra: el reconocedor muestrea los fotogramas
+    // que necesita y los va procesando EN PARALELO (ver ReconocedorPalabra). Aquí
+    // solo se le entrega el fotograma cuando lo pide, y la copia de bytes se hace
+    // únicamente en ese caso (la cámara reutiliza su buffer y copiar cuesta). El
+    // Modelo A no corre: la palabra se cierra con el botón "Detener". El esqueleto
+    // se dibuja con las detecciones que el propio reconocedor va produciendo
+    // (onDeteccionVivo), sin gastar detecciones extra.
     if (_recon?.grabando ?? false) {
-      final bytes = Uint8List.fromList(imagen.planes.first.bytes);
-      _recon!.agregarFrameCrudo(bytes, imagen.width, imagen.height);
-
-      final ahora = DateTime.now().millisecondsSinceEpoch;
-      if (!_procesandoFrame && ahora - _ultimoDetGrabMs > 200) {
-        _procesandoFrame = true;
-        _ultimoDetGrabMs = ahora;
-        final w = imagen.width, h = imagen.height;
-        () async {
-          try {
-            final deteccion =
-                await _detector.procesarBytes(bytes, w, h, conPose: false);
-            _manoIzq = deteccion.manoIzquierda;
-            _manoDer = deteccion.manoDerecha;
-            if (deteccion.hayMano) {
-              _maquina!.procesarManos(
-                deteccion.manoIzquierda,
-                deteccion.manoDerecha,
-                correccionAspecto: _detector.factorAspecto,
-              );
-            } else {
-              _maquina!.sinManos();
-            }
-          } finally {
-            _procesandoFrame = false;
-          }
-        }();
+      if (_recon!.necesitaFrame()) {
+        final bytes = Uint8List.fromList(imagen.planes.first.bytes);
+        _recon!.agregarFrameCrudo(bytes, imagen.width, imagen.height);
       }
       return;
     }
@@ -251,10 +229,10 @@ class _EstadoPantallaReconocimiento extends State<PantallaReconocimiento>
     }
   }
 
-  // Abre la grabación de una palabra (por INICIO o por el botón).
+  // Abre la grabación de una palabra (por el botón "Grabar palabra").
   void _iniciarPalabra() {
     if (_recon == null || _recon!.grabando || _reconociendoPalabra) return;
-    _recon!.iniciar();
+    _recon!.iniciar(_detector);
     _maquina!.modoPalabra = true;
     setState(() {});
   }
@@ -264,7 +242,7 @@ class _EstadoPantallaReconocimiento extends State<PantallaReconocimiento>
     if (_recon == null || !_recon!.grabando) return;
     _maquina!.modoPalabra = false;
     setState(() => _reconociendoPalabra = true);
-    final resultado = await _recon!.detener(_detector);
+    final resultado = await _recon!.detener();
     if (!mounted) return;
     if (resultado != null) {
       _maquina!.agregarPalabra(resultado.sena);

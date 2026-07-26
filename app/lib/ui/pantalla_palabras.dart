@@ -37,8 +37,6 @@ class _EstadoPantallaPalabras extends State<PantallaPalabras>
   String? _error;
   bool _procesando = false;
   bool _reconociendo = false; // procesando la secuencia tras soltar el botón
-  bool _detectandoDisplay = false; // detección esporádica para el esqueleto al grabar
-  int _ultimoDisplayMs = 0;
   Timer? _timer;
 
   List<Punto>? _izq;
@@ -128,6 +126,11 @@ class _EstadoPantallaPalabras extends State<PantallaPalabras>
         throw StateError('Falta modelo_b.tflite en assets/models/.');
       }
       _recon = ReconocedorPalabra(ModeloB(_cargador));
+      _recon!.onDeteccionVivo = (d) {
+        _izq = d.manoIzquierda;
+        _der = d.manoDerecha;
+        if (d.pose != null) _pose = d.pose;
+      };
       // Con Pose (Modelo B) y dos manos.
       await _detector.inicializar(numManos: 2, conPose: true);
 
@@ -157,30 +160,14 @@ class _EstadoPantallaPalabras extends State<PantallaPalabras>
     // (competiría con el procesamiento fuera de línea por el detector).
     if (_reconociendo) return;
 
-    // Durante la grabación se guarda el fotograma crudo (rápido, sin MediaPipe):
-    // así se captura a la velocidad de la cámara sin perder movimiento. Todo se
-    // procesa al soltar. Aparte, de vez en cuando (cada ~250 ms) se corre la
-    // detección sobre el último fotograma solo para MOSTRAR el esqueleto en vivo,
-    // sin frenar el buffer.
+    // Durante la grabación, el reconocedor muestrea los fotogramas que necesita y
+    // los procesa EN PARALELO (ver ReconocedorPalabra). Solo se copian los bytes
+    // cuando los pide. El esqueleto se dibuja con esas mismas detecciones
+    // (onDeteccionVivo), sin correr detecciones extra que compitan por el detector.
     if (_recon!.grabando) {
-      final bytes = Uint8List.fromList(imagen.planes.first.bytes);
-      _recon!.agregarFrameCrudo(bytes, imagen.width, imagen.height);
-
-      final ahora = DateTime.now().millisecondsSinceEpoch;
-      if (!_detectandoDisplay && ahora - _ultimoDisplayMs > 250) {
-        _detectandoDisplay = true;
-        _ultimoDisplayMs = ahora;
-        final w = imagen.width, h = imagen.height;
-        () async {
-          try {
-            final d = await _detector.procesarBytes(bytes, w, h, conPose: true);
-            _izq = d.manoIzquierda;
-            _der = d.manoDerecha;
-            if (d.pose != null) _pose = d.pose;
-          } finally {
-            _detectandoDisplay = false;
-          }
-        }();
+      if (_recon!.necesitaFrame()) {
+        final bytes = Uint8List.fromList(imagen.planes.first.bytes);
+        _recon!.agregarFrameCrudo(bytes, imagen.width, imagen.height);
       }
       return;
     }
@@ -205,7 +192,7 @@ class _EstadoPantallaPalabras extends State<PantallaPalabras>
     if (_recon!.grabando) {
       _detenerGrabacion();
     } else {
-      _recon!.iniciar();
+      _recon!.iniciar(_detector);
       _inicioGrabMs = DateTime.now().millisecondsSinceEpoch.toDouble();
       setState(() => _resultado = null);
     }
@@ -214,7 +201,7 @@ class _EstadoPantallaPalabras extends State<PantallaPalabras>
   Future<void> _detenerGrabacion() async {
     if (_reconociendo) return;
     setState(() => _reconociendo = true);
-    final r = await _recon!.detener(_detector);
+    final r = await _recon!.detener();
     if (mounted) {
       setState(() {
         _resultado = r;

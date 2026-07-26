@@ -27,30 +27,48 @@ class _FrameCrudo {
 
 /// Graba una seña dinámica y la clasifica con el Modelo B.
 ///
-/// CLAVE DE RENDIMIENTO: mientras graba, SOLO guarda los fotogramas crudos de la
-/// cámara (rápido, a la velocidad de la cámara sin perder movimiento). MediaPipe
-/// (manos + pose) es lento en gama baja, así que correrlo en vivo perdería
-/// fotogramas y se comería el movimiento. Al soltar, procesa TODOS los fotogramas
-/// guardados fuera de línea (en orden, con la Pose cada 3 fotogramas): arma el
-/// vector por fotograma (corrección de aspecto + último marco del cuerpo),
-/// preprocesa (suavizado, recorte de quietos, escala, ubicación+relativos,
-/// remuestreo a 40) y corre el Modelo B. Así el movimiento se captura a fondo
-/// aunque el teléfono sea lento.
+/// CLAVE DE RENDIMIENTO: el procesamiento corre EN PARALELO con la grabación.
+/// Mientras se graba, se muestrea un fotograma cada ~[_intervaloMuestreoMs] ms
+/// (el modelo remuestrea a 40 de todas formas, capturar a 30 fps es de sobra) y
+/// un consumidor lo va procesando con MediaPipe de inmediato, en orden. El Modelo
+/// A no corre durante la grabación, así que el detector está libre. Al soltar el
+/// botón solo queda drenar la cola final (los últimos fotogramas), preprocesar
+/// (suavizado, recorte de quietos, escala, ubicación+relativos, remuestreo a 40)
+/// y correr el Modelo B: la espera baja de decenas de segundos a unos pocos.
 class ReconocedorPalabra {
   final ModeloB _modeloB;
 
   // Mínimo de fotogramas para intentar clasificar (a bajo fps una seña son pocos).
   static const int _minFrames = 8;
-  // Tope de fotogramas guardados (memoria): ~30 fps x 7 s.
-  static const int _maxCrudos = 210;
+  // Muestreo temporal durante la grabación: un fotograma cada ~150 ms (~6.7 por
+  // segundo). Es la perilla que intercambia densidad de la trayectoria contra
+  // tiempo de espera al soltar; con el remuestreo a 40 del preprocesamiento, esta
+  // densidad conserva la seña completa.
+  static const int _intervaloMuestreoMs = 150;
+  // Tope de fotogramas muestreados (memoria y tiempo; ~12 s de seña).
+  static const int _maxMuestreados = 80;
+  // La Pose corre cada este número de fotogramas procesados: el torso es estable
+  // y el marco del cuerpo se reusa entre corridas (carry-forward).
+  static const int _poseCada = 4;
 
-  final List<_FrameCrudo> _crudos = [];
+  final List<_FrameCrudo> _cola = [];
   final List<List<double>> _secuencia = [];
   MarcoCuerpo? _ultimoMarco;
   bool _grabando = false;
+  DetectorManos? _detector;
+  Future<void>? _consumidor;
+  double _ultimoMuestreoMs = 0;
+  int _muestreados = 0;
+  int _procesados = 0;
+  double _tPrimero = 0;
+  double _tUltimo = 0;
 
   /// Diagnóstico: cuántos fotogramas de la última grabación tuvieron cuerpo.
   int framesConMarco = 0;
+
+  /// Aviso por cada detección procesada durante la grabación (para que la
+  /// pantalla dibuje el esqueleto sin correr detecciones aparte).
+  void Function(ResultadoDeteccion d)? onDeteccionVivo;
 
   /// Factor de corrección de aspecto (se fija desde el detector en vivo).
   double correccionAspecto = Constantes.correccionAspectoX;
@@ -59,48 +77,80 @@ class ReconocedorPalabra {
 
   bool get grabando => _grabando;
   int get frames => _secuencia.length;
-  int get framesCrudos => _crudos.length;
+  int get framesCrudos => _muestreados;
 
-  void iniciar() {
-    _crudos.clear();
+  /// Abre la grabación. El [detector] queda fijo para el consumidor en paralelo.
+  void iniciar(DetectorManos detector) {
+    _detector = detector;
+    _cola.clear();
     _secuencia.clear();
     _ultimoMarco = null;
     framesConMarco = 0;
+    _muestreados = 0;
+    _procesados = 0;
+    _tPrimero = 0;
+    _tUltimo = 0;
+    _ultimoMuestreoMs = 0;
     _grabando = true;
   }
 
-  /// Guarda un fotograma CRUDO (rápido). Los bytes deben ser una copia propia (la
-  /// cámara reutiliza su buffer). No corre MediaPipe: eso se hace al detener.
-  void agregarFrameCrudo(Uint8List bytes, int width, int height) {
-    if (!_grabando || _crudos.length >= _maxCrudos) return;
-    _crudos.add(_FrameCrudo(bytes, width, height, _ahora()));
+  /// Verdadero si este fotograma cae en el muestreo temporal. La pantalla lo
+  /// consulta ANTES de copiar los bytes, para no copiar los fotogramas que no se
+  /// van a usar (la cámara reutiliza su buffer, copiar cuesta).
+  bool necesitaFrame() {
+    if (!_grabando || _muestreados >= _maxMuestreados) return false;
+    return _muestreados == 0 ||
+        _ahora() - _ultimoMuestreoMs >= _intervaloMuestreoMs;
   }
 
-  /// Detiene la grabación, procesa TODOS los fotogramas guardados con MediaPipe y
-  /// clasifica. Es async porque corre el detector sobre cada fotograma.
-  Future<ResultadoPalabra?> detener(DetectorManos detector) async {
+  /// Encola un fotograma muestreado (los bytes deben ser copia propia) y arranca
+  /// el consumidor si no está corriendo.
+  void agregarFrameCrudo(Uint8List bytes, int width, int height) {
+    if (!_grabando || _muestreados >= _maxMuestreados) return;
+    _ultimoMuestreoMs = _ahora();
+    _muestreados++;
+    _cola.add(_FrameCrudo(bytes, width, height, _ultimoMuestreoMs));
+    _consumidor ??= _consumir();
+  }
+
+  /// Consumidor: procesa la cola con MediaPipe, un fotograma a la vez y en orden,
+  /// mientras la grabación sigue. Termina cuando la cola queda vacía (y se
+  /// relanza si llega otro fotograma).
+  Future<void> _consumir() async {
+    final detector = _detector;
+    if (detector == null) {
+      _consumidor = null;
+      return;
+    }
+    while (_cola.isNotEmpty) {
+      final c = _cola.removeAt(0);
+      try {
+        final d = await detector.procesarBytes(c.bytes, c.width, c.height,
+            conPose: _procesados % _poseCada == 0);
+        _procesados++;
+        if (_tPrimero == 0) _tPrimero = c.tMs;
+        _tUltimo = c.tMs;
+        correccionAspecto = detector.factorAspecto;
+        _agregarDeteccion(d);
+        onDeteccionVivo?.call(d);
+      } catch (_) {
+        // Un fotograma fallido no debe tumbar la palabra completa.
+      }
+    }
+    _consumidor = null;
+  }
+
+  /// Cierra la grabación, espera a que el consumidor drene la cola restante y
+  /// clasifica la secuencia con el Modelo B.
+  Future<ResultadoPalabra?> detener() async {
     _grabando = false;
     final crono = Stopwatch()..start();
-    _secuencia.clear();
-    _ultimoMarco = null;
-    framesConMarco = 0;
+    final colaFinal = _cola.length;
 
-    if (_crudos.length < _minFrames) {
-      _crudos.clear();
-      return null;
+    // Drena lo que falte (con la grabación cerrada ya no entran fotogramas).
+    while (_consumidor != null) {
+      await _consumidor;
     }
-
-    final tIni = _crudos.first.tMs;
-    final tFin = _crudos.last.tMs;
-    for (var i = 0; i < _crudos.length; i++) {
-      final c = _crudos[i];
-      // Pose solo cada 3 fotogramas (el cuerpo es estable, se reusa el marco).
-      final d = await detector.procesarBytes(c.bytes, c.width, c.height,
-          conPose: i % 3 == 0);
-      correccionAspecto = detector.factorAspecto;
-      _agregarDeteccion(d);
-    }
-    _crudos.clear();
 
     // Si tras descartar los fotogramas sin manos quedan muy pocos, la seña no se
     // capturó bien (no se hizo, o se perdió la mano casi todo el tiempo). Es mejor
@@ -109,7 +159,7 @@ class ReconocedorPalabra {
 
     final n = _secuencia.length;
     final dt = n > 1
-        ? ((tFin - tIni) / (n - 1) / 1000.0).clamp(1.0 / 60.0, 0.5)
+        ? ((_tUltimo - _tPrimero) / (n - 1) / 1000.0).clamp(1.0 / 60.0, 0.5)
         : 1.0 / 30.0;
 
     final procesada = procesarSecuenciaB(_secuencia, dt: dt);
@@ -124,9 +174,11 @@ class ReconocedorPalabra {
         mejor = i;
       }
     }
-    // Diagnóstico liviano: tiempo desde soltar hasta el resultado y ritmo de fps.
+    // Diagnóstico: espera real al soltar, tamaño de la secuencia y cuántos
+    // fotogramas seguían en cola al soltar (mide qué tanto se adelantó el
+    // consumidor durante la grabación).
     debugPrint('LESHO_T detener ${crono.elapsedMilliseconds}ms '
-        'n=$n dt=${dt.toStringAsFixed(4)}');
+        'n=$n cola_final=$colaFinal dt=${dt.toStringAsFixed(4)}');
     if (mejor < 0) return null;
     return ResultadoPalabra(_modeloB.etiquetas[mejor], mejorP);
   }

@@ -97,6 +97,42 @@ class DetectorManos {
     });
 
     if (salida == null) return const ResultadoDeteccion();
+    return _parsearMapa(salida);
+  }
+
+  /// Procesa un LOTE de fotogramas NV21 en una sola llamada nativa. Es el camino
+  /// rápido para clasificar una palabra al soltar el botón: evita un viaje
+  /// Dart<->nativo por fotograma. La pose corre cada [poseCada] fotogramas (el
+  /// cuerpo es estable y el marco se reusa). Devuelve un resultado por fotograma,
+  /// en el mismo orden.
+  Future<List<ResultadoDeteccion>> procesarLote(
+      List<Uint8List> frames, int width, int height,
+      {int poseCada = 3}) async {
+    if (!_inicializado) throw StateError('DetectorManos no inicializado.');
+    if (frames.isEmpty) return const [];
+
+    // Mismo cálculo de aspecto que en procesarBytes.
+    final rotado = rotacion % 180 == 90;
+    final aspectoImagen = rotado ? height / width : width / height;
+    factorAspecto = aspectoImagen / Constantes.aspectoEntrenamiento;
+
+    final salida = await _canal.invokeMethod<List<dynamic>>('detectarLote', {
+      'frames': frames,
+      'width': width,
+      'height': height,
+      'rotation': rotacion,
+      'poseCada': poseCada,
+    });
+
+    if (salida == null) return const [];
+    return [
+      for (final cruda in salida)
+        _parsearMapa((cruda as Map).cast<dynamic, dynamic>())
+    ];
+  }
+
+  /// Traduce el mapa que devuelve el nativo a un [ResultadoDeteccion].
+  ResultadoDeteccion _parsearMapa(Map<dynamic, dynamic> salida) {
     final manos = (salida['manos'] as List<dynamic>?) ?? const [];
     final pose = _aPuntosPose(salida['pose']);
     return _asignarManos(manos, pose);
