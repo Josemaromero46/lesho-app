@@ -16,9 +16,10 @@ import 'package:lesho_app/inferencia/modelo_a.dart';
 ///      estáticas gemelas si se mueve claro).
 ///   5. Persistencia (5 ventanas) + cooldown (1200 ms) para confirmar.
 ///
-/// Al confirmar: una letra se agrega al texto, FIN inserta un espacio, INICIO
-/// borra la última, REPOSO no hace nada. (El Modelo B, señas dinámicas, se
-/// integra en una etapa posterior; esta máquina es solo el deletreo.)
+/// Al confirmar: una letra se agrega al texto. INICIO (dos palmas abiertas) y FIN
+/// (dos puños) NO editan el texto: disparan callbacks (onInicioSena / onFinSena)
+/// para que la pantalla abra y cierre la grabación de una palabra dinámica (Modelo
+/// B). El espacio y el borrado se manejan con botones. REPOSO no hace nada.
 class MaquinaEstados {
   final ModeloA _modeloA;
 
@@ -54,8 +55,20 @@ class MaquinaEstados {
   /// Se llama al confirmar una letra (no en FIN/INICIO/REPOSO).
   void Function(String letra)? onLetraAgregada;
 
-  /// Se llama cada vez que el texto cambia (letra, espacio o borrado).
+  /// Se llama cada vez que el texto cambia (letra, espacio, palabra o borrado).
   void Function()? onTextoCambiado;
+
+  /// Modo palabra: entre INICIO y FIN, los fotogramas son para el Modelo B y no se
+  /// confirman letras. Lo prende y apaga la pantalla.
+  bool modoPalabra = false;
+
+  /// Se dispara al confirmar la seña INICIO (dos palmas abiertas): la pantalla abre
+  /// la grabación de una palabra dinámica.
+  void Function()? onInicioSena;
+
+  /// Se dispara al confirmar la seña FIN (dos puños) estando en modo palabra: la
+  /// pantalla cierra la grabación y corre el Modelo B.
+  void Function()? onFinSena;
 
   // Diagnóstico en vivo (para el HUD de prueba, no forma parte del texto).
   int manosVisibles = 0;
@@ -286,14 +299,38 @@ class MaquinaEstados {
 
   void _confirmar(String clase) {
     if (clase == Constantes.claseReposo) return;
-    if (clase == Constantes.claseFin) {
-      if (_texto.isNotEmpty && _texto.last != ' ') _texto.add(' ');
-    } else if (clase == Constantes.claseInicio) {
-      if (_texto.isNotEmpty) _texto.removeLast();
+    // En modo palabra (entre INICIO y FIN) los fotogramas alimentan al Modelo B,
+    // así que NO se confirman letras: solo se escucha FIN para cerrar la palabra.
+    if (modoPalabra) {
+      if (clase == Constantes.claseFin) onFinSena?.call();
+      return;
+    }
+    if (clase == Constantes.claseInicio) {
+      // Dos palmas abiertas: abre la grabación de una palabra dinámica (Modelo B).
+      onInicioSena?.call();
+    } else if (clase == Constantes.claseFin) {
+      // FIN (dos puños) fuera de una palabra no hace nada: el espacio y el borrado
+      // tienen sus propios botones.
     } else {
       _texto.add(clase);
       onLetraAgregada?.call(clase);
+      onTextoCambiado?.call();
     }
+  }
+
+  /// Agrega un espacio al texto (botón de espacio), si el último no es ya un
+  /// espacio. Sirve para separar palabras deletreadas.
+  void agregarEspacio() {
+    if (_texto.isEmpty || _texto.last != ' ') {
+      _texto.add(' ');
+      onTextoCambiado?.call();
+    }
+  }
+
+  /// Agrega una palabra reconocida por el Modelo B, seguida de un espacio.
+  void agregarPalabra(String palabra) {
+    _texto.add(palabra);
+    _texto.add(' ');
     onTextoCambiado?.call();
   }
 }

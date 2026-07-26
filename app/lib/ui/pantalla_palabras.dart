@@ -23,13 +23,17 @@ class PantallaPalabras extends StatefulWidget {
   State<PantallaPalabras> createState() => _EstadoPantallaPalabras();
 }
 
-class _EstadoPantallaPalabras extends State<PantallaPalabras> {
+class _EstadoPantallaPalabras extends State<PantallaPalabras>
+    with WidgetsBindingObserver {
   final _camara = ControladorCamara();
   final _detector = DetectorManos();
   final _cargador = CargadorModelos();
   ReconocedorPalabra? _recon;
 
   bool _cargando = true;
+  // Falso hasta que MediaPipe termina de inicializar (tarda en gama baja). El
+  // preview ya se ve mientras tanto.
+  bool _reconocimientoListo = false;
   String? _error;
   bool _procesando = false;
   bool _reconociendo = false; // procesando la secuencia tras soltar el botón
@@ -48,11 +52,64 @@ class _EstadoPantallaPalabras extends State<PantallaPalabras> {
   static const int _maxMs = 10000;
   double _inicioGrabMs = 0;
 
+  // Cola para serializar el soltar/reabrir de la cámara en los cambios de ciclo de
+  // vida (evita que se pisen si el usuario sale y entra muy rápido).
+  Future<void> _colaCamara = Future.value();
+
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
     _inicializar();
+  }
+
+  // La cámara la libera el sistema cuando la app pasa a segundo plano. Hay que
+  // soltarla al salir y reabrirla al volver; si no, el preview queda congelado en
+  // el último fotograma.
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState estado) {
+    if (estado == AppLifecycleState.resumed) {
+      _encolarCamara(reanudar: true);
+    } else if (estado == AppLifecycleState.inactive ||
+        estado == AppLifecycleState.paused ||
+        estado == AppLifecycleState.hidden) {
+      _encolarCamara(reanudar: false);
+    }
+  }
+
+  void _encolarCamara({required bool reanudar}) {
+    _colaCamara =
+        _colaCamara.then((_) => reanudar ? _reabrirCamara() : _soltarCamara());
+  }
+
+  Future<void> _soltarCamara() async {
+    if (!_camara.estaInicializado) return;
+    await _camara.liberar();
+    if (mounted) setState(() {});
+  }
+
+  Future<void> _reabrirCamara() async {
+    if (_cargando || _error != null || _camara.estaInicializado) return;
+    try {
+      await _camara.inicializar();
+      _detector.rotacion = _camara.orientacionSensor;
+      await _arrancarDeteccionSiListo();
+    } catch (e) {
+      if (mounted) setState(() => _error = e.toString());
+    }
+    if (mounted) setState(() {});
+  }
+
+  // Arranca la detección en vivo si la cámara y el detector están listos y el flujo
+  // no corre ya (al terminar la carga o al reabrir la cámara tras segundo plano).
+  Future<void> _arrancarDeteccionSiListo() async {
+    if (_camara.estaInicializado &&
+        _detector.estaInicializado &&
+        !_camara.estaFluyendo) {
+      await _camara.iniciarFlujo(_procesarFrame);
+    }
+    if (mounted) setState(() => _reconocimientoListo = _detector.estaInicializado);
   }
 
   Future<void> _inicializar() async {
@@ -60,30 +117,32 @@ class _EstadoPantallaPalabras extends State<PantallaPalabras> {
       final permiso = await Permission.camera.request();
       if (!permiso.isGranted) throw StateError('Permiso de cámara denegado.');
 
+      // La cámara primero, y mostrar el preview de una vez; MediaPipe (la Pose con
+      // GPU) tarda en gama baja y se prepara en segundo plano.
+      await _camara.inicializar();
+      _detector.rotacion = _camara.orientacionSensor;
+      if (mounted) setState(() => _cargando = false);
+
       await _cargador.cargar();
       if (!_cargador.tieneModeloB) {
         throw StateError('Falta modelo_b.tflite en assets/models/.');
       }
       _recon = ReconocedorPalabra(ModeloB(_cargador));
-
       // Con Pose (Modelo B) y dos manos.
       await _detector.inicializar(numManos: 2, conPose: true);
-      await _camara.inicializar();
-      _detector.rotacion = _camara.orientacionSensor;
-      await _camara.iniciarFlujo(_procesarFrame);
+
+      await _arrancarDeteccionSiListo();
 
       _timer = Timer.periodic(const Duration(milliseconds: 120), (_) {
         if (!mounted) return;
         // Corte automático si se pasa del tope.
-        if (_recon!.grabando &&
+        if ((_recon?.grabando ?? false) &&
             !_reconociendo &&
             DateTime.now().millisecondsSinceEpoch - _inicioGrabMs > _maxMs) {
           _detenerGrabacion();
         }
         setState(() {});
       });
-
-      if (mounted) setState(() => _cargando = false);
     } catch (e) {
       if (mounted) setState(() {
         _cargando = false;
@@ -166,6 +225,7 @@ class _EstadoPantallaPalabras extends State<PantallaPalabras> {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _timer?.cancel();
     _camara.liberar();
     _detector.liberar();
@@ -197,6 +257,10 @@ class _EstadoPantallaPalabras extends State<PantallaPalabras> {
                   ),
                 if (_error == null && !_cargando)
                   Positioned(top: 8, left: 8, child: _hud(grabando)),
+                if (!_reconocimientoListo && _error == null && !_cargando)
+                  const Positioned.fill(
+                    child: Center(child: _ChipPreparando()),
+                  ),
               ],
             ),
           ),
@@ -294,7 +358,7 @@ class _EstadoPantallaPalabras extends State<PantallaPalabras> {
                 backgroundColor: grabando ? colores.error : colores.primary,
                 padding: const EdgeInsets.symmetric(vertical: 16),
               ),
-              onPressed: (_cargando || _error != null || _reconociendo)
+              onPressed: (!_reconocimientoListo || _error != null || _reconociendo)
                   ? null
                   : _alternarGrabacion,
               icon: _reconociendo
@@ -311,6 +375,38 @@ class _EstadoPantallaPalabras extends State<PantallaPalabras> {
                   ? 'Reconociendo...'
                   : (grabando ? 'Detener y reconocer' : 'Grabar seña')),
             ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Aviso centrado mientras MediaPipe inicializa (el preview ya se ve detrás).
+class _ChipPreparando extends StatelessWidget {
+  const _ChipPreparando();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        color: Colors.black.withValues(alpha: 0.6),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: const Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          SizedBox(
+            width: 18,
+            height: 18,
+            child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+          ),
+          SizedBox(width: 10),
+          Text(
+            'Preparando reconocimiento...',
+            style: TextStyle(
+                color: Colors.white, fontSize: 14, fontWeight: FontWeight.w600),
           ),
         ],
       ),

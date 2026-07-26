@@ -4,54 +4,42 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:lesho_app/texto_a_sena/clip_sena.dart';
 
-/// Muñeco volumétrico de cápsulas (PLAN_DIRECCION2, sección 6).
+/// Muñeco de señas dibujado como PERSONAJE ILUSTRADO (PLAN_DIRECCION2, sección 6).
 ///
-/// Dibuja un fotograma de un [ClipSena] como figura de juguete: cápsulas
-/// cónicas con luz fija, articulaciones soldadas, cabeza esférica sin rostro y
-/// orden de dibujado por profundidad. Es la réplica en CustomPainter del
-/// renderizador calibrado en `training/demo/visor_clips.py`; las proporciones
-/// y el sombreado deben mantenerse iguales en ambos.
-///
-/// Sin plugins, sin motor 3D: solo Canvas de Flutter.
+/// Estilo pensado para niños y para que se entienda a simple vista: piel cálida,
+/// camiseta de color (para que el brazo se distinga del torso), contorno oscuro
+/// limpio, y manos muy definidas con dedos contorneados y uñas en las puntas.
+/// Es la réplica en CustomPainter del renderizador calibrado en
+/// `training/demo/visor_clips.py`; las proporciones, colores y capas deben
+/// mantenerse iguales en ambos. Sin plugins ni motor 3D: solo Canvas de Flutter.
 
 // Proporciones en fracciones del ANCHO DE HOMBROS (calibradas en el visor).
-const _propBrazo = 0.34;
-const _propAntebrazo = 0.25;
-const _propCuello = 0.28;
-const _propDedo = 0.10;
-const _margenPalma = 1.15; // engorde del blob de la palma, en radios de dedo
-const _bolaNudillo = 0.54; // radio de la bola de cada articulacion del dedo
-const _propRadioCabeza = 0.44;
-const _ovaloCabeza = 1.07; // cabeza levemente ovalada (mas alta que ancha)
-const _propRadioTorso = 0.15;
-const _angosteCaderas = 0.86; // caderas mas angostas que lo medido (maniqui)
-const _propBolaCodo = 0.15; // radio de la bola de articulacion del codo
-const _propBolaMuneca = 0.10; // radio de la bola de la muneca
+const _propBrazo = 0.32; // grosor de la manga (hombro a codo)
+const _propAntebrazo = 0.24; // grosor del antebrazo (piel)
+const _propCuello = 0.32;
+const _propDedo = 0.118;
+const _propRadioCabeza = 0.46;
+const _ovaloCabeza = 1.14; // cabeza ovalada (mas alta que ancha)
+const _angosteCaderas = 0.80; // caderas mas angostas que lo medido
+const _grosorContorno = 0.028; // ancho del contorno oscuro
 
-// Torso de maniqui en TRES piezas (pecho ancho, cintura angosta, bloque de
-// cadera). Cada tupla es (t inicio, t fin, ancho inicio, ancho fin): t recorre
-// de la linea de hombros (0) a la de caderas (1) y el ancho es relativo al
-// ancho local interpolado. Calibrado en el visor de Python (mantener paridad).
-const _piezasTorso = [
-  (0.00, 0.62, 1.00, 0.82), // pecho
-  (0.50, 0.85, 0.62, 0.54), // cintura
-  (0.74, 1.00, 1.00, 1.08), // cadera
+// Perfil de la silueta del torso: (t, ancho relativo al medio-hombro). t va de
+// la linea de hombros (0) a la de caderas (1). Cintura marcada = mas humano.
+const _perfilTorso = [
+  (0.00, 1.00),
+  (0.30, 0.95),
+  (0.58, 0.76),
+  (0.82, 0.84),
+  (1.00, 0.90),
 ];
 
-/// Cuánto del ancho del lienzo ocupa el ancho de hombros del muñeco.
-const _fraccionHombros = 0.335;
-
-/// Posición vertical nominal del centro de hombros (fracción de la altura).
+const _fraccionHombros = 0.325;
 const _alturaHombros = 0.46;
 
-/// Dirección de la luz (fija, arriba a la izquierda), normalizada.
 const _luzX = -0.45, _luzY = -0.89;
-
-/// Pseudo-profundidad de los dedos: más cerca de la cámara = más grueso.
-const _gananciaZDedos = 5.0;
+const _ganZDedos = 5.0;
 const _factorZMin = 0.72, _factorZMax = 1.30;
 
-/// Cadenas de falanges de cada dedo y puntos del blob de la palma.
 const _dedos = [
   [1, 2, 3, 4],
   [5, 6, 7, 8],
@@ -59,63 +47,71 @@ const _dedos = [
   [13, 14, 15, 16],
   [17, 18, 19, 20],
 ];
-const _palma = [0, 1, 2, 5, 9, 13, 17];
+const _palmaIdx = [0, 1, 2, 5, 9, 13, 17];
 
-/// Colores del muñeco. Azul de juguete por defecto (referencia del plan).
+// Capas del sombreado sobre el relleno: (indice de tono, factor, corr luz). La
+// definicion la da el contorno; el sombreado es suave (base y un brillo).
+const _capas = [(1, 1.00, 0.00), (2, 0.66, 0.24)];
+
+/// Colores del personaje. Piel cálida + camiseta de color + pelo castaño.
 class ColoresMuneco {
-  final Color cuerpo;
-  final Color mano;
-  const ColoresMuneco({required this.cuerpo, required this.mano});
+  final Color piel;
+  final Color camisa;
+  final Color pelo;
+  const ColoresMuneco(
+      {required this.piel, required this.camisa, required this.pelo});
 
-  static const azul = ColoresMuneco(
-    cuerpo: Color(0xFF387CC4),
-    mano: Color(0xFF6CA8DE),
+  static const humano = ColoresMuneco(
+    piel: Color(0xFFE2B080), // tan calido
+    camisa: Color(0xFF56966E), // verde bosque
+    pelo: Color(0xFF4E382E), // castano oscuro
   );
 }
 
-/// Tres tonos derivados de un color base, para el sombreado por capas.
+/// Contorno oscuro (casi negro cálido) y color de las uñas.
+const _contorno = Color(0xFF3A2C28);
+const _colUna = Color(0xFFF8E4CE);
+
+/// Tres tonos derivados de un color base, para el sombreado.
 class _Tonos {
   final Color oscuro;
   final Color base;
   final Color claro;
   _Tonos(Color c)
-      : oscuro = _mezclar(c, Colors.black, 0.40),
+      : oscuro = Color.lerp(c, Colors.black, 0.32)!,
         base = c,
-        claro = _mezclar(c, Colors.white, 0.38);
+        claro = Color.lerp(c, Colors.white, 0.40)!;
 
-  static Color _mezclar(Color a, Color b, double t) => Color.lerp(a, b, t)!;
+  Color tono(int i) => switch (i) {
+        0 => oscuro,
+        1 => base,
+        _ => claro,
+      };
 }
-
-// Capas del sombreado: (tono, factor de radio, corrimiento hacia la luz).
-const _capas = [(0, 1.00, 0.00), (1, 0.80, 0.16), (2, 0.46, 0.34)];
 
 class MunecoPainter extends CustomPainter {
   final ClipSena clip;
   final FotogramaSena fotograma;
 
-  /// Vista (lateralidad): la captura es en espejo (selfie), asi que el clip
-  /// guarda la imagen especular del firmante. Con [vistaEspejo] en false (el
-  /// valor por defecto) se voltea horizontalmente al dibujar: el muneco es una
-  /// persona DE FRENTE que firma con su mano derecha real, como un interprete.
-  /// Con true se dibuja tal cual se grabo (como un reflejo, util para que un
-  /// nino imite la sena). Se valida con asesoria LESHO.
+  /// Vista (lateralidad): false (por defecto) dibuja una persona DE FRENTE que
+  /// firma con su mano derecha real; true la dibuja como reflejo (para imitar).
   final bool vistaEspejo;
   final ColoresMuneco colores;
 
-  late final _Tonos _tonosCuerpo = _Tonos(colores.cuerpo);
-  late final _Tonos _tonosMano = _Tonos(colores.mano);
+  late final _Tonos _piel = _Tonos(colores.piel);
+  late final _Tonos _camisa = _Tonos(colores.camisa);
 
-  // Marco del fotograma actual (se calcula en paint segun el tamano real).
   double _escala = 1;
   double _yHombros = 0;
   double _s = 1; // ancho de hombros en pixeles
+  double _g = 3; // grosor del contorno en pixeles
   Size _tamano = Size.zero;
 
   MunecoPainter({
     required this.clip,
     required this.fotograma,
     this.vistaEspejo = false,
-    this.colores = ColoresMuneco.azul,
+    this.colores = ColoresMuneco.humano,
   });
 
   @override
@@ -128,8 +124,6 @@ class MunecoPainter extends CustomPainter {
     _torso(canvas, cuerpo);
     _cabeza(canvas, cuerpo);
 
-    // Brazos: primero el mas lejano (z de la muneca de Pose); las manos van
-    // casi siempre delante del cuerpo, por eso se dibujan tras torso y cabeza.
     final zIzq = cuerpo[PuntosCuerpo.munecaIzq].z;
     final zDer = cuerpo[PuntosCuerpo.munecaDer].z;
     if (zIzq >= zDer) {
@@ -167,43 +161,18 @@ class MunecoPainter extends CustomPainter {
     }
     _yHombros = yHombros;
     _s = clip.anchoHombros * escala;
+    _g = math.max(2.0, _grosorContorno * _s);
   }
 
   Offset _px(P3 p) {
     var dx = (p.x - clip.centroX) * _escala;
-    // Sin vista espejo se voltea la x: el clip viene en espejo (selfie) y el
-    // volteo lo convierte en una persona vista de frente.
     if (!vistaEspejo) dx = -dx;
     return Offset(_tamano.width / 2 + dx,
         _yHombros + (p.y - clip.centroY) * _escala);
   }
 
-  // -- Primitivas con sombreado ----------------------------------------------
+  // -- Primitivas con contorno + sombreado -----------------------------------
 
-  /// Cadena de cápsulas cónicas sombreadas, dibujada POR CAPA para que las
-  /// articulaciones queden fundidas sin costuras (un brazo o un dedo es una
-  /// sola pieza continua).
-  void _cadena(Canvas canvas, List<(Offset, Offset, double, double)> segmentos,
-      _Tonos tonos) {
-    for (final (indice, factor, corr) in _capas) {
-      final color = switch (indice) {
-        0 => tonos.oscuro,
-        1 => tonos.base,
-        _ => tonos.claro,
-      };
-      final pintura = Paint()
-        ..color = color
-        ..isAntiAlias = true;
-      for (final (a, b, ra, rb) in segmentos) {
-        final da = Offset(_luzX * ra * corr, _luzY * ra * corr);
-        final db = Offset(_luzX * rb * corr, _luzY * rb * corr);
-        _capsulaSolida(
-            canvas, a + da, b + db, ra * factor, rb * factor, pintura);
-      }
-    }
-  }
-
-  /// Cápsula cónica plana: cuadrilátero + círculos en los extremos.
   void _capsulaSolida(
       Canvas canvas, Offset a, Offset b, double ra, double rb, Paint pintura) {
     final d = b - a;
@@ -222,48 +191,69 @@ class MunecoPainter extends CustomPainter {
     canvas.drawCircle(b, math.max(1, rb), pintura);
   }
 
-  // -- Partes del muñeco -------------------------------------------------------
+  /// Cadena de cápsulas con contorno oscuro y sombreado suave. Cada pieza lleva
+  /// su propio contorno, así un dedo o un brazo se separa del de al lado por una
+  /// línea oscura, sin fundirse.
+  void _cadena(
+      Canvas canvas, List<(Offset, Offset, double, double)> segmentos, _Tonos t,
+      {bool contorno = true}) {
+    if (contorno) {
+      final p = Paint()
+        ..color = _contorno
+        ..isAntiAlias = true;
+      for (final (a, b, ra, rb) in segmentos) {
+        _capsulaSolida(canvas, a, b, ra + _g, rb + _g, p);
+      }
+    }
+    for (final (indice, factor, corr) in _capas) {
+      final p = Paint()
+        ..color = t.tono(indice)
+        ..isAntiAlias = true;
+      for (final (a, b, ra, rb) in segmentos) {
+        _capsulaSolida(
+          canvas,
+          a + Offset(_luzX * ra * corr, _luzY * ra * corr),
+          b + Offset(_luzX * rb * corr, _luzY * rb * corr),
+          ra * factor,
+          rb * factor,
+          p,
+        );
+      }
+    }
+  }
+
+  void _elipseContorneada(
+      Canvas canvas, Offset centro, double rx, double ry, _Tonos t) {
+    canvas.drawOval(
+      Rect.fromCenter(
+          center: centro, width: 2 * (rx + _g), height: 2 * (ry + _g)),
+      Paint()
+        ..color = _contorno
+        ..isAntiAlias = true,
+    );
+    for (final (indice, factor, corr) in _capas) {
+      final cc = centro + Offset(_luzX * ry * corr, _luzY * ry * corr);
+      canvas.drawOval(
+        Rect.fromCenter(
+            center: cc, width: 2 * rx * factor, height: 2 * ry * factor),
+        Paint()
+          ..color = t.tono(indice)
+          ..isAntiAlias = true,
+      );
+    }
+  }
+
+  // -- Partes del muñeco -----------------------------------------------------
 
   Offset _centroCabeza(List<P3> cuerpo) =>
       _px(cuerpo[PuntosCuerpo.nariz]) + Offset(0, -0.10 * _s);
 
   void _cuello(Canvas canvas, List<P3> cuerpo) {
-    // Antes del torso, para que este tape su base (sin "medallon" en el pecho).
     final hi = _px(cuerpo[PuntosCuerpo.hombroIzq]);
     final hd = _px(cuerpo[PuntosCuerpo.hombroDer]);
     final centro = Offset((hi.dx + hd.dx) / 2, (hi.dy + hd.dy) / 2);
     final r = _propCuello * _s / 2;
-    _cadena(canvas, [(centro, _centroCabeza(cuerpo), r, r)], _tonosCuerpo);
-  }
-
-  void _cabeza(Canvas canvas, List<P3> cuerpo) {
-    final centro = _centroCabeza(cuerpo);
-    final radio = _propRadioCabeza * _s;
-    // Esfera con degradado radial corrido hacia la luz, mas un brillo suave.
-    // Levemente ovalada en vertical (silueta mas humana que una bola): se
-    // dibuja el circulo con el canvas escalado en y alrededor del centro.
-    final foco = centro + Offset(_luzX * radio * 0.35, _luzY * radio * 0.35);
-    final pintura = Paint()
-      ..isAntiAlias = true
-      ..shader = ui.Gradient.radial(
-        foco,
-        radio * 1.55,
-        [_tonosCuerpo.claro, _tonosCuerpo.base, _tonosCuerpo.oscuro],
-        [0.0, 0.55, 1.0],
-      );
-    canvas.save();
-    canvas.translate(centro.dx, centro.dy);
-    canvas.scale(1.0, _ovaloCabeza);
-    canvas.translate(-centro.dx, -centro.dy);
-    canvas.drawCircle(centro, radio, pintura);
-    canvas.restore();
-    final brillo = Paint()
-      ..isAntiAlias = true
-      ..color = Color.lerp(_tonosCuerpo.claro, Colors.white, 0.55)!;
-    canvas.drawCircle(
-        centro + Offset(_luzX * radio * 0.42, _luzY * radio * 0.42),
-        radio * 0.20,
-        brillo);
+    _cadena(canvas, [(centro, _centroCabeza(cuerpo), r, r)], _piel);
   }
 
   void _torso(Canvas canvas, List<P3> cuerpo) {
@@ -271,72 +261,93 @@ class MunecoPainter extends CustomPainter {
     final hd = _px(cuerpo[PuntosCuerpo.hombroDer]);
     var ci = _px(cuerpo[PuntosCuerpo.caderaIzq]);
     var cd = _px(cuerpo[PuntosCuerpo.caderaDer]);
+    final medioCad = Offset((ci.dx + cd.dx) / 2, (ci.dy + cd.dy) / 2);
+    ci = medioCad + (ci - medioCad) * _angosteCaderas;
+    cd = medioCad + (cd - medioCad) * _angosteCaderas;
 
-    // Silueta de maniqui: las caderas se angostan respecto a lo medido, para
-    // que el pecho domine y el torso no sea un bloque parejo.
-    final medioCaderas = Offset((ci.dx + cd.dx) / 2, (ci.dy + cd.dy) / 2);
-    ci = medioCaderas + (ci - medioCaderas) * _angosteCaderas;
-    cd = medioCaderas + (cd - medioCaderas) * _angosteCaderas;
+    final medioSup = Offset((hi.dx + hd.dx) / 2, (hi.dy + hd.dy) / 2);
+    final eje = medioCad - medioSup;
+    final semiHombro = (hd - hi).distance / 2;
+    var u = Offset(eje.dy, -eje.dx);
+    final nu = u.distance;
+    u = nu > 1e-6 ? u / nu : const Offset(1, 0);
 
-    // Torso de maniqui en TRES piezas (pecho, cintura, cadera). Cada pieza se
-    // encoge hacia su centro y se dibuja rellena MAS trazada con esquinas
-    // redondas (equivale a la dilatacion de la mascara en el visor de Python);
-    // como las tres comparten el mismo degradado vertical, se funden sin
-    // costuras y con filetes redondeados en los empalmes.
-    final radio = math.max(2.0, _propRadioTorso * _s);
-    final centroX = (hi.dx + hd.dx) / 2;
+    final izq = <Offset>[];
+    final der = <Offset>[];
+    for (final (t, ancho) in _perfilTorso) {
+      final centro = medioSup + eje * t;
+      final medio = semiHombro * ancho;
+      izq.add(centro + u * medio);
+      der.add(centro - u * medio);
+    }
+    final path = Path()..addPolygon([...izq, ...der.reversed], true);
 
-    final arriba = Color.lerp(_tonosCuerpo.base, _tonosCuerpo.claro, 0.35)!;
-    final abajo = Color.lerp(_tonosCuerpo.base, _tonosCuerpo.oscuro, 0.75)!;
-    final yArriba = math.min(hi.dy, hd.dy) - radio;
-    final yAbajo = math.max(ci.dy, cd.dy) + radio;
-    final degradado = ui.Gradient.linear(
-      Offset(centroX, yArriba),
-      Offset(centroX, yAbajo),
+    // Contorno oscuro (trazo grueso) y relleno con degradado vertical.
+    canvas.drawPath(
+      path,
+      Paint()
+        ..color = _contorno
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 2 * _g
+        ..strokeJoin = StrokeJoin.round
+        ..isAntiAlias = true,
+    );
+    final arriba = Color.lerp(_camisa.base, _camisa.claro, 0.45)!;
+    final abajo = Color.lerp(_camisa.base, _camisa.oscuro, 0.30)!;
+    final shader = ui.Gradient.linear(
+      Offset(medioSup.dx, medioSup.dy),
+      Offset(medioCad.dx, medioCad.dy),
       [arriba, abajo],
     );
-    final relleno = Paint()
-      ..isAntiAlias = true
-      ..shader = degradado;
-    final borde = Paint()
-      ..isAntiAlias = true
-      ..shader = degradado
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 2 * radio
-      ..strokeJoin = StrokeJoin.round
-      ..strokeCap = StrokeCap.round;
+    canvas.drawPath(
+      path,
+      Paint()
+        ..shader = shader
+        ..isAntiAlias = true,
+    );
+  }
 
-    (Offset, Offset) par(double t, double ancho) {
-      final a = hi + (ci - hi) * t;
-      final b = hd + (cd - hd) * t;
-      final medio = Offset((a.dx + b.dx) / 2, (a.dy + b.dy) / 2);
-      return (medio + (a - medio) * ancho, medio + (b - medio) * ancho);
-    }
+  void _cabeza(Canvas canvas, List<P3> cuerpo) {
+    final c = _centroCabeza(cuerpo);
+    final rx = _propRadioCabeza * _s;
+    final ry = rx * _ovaloCabeza;
+    _elipseContorneada(canvas, c, rx, ry, _piel);
+    _pelo(canvas, c, rx, ry);
+  }
 
-    for (final (t0, t1, w0, w1) in _piezasTorso) {
-      final (a0, b0) = par(t0, w0);
-      final (a1, b1) = par(t1, w1);
-      final pieza = [a0, b0, b1, a1];
-      final centroide = Offset(
-        pieza.map((p) => p.dx).reduce((a, b) => a + b) / 4,
-        pieza.map((p) => p.dy).reduce((a, b) => a + b) / 4,
-      );
-      final interior = pieza.map((p) {
-        final hacia = centroide - p;
-        final norma = math.max(1e-6, hacia.distance);
-        // El encogimiento se acota para que una pieza angosta no colapse.
-        final paso = math.min(radio, norma * 0.6);
-        return p + hacia * (paso / norma);
-      }).toList();
-      final camino = Path()
-        ..moveTo(interior[0].dx, interior[0].dy)
-        ..lineTo(interior[1].dx, interior[1].dy)
-        ..lineTo(interior[2].dx, interior[2].dy)
-        ..lineTo(interior[3].dx, interior[3].dy)
-        ..close();
-      canvas.drawPath(camino, borde);
-      canvas.drawPath(camino, relleno);
+  /// Casquete de pelo sobre la parte de arriba de la cabeza (sin rostro).
+  void _pelo(Canvas canvas, Offset c, double rx, double ry) {
+    const pasos = 40;
+    final pts = <Offset>[];
+    for (var i = 0; i <= pasos; i++) {
+      final ang = math.pi + math.pi * i / pasos;
+      pts.add(Offset(c.dx + rx * math.cos(ang), c.dy + ry * math.sin(ang)));
     }
+    for (var i = pasos; i >= 0; i--) {
+      final x = c.dx - rx + 2 * rx * i / pasos;
+      final frac = (x - c.dx) / rx;
+      final y = c.dy - ry * 0.22 - ry * 0.34 * (1 - frac * frac);
+      pts.add(Offset(x, y));
+    }
+    final hairPath = Path()..addPolygon(pts, true);
+    final ovalPath = Path()
+      ..addOval(Rect.fromCenter(center: c, width: 2 * rx, height: 2 * ry));
+
+    canvas.save();
+    canvas.clipPath(ovalPath);
+    final baseHair = colores.pelo;
+    final oscHair = Color.lerp(colores.pelo, Colors.black, 0.28)!;
+    canvas.drawPath(
+      hairPath,
+      Paint()
+        ..shader = ui.Gradient.linear(
+          Offset(c.dx, c.dy - ry),
+          Offset(c.dx, c.dy + ry),
+          [baseHair, oscHair],
+        )
+        ..isAntiAlias = true,
+    );
+    canvas.restore();
   }
 
   void _brazo(Canvas canvas, List<P3> cuerpo, List<P3>? mano,
@@ -347,56 +358,31 @@ class MunecoPainter extends CustomPainter {
         _px(cuerpo[izquierdo ? PuntosCuerpo.codoIzq : PuntosCuerpo.codoDer]);
     final munecaPose = _px(
         cuerpo[izquierdo ? PuntosCuerpo.munecaIzq : PuntosCuerpo.munecaDer]);
-
-    // Si hay mano, el antebrazo termina en la muneca de Hands (mas precisa):
-    // brazo y mano quedan soldados sin hueco.
     final muneca = mano != null ? _px(mano[0]) : munecaPose;
 
-    // Brazo con taper (grueso en el hombro, fino en la muneca) y un bulto de
-    // deltoide en el arranque, para una silueta mas humana.
     final rBrazo = _propBrazo * _s / 2;
     final rAnte = _propAntebrazo * _s / 2;
+
+    // Manga (camiseta): hombro con deltoide hasta el codo. Antebrazo (piel):
+    // codo a muneca. El contorno del antebrazo sobre la manga hace de dobladillo.
     _cadena(canvas, [
-      (hombro, hombro, rBrazo * 1.12, rBrazo * 1.12), // deltoide
-      (hombro, codo, rBrazo, rAnte * 1.02),
-      (codo, muneca, rAnte, rAnte * 0.85),
-    ], _tonosCuerpo);
-    // Bolas de articulacion en codo y muneca (estilo maniqui, como las manos
-    // en tono claro): hacen legibles los quiebres del brazo.
-    _bola(canvas, codo, _propBolaCodo * _s, _tonosMano);
-    _bola(canvas, muneca, _propBolaMuneca * _s, _tonosMano);
+      (hombro, hombro, rBrazo * 1.10, rBrazo * 1.10), // deltoide
+      (hombro, codo, rBrazo, rAnte * 1.06),
+    ], _camisa);
+    _cadena(canvas, [(codo, muneca, rAnte * 1.02, rAnte * 0.9)], _piel);
 
     if (mano != null) _mano(canvas, mano);
   }
 
-  /// Bola de articulacion (esfera chica con degradado radial hacia la luz).
-  void _bola(Canvas canvas, Offset centro, double radio, _Tonos tonos) {
-    final foco = centro + Offset(_luzX * radio * 0.35, _luzY * radio * 0.35);
-    final pintura = Paint()
-      ..isAntiAlias = true
-      ..shader = ui.Gradient.radial(
-        foco,
-        radio * 1.55,
-        [tonos.claro, tonos.base, tonos.oscuro],
-        [0.0, 0.55, 1.0],
-      );
-    canvas.drawCircle(centro, radio, pintura);
-  }
+  // -- Mano ilustrada: dedos contorneados con uñas ---------------------------
 
-  /// Mano como UNA pieza solida: palma llena + dedos, capa por capa.
-  ///
-  /// En vez de dibujar la palma y cada dedo como piezas sombreadas
-  /// independientes (se ven tubos sueltos), toda la mano se dibuja capa por
-  /// capa de tono: donde palma y dedos se solapan, el mismo tono se funde sin
-  /// costura y la mano se lee como un solo volumen, tipo manopla de juguete.
-  /// El orden por profundidad se conserva: los dedos DETRAS de la palma se
-  /// dibujan como pieza previa, y la palma con los dedos delanteros encima.
   void _mano(Canvas canvas, List<P3> mano) {
     final puntos = mano.map(_px).toList();
     final rDedo = _propDedo * _s / 2;
 
     final zPalma =
-        _palma.map((i) => mano[i].z).reduce((a, b) => a + b) / _palma.length;
+        _palmaIdx.map((i) => mano[i].z).reduce((a, b) => a + b) /
+            _palmaIdx.length;
     final detras = <(double, List<int>)>[];
     final delante = <(double, List<int>)>[];
     for (final dedo in _dedos) {
@@ -410,117 +396,95 @@ class MunecoPainter extends CustomPainter {
     for (final (_, dedo) in detras) {
       _dedo(canvas, puntos, mano, dedo, rDedo);
     }
-    _palmaBlob(canvas, puntos, rDedo);
+    _palma(canvas, puntos, rDedo);
     for (final (_, dedo) in delante) {
       _dedo(canvas, puntos, mano, dedo, rDedo);
     }
   }
 
-  /// Blob de la palma (casco convexo dilatado) + bolitas de nudillos.
-  ///
-  /// El casco de muneca y nudillos es flaco cuando la mano esta de canto; el
-  /// margen (relleno + trazo grueso redondo, equivale a dilatar) le da cuerpo
-  /// de palma real. Las bolitas donde nacen los dedos hacen visibles esas
-  /// articulaciones.
-  void _palmaBlob(Canvas canvas, List<Offset> puntos, double rDedo) {
-    final casco = _cascoConvexo(_palma.map((i) => puntos[i]).toList());
+  void _palma(Canvas canvas, List<Offset> puntos, double rDedo) {
+    final hull = _cascoConvexo(_palmaIdx.map((i) => puntos[i]).toList());
     final centroide = Offset(
-      casco.map((p) => p.dx).reduce((a, b) => a + b) / casco.length,
-      casco.map((p) => p.dy).reduce((a, b) => a + b) / casco.length,
+      hull.map((p) => p.dx).reduce((a, b) => a + b) / hull.length,
+      hull.map((p) => p.dy).reduce((a, b) => a + b) / hull.length,
     );
-    for (final (indice, factor, corr) in _capas) {
-      final pintura = Paint()
-        ..color = _tonoMano(indice)
-        ..isAntiAlias = true;
-      final margen = rDedo * _margenPalma * factor;
-      final desplazamiento =
-          Offset(_luzX * rDedo * 2 * corr, _luzY * rDedo * 2 * corr);
-      final camino = Path();
-      for (var i = 0; i < casco.length; i++) {
-        final p =
-            centroide + (casco[i] - centroide) * factor + desplazamiento;
-        if (i == 0) {
-          camino.moveTo(p.dx, p.dy);
-        } else {
-          camino.lineTo(p.dx, p.dy);
-        }
-      }
-      camino.close();
-      canvas.drawPath(camino, pintura);
-      final borde = Paint()
-        ..color = pintura.color
-        ..isAntiAlias = true
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = math.max(1, 2 * margen)
-        ..strokeJoin = StrokeJoin.round
-        ..strokeCap = StrokeCap.round;
-      canvas.drawPath(camino, borde);
+    final margen = rDedo * 1.05;
+
+    void casco(double escala, double extra, Color color) {
+      final pts =
+          hull.map((q) => centroide + (q - centroide) * escala).toList();
+      final path = Path()..addPolygon(pts, true);
+      final radio = margen * escala + extra;
+      canvas.drawPath(
+        path,
+        Paint()
+          ..color = color
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = math.max(1, 2 * radio)
+          ..strokeJoin = StrokeJoin.round
+          ..strokeCap = StrokeCap.round
+          ..isAntiAlias = true,
+      );
+      canvas.drawPath(
+        path,
+        Paint()
+          ..color = color
+          ..isAntiAlias = true,
+      );
     }
-    // Nudillos: bolita donde nace cada dedo (base del pulgar incluida).
-    for (final i in const [2, 5, 9, 13, 17]) {
-      _bolita(canvas, puntos[i], rDedo * _bolaNudillo * 1.05);
+
+    casco(1.0, _g, _contorno); // contorno
+    for (final (indice, factor, _) in _capas) {
+      casco(factor, 0.0, _piel.tono(indice));
     }
   }
 
-  // Capas de un dedo: contorno oscuro MAS grueso que el de otras piezas, para
-  // que un dedo doblado sobre la palma no se funda con ella.
-  static const _capasDedo = [(0, 1.14, 0.00), (1, 0.88, 0.14), (2, 0.50, 0.30)];
-
-  /// Un dedo articulado: capsulas conicas + bolitas en las falanges (los 21
-  /// landmarks de MediaPipe hechos visibles, estilo maniqui).
   void _dedo(Canvas canvas, List<Offset> puntos, List<P3> mano,
       List<int> cadena, double rBase) {
-    const radios = [1.00, 0.92, 0.85, 0.80];
+    const radios = [1.00, 0.94, 0.88, 0.82];
     double rz(int k) {
-      final factor = (1.0 - mano[cadena[k]].z * _gananciaZDedos)
+      final factor = (1.0 - mano[cadena[k]].z * _ganZDedos)
           .clamp(_factorZMin, _factorZMax);
       return rBase * radios[k] * factor;
     }
 
-    for (final (indice, factor, corr) in _capasDedo) {
-      final pintura = Paint()
-        ..color = _tonoMano(indice)
-        ..isAntiAlias = true;
-      for (var k = 0; k + 1 < cadena.length; k++) {
-        final ra = rz(k), rb = rz(k + 1);
-        _capsulaSolida(
-          canvas,
-          puntos[cadena[k]] + Offset(_luzX * ra * corr, _luzY * ra * corr),
-          puntos[cadena[k + 1]] + Offset(_luzX * rb * corr, _luzY * rb * corr),
-          ra * factor,
-          rb * factor,
-          pintura,
-        );
-      }
-    }
-    // Articulaciones intermedias y punta del dedo.
-    _bolita(canvas, puntos[cadena[1]], rBase * _bolaNudillo);
-    _bolita(canvas, puntos[cadena[2]], rBase * _bolaNudillo * 0.9);
-    _bolita(canvas, puntos[cadena[3]], rBase * _bolaNudillo * 0.75);
+    final segmentos = <(Offset, Offset, double, double)>[
+      for (var k = 0; k + 1 < cadena.length; k++)
+        (puntos[cadena[k]], puntos[cadena[k + 1]], rz(k), rz(k + 1)),
+    ];
+    _cadena(canvas, segmentos, _piel);
+    _una(canvas, puntos[cadena[3]], puntos[cadena[2]], rz(3));
   }
 
-  Color _tonoMano(int indice) => switch (indice) {
-        0 => _tonosMano.oscuro,
-        1 => _tonosMano.base,
-        _ => _tonosMano.claro,
-      };
+  /// Uña: óvalo claro en la punta, orientado a lo largo del dedo.
+  void _una(Canvas canvas, Offset punta, Offset previa, double r) {
+    final d = punta - previa;
+    final largo = d.distance;
+    final dir = largo > 1e-3 ? d / largo : const Offset(0, -1);
+    final centro = punta - dir * (r * 0.30);
+    final ang = math.atan2(dir.dy, dir.dx);
+    final ejeX = r * 0.78, ejeY = r * 0.58;
 
-  /// Bolita de articulacion (mini esfera en el tono de la mano).
-  void _bolita(Canvas canvas, Offset centro, double radio) {
-    for (final (indice, factor, corr) in const [
-      (0, 1.00, 0.00),
-      (1, 0.78, 0.18),
-      (2, 0.42, 0.36),
-    ]) {
-      final pintura = Paint()
-        ..color = _tonoMano(indice)
-        ..isAntiAlias = true;
-      final c = centro + Offset(_luzX * radio * corr, _luzY * radio * corr);
-      canvas.drawCircle(c, math.max(1, radio * factor), pintura);
-    }
+    canvas.save();
+    canvas.translate(centro.dx, centro.dy);
+    canvas.rotate(ang);
+    canvas.drawOval(
+      Rect.fromCenter(
+          center: Offset.zero, width: 2 * (ejeX + 1), height: 2 * (ejeY + 1)),
+      Paint()
+        ..color = _contorno
+        ..isAntiAlias = true,
+    );
+    canvas.drawOval(
+      Rect.fromCenter(center: Offset.zero, width: 2 * ejeX, height: 2 * ejeY),
+      Paint()
+        ..color = _colUna
+        ..isAntiAlias = true,
+    );
+    canvas.restore();
   }
 
-  /// Casco convexo (cadena monotona de Andrew) para el blob de la palma.
+  /// Casco convexo (cadena monótona de Andrew) para el blob de la palma.
   static List<Offset> _cascoConvexo(List<Offset> puntos) {
     if (puntos.length < 3) return puntos;
     final orden = List<Offset>.from(puntos)

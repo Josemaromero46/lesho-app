@@ -102,6 +102,11 @@ class ReconocedorPalabra {
     }
     _crudos.clear();
 
+    // Si tras descartar los fotogramas sin manos quedan muy pocos, la seña no se
+    // capturó bien (no se hizo, o se perdió la mano casi todo el tiempo). Es mejor
+    // no responder que devolver una clase basura (típicamente AGUA).
+    if (_secuencia.length < _minFrames) return null;
+
     final n = _secuencia.length;
     final dt = n > 1
         ? ((tFin - tIni) / (n - 1) / 1000.0).clamp(1.0 / 60.0, 0.5)
@@ -135,6 +140,14 @@ class ReconocedorPalabra {
       final marco = marcoDesdePuntos(_corregirPose(d.pose!));
       if (marco != null) _ultimoMarco = marco;
     }
+    // Solo se agregan fotogramas con AL MENOS UNA MANO, igual que el capturador
+    // del dataset (que solo guardaba fotogramas con manos). Un fotograma sin manos
+    // entra como ceros: el modelo lo interpreta como AGUA/PAPA y, cuando son una
+    // fracción grande (teléfono lento, o detección perdida durante el movimiento),
+    // arrastran el resultado a la clase equivocada. Validado en Python contra el
+    // modelo: filtrarlos recupera la respuesta correcta (HOLA que caía en AGUA
+    // vuelve a HOLA; PAPA que caía en AGUA vuelve a PAPA).
+    if (izq == null && der == null) return;
     if (_ultimoMarco != null) framesConMarco++;
     _secuencia.add(componerVectorModeloB(izq, der, _ultimoMarco));
   }

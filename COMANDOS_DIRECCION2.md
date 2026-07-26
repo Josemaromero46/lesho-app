@@ -60,6 +60,24 @@ Teclas: ESPACIO pausa, A/D fotograma, V velocidad (1x/0.75x/0.5x/0.25x),
 M espejo, N/P clip siguiente/anterior, G guardar PNG, Q salir.
 Con `--exportar carpeta --cada 5` guarda PNGs sin abrir ventana.
 
+### Arreglar un clip con temblor o dedos perdidos (modo edicion)
+
+Dentro del visor, la tecla **E** entra al MODO EDICION. Ahi se corrige un tramo
+malo (mano temblorosa o perdida) SIN colocar los dedos a mano: el tramo se
+regenera desde los frames buenos de los lados.
+
+  - A/D : moverse fotograma a fotograma hasta el tramo malo
+  - I   : marcar el INICIO del tramo malo (fotograma actual)
+  - O   : marcar el FIN del tramo malo
+  - F   : arreglar (regenera ese tramo interpolando desde los frames buenos)
+  - Z   : deshacer el ultimo arreglo
+  - S   : guardar el clip corregido (el original queda respaldado en un .bak)
+  - C   : limpiar la marca    E : salir del modo edicion
+
+Los huecos CORTOS de mano (hasta 0.6 s, por ejemplo al pasar la mano por la
+cara) se rellenan solos al cargar el clip; el modo edicion es para los tramos
+mas largos o el temblor.
+
 Este es el paso de VALIDACIÓN con la persona que sabe LESHO: ¿se entiende la
 seña? ¿la orientación de la palma se lee? (Fase 0, PLAN_DIRECCION2.md).
 

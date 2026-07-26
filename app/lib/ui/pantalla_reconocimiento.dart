@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
@@ -8,15 +9,20 @@ import 'package:lesho_app/core/constantes.dart';
 import 'package:lesho_app/core/normalizacion.dart';
 import 'package:lesho_app/captura/controlador_camara.dart';
 import 'package:lesho_app/control/maquina_estados.dart';
+import 'package:lesho_app/control/reconocedor_palabra.dart';
 import 'package:lesho_app/inferencia/cargador_modelos.dart';
 import 'package:lesho_app/inferencia/modelo_a.dart';
+import 'package:lesho_app/inferencia/modelo_b.dart';
 import 'package:lesho_app/landmarks/detector_manos.dart';
 
-/// Pantalla de reconocimiento del alfabeto (Dirección 1: niño deletrea -> texto).
+/// Pantalla del niño (Dirección 1: LESHO -> español). Une el DELETREO (Modelo A,
+/// letra por letra) con las PALABRAS (Modelo B, señas dinámicas).
 ///
-/// Muestra la cámara frontal en modo selfie y el texto deletreado. Reproduce la
-/// lógica de la demo validada: ventana temporal, suavizado, compuerta de
-/// movimiento, persistencia y cooldown (todo en [MaquinaEstados]).
+/// - Deletreo: por defecto, cada letra que se firma se agrega al texto.
+/// - Palabra: al firmar INICIO (dos palmas abiertas) o tocar "Grabar palabra", se
+///   abre una grabación; los fotogramas se guardan y, al firmar FIN (dos puños) o
+///   tocar "Detener", se procesan con el Modelo B y la palabra se agrega al texto.
+/// - Botones: espacio (separa palabras), borrar y limpiar (en la barra superior).
 class PantallaReconocimiento extends StatefulWidget {
   const PantallaReconocimiento({super.key});
 
@@ -24,27 +30,97 @@ class PantallaReconocimiento extends StatefulWidget {
   State<PantallaReconocimiento> createState() => _EstadoPantallaReconocimiento();
 }
 
-class _EstadoPantallaReconocimiento extends State<PantallaReconocimiento> {
+class _EstadoPantallaReconocimiento extends State<PantallaReconocimiento>
+    with WidgetsBindingObserver {
   final _camara = ControladorCamara();
   final _detector = DetectorManos();
   final _cargador = CargadorModelos();
   MaquinaEstados? _maquina;
+  ReconocedorPalabra? _recon;
 
   bool _cargando = true;
+  // Falso hasta que MediaPipe termina de inicializar (en gama baja tarda varios
+  // segundos). Mientras tanto el preview YA se ve, pero la detección aún no corre.
+  bool _reconocimientoListo = false;
   String? _errorCarga;
   bool _procesandoFrame = false;
+  // Marca de tiempo de la última detección hecha DURANTE la grabación de una
+  // palabra. Sirve para limitarla a ~5 por segundo y no robarle CPU a la captura
+  // de fotogramas (ver _procesarFrame).
+  int _ultimoDetGrabMs = 0;
+  // Verdadero mientras se procesa la secuencia de una palabra tras cerrarla.
+  bool _reconociendoPalabra = false;
   Timer? _timerHud;
+  // Cola para serializar el soltar/reabrir de la cámara en los cambios de ciclo de
+  // vida (evita que se pisen si el usuario sale y entra muy rápido).
+  Future<void> _colaCamara = Future.value();
 
   // Últimas manos detectadas, para dibujar el esqueleto sobre el preview.
   List<Punto>? _manoIzq;
   List<Punto>? _manoDer;
 
+  // Recuadro de texto: control de scroll para bajar al final cuando entra texto.
+  final ScrollController _scrollTexto = ScrollController();
+  static const double _fontTexto = 26;
+  static const double _lineaTexto = 1.35;
+  static const double _altoTresLineas = _fontTexto * _lineaTexto * 3;
+
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     // La rotación del fotograma asume orientación vertical.
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
     _inicializar();
+  }
+
+  // La cámara la libera el sistema cuando la app pasa a segundo plano. Hay que
+  // soltarla al salir y reabrirla al volver; si no, el preview queda congelado en
+  // el último fotograma.
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState estado) {
+    if (estado == AppLifecycleState.resumed) {
+      _encolarCamara(reanudar: true);
+    } else if (estado == AppLifecycleState.inactive ||
+        estado == AppLifecycleState.paused ||
+        estado == AppLifecycleState.hidden) {
+      _encolarCamara(reanudar: false);
+    }
+  }
+
+  void _encolarCamara({required bool reanudar}) {
+    _colaCamara =
+        _colaCamara.then((_) => reanudar ? _reabrirCamara() : _soltarCamara());
+  }
+
+  Future<void> _soltarCamara() async {
+    if (!_camara.estaInicializado) return;
+    await _camara.liberar();
+    if (mounted) setState(() {});
+  }
+
+  Future<void> _reabrirCamara() async {
+    if (_cargando || _errorCarga != null || _camara.estaInicializado) return;
+    try {
+      await _camara.inicializar();
+      _detector.rotacion = _camara.orientacionSensor;
+      await _arrancarDeteccionSiListo();
+    } catch (e) {
+      if (mounted) setState(() => _errorCarga = e.toString());
+    }
+    if (mounted) setState(() {});
+  }
+
+  // Arranca la detección en vivo si la cámara y el detector están listos y el flujo
+  // no corre ya. Sirve tanto al terminar la carga como al reabrir la cámara tras
+  // volver de segundo plano (en cualquier orden que hayan quedado listos).
+  Future<void> _arrancarDeteccionSiListo() async {
+    if (_camara.estaInicializado &&
+        _detector.estaInicializado &&
+        !_camara.estaFluyendo) {
+      await _camara.iniciarFlujo(_procesarFrame);
+    }
+    if (mounted) setState(() => _reconocimientoListo = _detector.estaInicializado);
   }
 
   Future<void> _inicializar() async {
@@ -54,23 +130,38 @@ class _EstadoPantallaReconocimiento extends State<PantallaReconocimiento> {
         throw StateError('Permiso de cámara denegado.');
       }
 
-      await _cargador.cargar();
-      _maquina = MaquinaEstados(modeloA: ModeloA(_cargador));
-      _maquina!.onTextoCambiado = () {
-        if (mounted) setState(() {});
-      };
-
-      await _detector.inicializar();
+      // 1) La CÁMARA primero, y mostrar el preview de una vez. MediaPipe (sobre
+      //    todo la Pose con GPU) tarda varios segundos en inicializar en gama baja;
+      //    no hay que hacer esperar al usuario mirando una pantalla de carga. Se ve
+      //    la cámara y se ubica mientras el reconocimiento se prepara en segundo
+      //    plano. El preview de la cámara no necesita el flujo de fotogramas.
       await _camara.inicializar();
       _detector.rotacion = _camara.orientacionSensor;
-      await _camara.iniciarFlujo(_procesarFrame);
+      if (mounted) setState(() => _cargando = false);
+
+      // 2) Modelos (rápido) y detector MediaPipe (lento) en segundo plano.
+      await _cargador.cargar();
+      _maquina = MaquinaEstados(modeloA: ModeloA(_cargador));
+      _maquina!.onTextoCambiado = _alTextoCambiado;
+      // El Modelo B (palabras) es opcional: si falta, solo funciona el deletreo.
+      if (_cargador.tieneModeloB) {
+        _recon = ReconocedorPalabra(ModeloB(_cargador));
+        _maquina!.onInicioSena = _iniciarPalabra; // dos palmas abiertas
+        _maquina!.onFinSena = _terminarPalabra; // dos puños
+      }
+      // Dos manos (para INICIO/FIN y las señas bimanuales) y Pose (para el Modelo
+      // B, que la usa al procesar la palabra al soltar).
+      await _detector.inicializar(numManos: 2, conPose: _recon != null);
+
+      // 3) Ya está todo listo: arranca la detección en vivo (si la cámara sigue
+      //    abierta; si se fue a segundo plano durante la carga, la reabre el ciclo
+      //    de vida y arranca ahí).
+      await _arrancarDeteccionSiListo();
 
       // Refresca el HUD de diagnóstico a ~7 Hz, sin atarlo al ritmo de frames.
       _timerHud = Timer.periodic(const Duration(milliseconds: 150), (_) {
         if (mounted) setState(() {});
       });
-
-      if (mounted) setState(() => _cargando = false);
     } catch (e, stack) {
       debugPrint('LESHO error de arranque: $e\n$stack');
       if (mounted) {
@@ -82,11 +173,68 @@ class _EstadoPantallaReconocimiento extends State<PantallaReconocimiento> {
     }
   }
 
+  // Baja el recuadro de texto al final para mostrar lo último escrito.
+  void _alTextoCambiado() {
+    if (mounted) setState(() {});
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_scrollTexto.hasClients) {
+        _scrollTexto.jumpTo(_scrollTexto.position.maxScrollExtent);
+      }
+    });
+  }
+
   Future<void> _procesarFrame(CameraImage imagen) async {
-    if (_procesandoFrame || _maquina == null) return;
+    if (_maquina == null) return;
+    // Mientras se procesa la palabra tras soltar, no correr detección en vivo.
+    if (_reconociendoPalabra) return;
+
+    // Durante la grabación de una palabra: se guarda el fotograma crudo SIEMPRE
+    // (rápido, ANTES de cualquier detección) y la detección del deletreo NO corre
+    // en cada fotograma. Correr el Modelo A completo aquí le roba CPU a la cámara,
+    // el A13 captura muchos menos fotogramas de la seña, y eso la vuelve lenta y
+    // arruina el reconocimiento del Modelo B. Solo cada ~200 ms se corre una
+    // detección, apenas para vigilar la seña de FIN (dos puños) y refrescar el
+    // esqueleto. Es lo mismo que hace la pantalla de prueba, y por eso allí sí
+    // funciona bien. Se usa la copia de bytes (no `imagen`) porque la detección es
+    // diferida y la cámara reutiliza su buffer.
+    if (_recon?.grabando ?? false) {
+      final bytes = Uint8List.fromList(imagen.planes.first.bytes);
+      _recon!.agregarFrameCrudo(bytes, imagen.width, imagen.height);
+
+      final ahora = DateTime.now().millisecondsSinceEpoch;
+      if (!_procesandoFrame && ahora - _ultimoDetGrabMs > 200) {
+        _procesandoFrame = true;
+        _ultimoDetGrabMs = ahora;
+        final w = imagen.width, h = imagen.height;
+        () async {
+          try {
+            final deteccion =
+                await _detector.procesarBytes(bytes, w, h, conPose: false);
+            _manoIzq = deteccion.manoIzquierda;
+            _manoDer = deteccion.manoDerecha;
+            if (deteccion.hayMano) {
+              _maquina!.procesarManos(
+                deteccion.manoIzquierda,
+                deteccion.manoDerecha,
+                correccionAspecto: _detector.factorAspecto,
+              );
+            } else {
+              _maquina!.sinManos();
+            }
+          } finally {
+            _procesandoFrame = false;
+          }
+        }();
+      }
+      return;
+    }
+
+    // Fuera de grabación: la detección en vivo (Modelo A: deletreo, INICIO,
+    // esqueleto) corre cuando no está ocupada; si lo está, se saltea esa detección.
+    if (_procesandoFrame) return;
     _procesandoFrame = true;
     try {
-      final deteccion = await _detector.procesar(imagen);
+      final deteccion = await _detector.procesar(imagen, conPose: false);
       _manoIzq = deteccion.manoIzquierda;
       _manoDer = deteccion.manoDerecha;
       if (deteccion.hayMano) {
@@ -103,9 +251,41 @@ class _EstadoPantallaReconocimiento extends State<PantallaReconocimiento> {
     }
   }
 
+  // Abre la grabación de una palabra (por INICIO o por el botón).
+  void _iniciarPalabra() {
+    if (_recon == null || _recon!.grabando || _reconociendoPalabra) return;
+    _recon!.iniciar();
+    _maquina!.modoPalabra = true;
+    setState(() {});
+  }
+
+  // Cierra la grabación, corre el Modelo B y agrega la palabra al texto.
+  Future<void> _terminarPalabra() async {
+    if (_recon == null || !_recon!.grabando) return;
+    _maquina!.modoPalabra = false;
+    setState(() => _reconociendoPalabra = true);
+    final resultado = await _recon!.detener(_detector);
+    if (!mounted) return;
+    if (resultado != null) {
+      _maquina!.agregarPalabra(resultado.sena);
+    }
+    setState(() => _reconociendoPalabra = false);
+  }
+
+  void _alternarPalabra() {
+    if (_recon == null || _reconociendoPalabra) return;
+    if (_recon!.grabando) {
+      _terminarPalabra();
+    } else {
+      _iniciarPalabra();
+    }
+  }
+
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _timerHud?.cancel();
+    _scrollTexto.dispose();
     _camara.liberar();
     _detector.liberar();
     _cargador.liberar();
@@ -115,18 +295,19 @@ class _EstadoPantallaReconocimiento extends State<PantallaReconocimiento> {
   @override
   Widget build(BuildContext context) {
     final colores = Theme.of(context).colorScheme;
+    final grabando = _recon?.grabando ?? false;
 
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         foregroundColor: colores.onSurface,
         elevation: 0,
-        title: const Text('Deletrear'),
+        title: const Text('El niño firma'),
         actions: [
           if (_maquina != null)
             IconButton(
               icon: const Icon(Icons.backspace_rounded),
-              tooltip: 'Borrar última letra',
+              tooltip: 'Borrar último',
               onPressed: () => _maquina!.borrarUltima(),
             ),
           if (_maquina != null)
@@ -161,10 +342,110 @@ class _EstadoPantallaReconocimiento extends State<PantallaReconocimiento> {
                     left: 8,
                     child: _HudDiagnostico(maquina: _maquina!),
                   ),
+                // Aviso de grabación de palabra sobre la cámara.
+                if (grabando || _reconociendoPalabra)
+                  Positioned(
+                    top: 8,
+                    right: 8,
+                    child: _AvisoPalabra(
+                      reconociendo: _reconociendoPalabra,
+                    ),
+                  ),
+                // Mientras MediaPipe inicializa: el preview ya se ve, pero avisamos
+                // que el reconocimiento se está preparando.
+                if (!_reconocimientoListo && _errorCarga == null && !_cargando)
+                  const Positioned.fill(
+                    child: Center(child: _ChipPreparando()),
+                  ),
               ],
             ),
           ),
-          _AreaResultados(texto: _maquina?.texto ?? ''),
+          _panelInferior(colores, grabando),
+        ],
+      ),
+    );
+  }
+
+  Widget _panelInferior(ColorScheme colores, bool grabando) {
+    final texto = _maquina?.texto ?? '';
+    final hayModeloB = _recon != null;
+
+    return Container(
+      color: Colors.white,
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          // Recuadro de texto: crece según la necesidad hasta 3 líneas, y de ahí
+          // se puede subir/bajar con scroll (baja solo cuando entra texto nuevo).
+          ConstrainedBox(
+            constraints: const BoxConstraints(maxHeight: _altoTresLineas),
+            child: SingleChildScrollView(
+              controller: _scrollTexto,
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  texto.isEmpty ? 'Firma para escribir...' : texto,
+                  style: TextStyle(
+                    fontSize: _fontTexto,
+                    height: _lineaTexto,
+                    letterSpacing: 2,
+                    fontWeight: FontWeight.w600,
+                    color: texto.isEmpty
+                        ? colores.onSurface.withValues(alpha: 0.25)
+                        : colores.onSurface,
+                  ),
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              // Botón de espacio.
+              Expanded(
+                child: OutlinedButton.icon(
+                  onPressed: !_reconocimientoListo || _errorCarga != null
+                      ? null
+                      : () => _maquina?.agregarEspacio(),
+                  icon: const Icon(Icons.space_bar_rounded),
+                  label: const Text('Espacio'),
+                  style: OutlinedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+              // Botón de grabar/detener palabra (Modelo B).
+              Expanded(
+                flex: 2,
+                child: FilledButton.icon(
+                  style: FilledButton.styleFrom(
+                    backgroundColor: grabando ? colores.error : colores.primary,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                  ),
+                  onPressed: (!hayModeloB || _reconociendoPalabra ||
+                          !_reconocimientoListo || _errorCarga != null)
+                      ? null
+                      : _alternarPalabra,
+                  icon: _reconociendoPalabra
+                      ? const SizedBox(
+                          width: 18,
+                          height: 18,
+                          child: CircularProgressIndicator(
+                              strokeWidth: 2, color: Colors.white),
+                        )
+                      : Icon(grabando
+                          ? Icons.stop_rounded
+                          : Icons.fiber_manual_record),
+                  label: Text(_reconociendoPalabra
+                      ? 'Reconociendo...'
+                      : (grabando ? 'Detener' : 'Grabar palabra')),
+                ),
+              ),
+            ],
+          ),
         ],
       ),
     );
@@ -251,11 +532,72 @@ class _PanelEstado extends StatelessWidget {
   }
 }
 
+/// Aviso sobre la cámara mientras se graba o se reconoce una palabra.
+class _AvisoPalabra extends StatelessWidget {
+  final bool reconociendo;
+
+  const _AvisoPalabra({required this.reconociendo});
+
+  @override
+  Widget build(BuildContext context) {
+    final rojo = reconociendo ? Colors.amber : Colors.redAccent;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+      decoration: BoxDecoration(
+        color: Colors.black.withValues(alpha: 0.6),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(reconociendo ? Icons.hourglass_top_rounded : Icons.circle,
+              size: 12, color: rojo),
+          const SizedBox(width: 6),
+          Text(
+            reconociendo ? 'Reconociendo' : 'Grabando palabra',
+            style: TextStyle(color: rojo, fontSize: 13, fontWeight: FontWeight.w600),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Aviso centrado mientras MediaPipe inicializa. El preview de la cámara ya se ve
+/// detrás; esto solo indica que la detección se está preparando.
+class _ChipPreparando extends StatelessWidget {
+  const _ChipPreparando();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        color: Colors.black.withValues(alpha: 0.6),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: const Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          SizedBox(
+            width: 18,
+            height: 18,
+            child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+          ),
+          SizedBox(width: 10),
+          Text(
+            'Preparando reconocimiento...',
+            style: TextStyle(
+                color: Colors.white, fontSize: 14, fontWeight: FontWeight.w600),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 /// Dibuja el esqueleto de la(s) mano(s) sobre el preview, con los landmarks
-/// normalizados [0,1] que devuelve MediaPipe. Sirve para VER si la orientación es
-/// correcta: si el esqueleto cae sobre la mano real, el fotograma que recibe el
-/// modelo está bien orientado; si aparece girado o espejado, hay que corregir la
-/// rotación en el puente nativo.
+/// normalizados [0,1] que devuelve MediaPipe.
 class _PintorManos extends CustomPainter {
   final List<Punto>? izquierda;
   final List<Punto>? derecha;
@@ -302,10 +644,8 @@ class _PintorManos extends CustomPainter {
       old.izquierda != izquierda || old.derecha != derecha;
 }
 
-/// HUD de diagnóstico para la prueba en el teléfono: cuántas manos ve MediaPipe,
-/// la letra candidata, el movimiento y la confianza. Sirve para saber si el
-/// problema es la cámara/detección o el reconocimiento. Se quita en la versión
-/// final para niños.
+/// HUD de diagnóstico para la prueba en el teléfono: manos, letra candidata,
+/// movimiento y confianza. Se quita en la versión final para niños.
 class _HudDiagnostico extends StatelessWidget {
   final MaquinaEstados maquina;
 
@@ -351,63 +691,12 @@ class _HudDiagnostico extends StatelessWidget {
             style: const TextStyle(color: Colors.white70, fontSize: 12),
           ),
           Text(
-            'Ventana: ${maquina.nivelVentana}/${Constantes.tamanoVentanaA}',
-            style: TextStyle(
-              color: maquina.nivelVentana >= Constantes.tamanoVentanaA
-                  ? Colors.greenAccent
-                  : Colors.white70,
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          Text(
             'Det/s: ${maquina.fps.toStringAsFixed(1)}',
             style: TextStyle(
               color: maquina.fps >= 15
                   ? Colors.greenAccent
                   : (maquina.fps >= 8 ? Colors.amberAccent : Colors.redAccent),
               fontSize: 12,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _AreaResultados extends StatelessWidget {
-  final String texto;
-
-  const _AreaResultados({required this.texto});
-
-  @override
-  Widget build(BuildContext context) {
-    final colores = Theme.of(context).colorScheme;
-
-    return Container(
-      color: Colors.white,
-      padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
-      child: Row(
-        children: [
-          Text(
-            'Texto:',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: colores.onSurface.withValues(alpha: 0.5),
-                ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Text(
-              texto.isEmpty ? '---' : texto,
-              style: Theme.of(context).textTheme.displayLarge?.copyWith(
-                    fontSize: 32,
-                    color: texto.isEmpty
-                        ? colores.onSurface.withValues(alpha: 0.2)
-                        : colores.onSurface,
-                    letterSpacing: 4,
-                  ),
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
             ),
           ),
         ],

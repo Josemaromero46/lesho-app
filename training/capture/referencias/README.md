@@ -32,7 +32,7 @@ Colocá `<NOMBRE>.png` (o `.jpg`) por cada una. Faltan todas por ahora.
 - Respuestas: `SI` `NO` `BIEN`
 - Necesidades: `AGUA` `COMER` `BAÑO` `DORMIR` `AYUDA` `DOLOR` `HAMBRE` `ENFERMO`
 - Personas / familia: `MAMA` `PAPA` `FAMILIA` `AMIGO` `NIÑO` `MAESTRO` `DOCTOR`
-- Verbos: `QUERER` `NECESITAR` `TENER` `DAR` `PERDER` `VENIR` `JUGAR` `ESTUDIAR` `APRENDER` `COMPRAR` `ESPERAR`
+- Verbos: `LLAMAR` `NECESITAR` `TENER` `DAR` `PERDER` `VENIR` `JUGAR` `ESTUDIAR` `APRENDER` `COMPRAR` `ESPERAR`
 - Lugares: `CASA` `ESCUELA` `HOSPITAL` `TIENDA` `CALLE` `TRABAJO`
 - Emociones / estados: `FELIZ` `TRISTE` `ENOJADO` `CANSADO` `MIEDO`
 - Tiempo: `HOY` `MAÑANA` `AYER` `DIA` `NOCHE`

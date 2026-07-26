@@ -210,7 +210,7 @@ CLASES_DINAMICAS: list[str] = [
     # Personas / familia (7)
     "MAMA", "PAPA", "FAMILIA", "AMIGO", "NIÑO", "MAESTRO", "DOCTOR",
     # Verbos de uso diario (11)
-    "QUERER", "NECESITAR", "TENER", "DAR", "PERDER", "VENIR", "JUGAR", "ESTUDIAR",
+    "LLAMAR", "NECESITAR", "TENER", "DAR", "PERDER", "VENIR", "JUGAR", "ESTUDIAR",
     "APRENDER", "COMPRAR", "ESPERAR",
     # Lugares (6)
     "CASA", "ESCUELA", "HOSPITAL", "TIENDA", "CALLE", "TRABAJO",

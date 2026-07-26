@@ -14,8 +14,8 @@
 ///     escribe de ambas formas). La Ñ SI se conserva: "baño" busca BAÑO y una
 ///     palabra deletreada usa la seña de la Ñ. El texto que escribió el
 ///     usuario se muestra tal cual; la normalización es solo interna.
-///  3. ALIAS: flexiones y sinónimos apuntan a la seña que existe (QUIERO ->
-///     QUERER; AUTO -> CARRO). Los pares se validan con la asesoría LESHO;
+///  3. ALIAS: flexiones y sinónimos apuntan a la seña que existe (LLAMO ->
+///     LLAMAR; AUTO -> CARRO). Los pares se validan con la asesoría LESHO;
 ///     no se hace gramática (fuera del alcance de la tesis).
 ///
 /// Si ninguna clave ni alias resuelve una palabra, cae al deletreo letra por
@@ -31,6 +31,7 @@ class DiccionarioSenas {
     'HOLA': 'assets/clips/piloto/HOLA_rec.json',
     'CASA': 'assets/clips/piloto/CASA_rec.json',
     'NO': 'assets/clips/piloto/NO_rec.json',
+    'HAMBRE': 'assets/clips/piloto/HAMBRE_rec.json',
     // Ejemplos de señas compuestas (grabar con: --palabras "BUENOS DIAS"):
     // 'BUENOS_DIAS': 'assets/clips/palabras/BUENOS_DIAS.json',
     // 'POR_FAVOR': 'assets/clips/palabras/POR_FAVOR.json',
@@ -41,7 +42,7 @@ class DiccionarioSenas {
   /// Un alias solo actúa si su destino existe en el índice.
   static const Map<String, String> aliasPorDefecto = {
     // Flexiones frecuentes (validar pares con la asesoría LESHO):
-    // 'QUIERO': 'QUERER',
+    // 'LLAMO': 'LLAMAR',
     // 'NIÑOS': 'NIÑO',
     // Sinónimos de contexto:
     // 'AUTO': 'CARRO',

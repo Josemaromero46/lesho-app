@@ -22,6 +22,7 @@ class _PantallaPruebaMunecoState extends State<PantallaPruebaMuneco> {
     'assets/clips/piloto/HOLA_rec.json',
     'assets/clips/piloto/CASA_rec.json',
     'assets/clips/piloto/NO_rec.json',
+    'assets/clips/piloto/HAMBRE_rec.json',
   ];
 
   final Map<String, ClipSena> _clips = {};

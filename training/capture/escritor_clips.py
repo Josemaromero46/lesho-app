@@ -84,7 +84,8 @@ class EscritorClips:
         """
         fps = fps_de_secuencia(secuencia, self.fps_respaldo)
         frames = [
-            fotograma_clip(f["cuerpo"], f["mano_izq"], f["mano_der"])
+            fotograma_clip(f["cuerpo"], f["mano_izq"], f["mano_der"],
+                           f.get("prof_izq"), f.get("prof_der"))
             for f in secuencia
         ]
         clip = crear_clip(clase, fps, self.aspecto, frames, persona=persona)

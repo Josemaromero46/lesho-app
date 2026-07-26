@@ -53,11 +53,18 @@ class ManoDetectada:
         define la sena. Ver la nota sobre el efecto espejo mas abajo.
     confianza : float
         Confianza de la clasificacion de lateralidad reportada por MediaPipe.
+    landmarks_mundo : list[tuple[float, float, float]] | None
+        Los mismos 21 puntos en coordenadas del MUNDO (metros, origen en el
+        centro geometrico de la mano). Su z es una profundidad mucho mas fiable
+        que la z de `landmarks` (que MediaPipe estima mal en puntas ocultas).
+        La usa la Direccion 2 (muneco) para ordenar la oclusion de los dedos.
+        Es None si MediaPipe no la entrego. El alfabeto y el Modelo B no la usan.
     """
 
     landmarks: list
     lateralidad: str
     confianza: float
+    landmarks_mundo: list = None
 
 
 class DetectorLandmarks:
@@ -142,17 +149,27 @@ class DetectorLandmarks:
         if not resultado.hand_landmarks:
             return None
 
+        # World landmarks: misma lista por mano y en el mismo orden que los de
+        # imagen. Pueden faltar en versiones viejas; se maneja como opcional.
+        mundos = getattr(resultado, "hand_world_landmarks", None) or []
+
         manos: list[ManoDetectada] = []
         for indice, lista_landmarks in enumerate(resultado.hand_landmarks):
             puntos = [(lm.x, lm.y, lm.z) for lm in lista_landmarks]
             if len(puntos) != NUM_LANDMARKS:
                 continue
+            mundo = None
+            if indice < len(mundos):
+                mundo = [(lm.x, lm.y, lm.z) for lm in mundos[indice]]
+                if len(mundo) != NUM_LANDMARKS:
+                    mundo = None
             lateralidad, confianza = self._leer_lateralidad(resultado, indice)
             manos.append(
                 ManoDetectada(
                     landmarks=puntos,
                     lateralidad=lateralidad,
                     confianza=confianza,
+                    landmarks_mundo=mundo,
                 )
             )
 

@@ -92,7 +92,18 @@ def _redondear(valores, n_esperado, mensaje):
     return [[round(float(v), DECIMALES_CLIP) for v in punto] for punto in valores]
 
 
-def fotograma_clip(cuerpo, mano_izq, mano_der) -> dict:
+def _redondear_prof(prof):
+    """Redondea una lista de 21 profundidades (z del mundo), validando el largo."""
+    if prof is None:
+        return None
+    if len(prof) != NUM_LANDMARKS:
+        raise ValueError(
+            f"profundidad: se esperaban {NUM_LANDMARKS}, hay {len(prof)}.")
+    return [round(float(v), DECIMALES_CLIP) for v in prof]
+
+
+def fotograma_clip(cuerpo, mano_izq, mano_der,
+                   prof_izq=None, prof_der=None) -> dict:
     """Arma el fotograma de un clip a partir de los datos crudos.
 
     Parametros
@@ -102,8 +113,13 @@ def fotograma_clip(cuerpo, mano_izq, mano_der) -> dict:
         no se detecto en este fotograma.
     mano_izq, mano_der : list[tuple] | None
         Los 21 landmarks (x, y, z) de cada mano, o None si esta ausente.
+    prof_izq, prof_der : list[float] | None
+        Profundidad del MUNDO (z de los world landmarks), 21 valores por mano, o
+        None. Es una profundidad fiable (a diferencia de la z de los landmarks de
+        imagen) que el muneco usa para ordenar la oclusion de los dedos. Opcional
+        y retrocompatible: los clips viejos no la traen y el muneco cae a la z.
     """
-    return {
+    frame = {
         "cuerpo": (None if cuerpo is None
                    else _redondear(cuerpo, NUM_PUNTOS_CUERPO_CLIP, "puntos de cuerpo")),
         "mano_izq": (None if mano_izq is None
@@ -111,6 +127,13 @@ def fotograma_clip(cuerpo, mano_izq, mano_der) -> dict:
         "mano_der": (None if mano_der is None
                      else _redondear(mano_der, NUM_LANDMARKS, "landmarks de mano")),
     }
+    prof_i = _redondear_prof(prof_izq)
+    prof_d = _redondear_prof(prof_der)
+    if prof_i is not None:
+        frame["prof_izq"] = prof_i
+    if prof_d is not None:
+        frame["prof_der"] = prof_d
+    return frame
 
 
 def crear_clip(palabra: str, fps: float, aspecto: float, frames: list,

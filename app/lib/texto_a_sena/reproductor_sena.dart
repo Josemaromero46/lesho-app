@@ -35,7 +35,7 @@ class ReproductorSena extends StatefulWidget {
     this.vistaEspejo = false,
     this.repetir = true,
     this.alTerminar,
-    this.colores = ColoresMuneco.azul,
+    this.colores = ColoresMuneco.humano,
   });
 
   @override

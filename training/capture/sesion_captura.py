@@ -379,28 +379,61 @@ class SesionCaptura:
                 derecha = landmarks
         return izquierda, derecha
 
+    def _asignar_lateralidad_obj(self, manos):
+        """Como `_asignar_lateralidad`, pero devuelve los objetos ManoDetectada.
+
+        Sirve para el clip del muneco, que ademas de los landmarks de imagen
+        necesita los del MUNDO (profundidad fiable) de cada mano asignada.
+        """
+        izquierda = derecha = None
+        sin_asignar = []
+        for mano in manos:
+            if mano.lateralidad == LATERALIDAD_IZQUIERDA and izquierda is None:
+                izquierda = mano
+            elif mano.lateralidad == LATERALIDAD_DERECHA and derecha is None:
+                derecha = mano
+            else:
+                sin_asignar.append(mano)
+        for mano in sin_asignar:
+            if izquierda is None:
+                izquierda = mano
+            elif derecha is None:
+                derecha = mano
+        return izquierda, derecha
+
     def _fotograma_crudo(self, manos) -> dict:
         """Fotograma crudo para un clip del diccionario (Direccion 2).
 
         Guarda las coordenadas tal como salen de MediaPipe ([0, 1] de la
         imagen), sin normalizar respecto a la muneca, porque el objetivo es
-        REPRODUCIR el movimiento sobre el muneco, no entrenar. Incluye el
+        REPRODUCIR el movimiento sobre el muneco, no entrenar. Guarda ademas la
+        PROFUNDIDAD del mundo (z de los world landmarks) por mano, que el muneco
+        usa para ordenar la oclusion de los dedos de forma fiable. Incluye el
         instante de captura para que el escritor calcule el fps real de la toma.
         """
-        izquierda = derecha = None
+        izq_obj = der_obj = None
         if manos:
-            izquierda, derecha = self._asignar_lateralidad(manos)
+            izq_obj, der_obj = self._asignar_lateralidad_obj(manos)
         cuerpo = None
         if self._cuerpo_actual:
             cuerpo = [
                 [p.x, p.y, p.z, p.visibilidad]
                 for p in (self._cuerpo_actual[i] for i in INDICES_POSE_CLIP)
             ]
+
+        def prof(mano):
+            """z de los world landmarks (21 valores), o None si no hay."""
+            if mano is None or mano.landmarks_mundo is None:
+                return None
+            return [float(p[2]) for p in mano.landmarks_mundo]
+
         return {
             "t": time.time(),
             "cuerpo": cuerpo,
-            "mano_izq": izquierda,
-            "mano_der": derecha,
+            "mano_izq": izq_obj.landmarks if izq_obj else None,
+            "mano_der": der_obj.landmarks if der_obj else None,
+            "prof_izq": prof(izq_obj),
+            "prof_der": prof(der_obj),
         }
 
     def _toma_cruda_valida(self) -> bool:

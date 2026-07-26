@@ -100,17 +100,21 @@ class MainActivity : FlutterActivity() {
     private fun inicializar(numManos: Int, conPose: Boolean) {
         hands?.close(); hands = null
         pose?.close(); pose = null
+        val t0 = System.currentTimeMillis()
         hands = try {
             crearHands(numManos, Delegate.GPU)
         } catch (e: Exception) {
             crearHands(numManos, Delegate.CPU)
         }
+        val t1 = System.currentTimeMillis()
+        android.util.Log.d("LESHO_INIT", "Hands: ${t1 - t0} ms")
         if (conPose) {
             pose = try {
                 crearPose(Delegate.GPU)
             } catch (e: Exception) {
                 crearPose(Delegate.CPU)
             }
+            android.util.Log.d("LESHO_INIT", "Pose: ${System.currentTimeMillis() - t1} ms")
         }
         timestampMs = 0
     }

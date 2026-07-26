@@ -259,7 +259,8 @@ class SesionCapturaClips(SesionCaptura):
         """Arma el clip en memoria (mismo contrato del JSON) para revisarlo."""
         secuencia = self._pendiente["datos"]
         frames = [
-            fotograma_clip(f["cuerpo"], f["mano_izq"], f["mano_der"])
+            fotograma_clip(f["cuerpo"], f["mano_izq"], f["mano_der"],
+                           f.get("prof_izq"), f.get("prof_der"))
             for f in secuencia
         ]
         fps = fps_de_secuencia(secuencia, config.FPS_OBJETIVO)
@@ -335,6 +336,13 @@ def main(palabras: list, tomas: int, persona: str, carpeta: str,
     detector = DetectorLandmarks(
         max_manos=config.MAX_MANOS,
         confianza_deteccion=config.CONFIANZA_DETECCION_MANO,
+        # Seguimiento mas tolerante que en el dataset: al pasar la mano por la
+        # cara MediaPipe tiende a soltarla; un umbral de seguimiento bajo la
+        # mantiene rastreada un poco mas de tiempo. Es un sistema aparte del
+        # dataset (aca importa reproducir, no entrenar), asi que no afecta al
+        # entrenamiento. No elimina la perdida (es un limite de MediaPipe), la
+        # reduce.
+        confianza_seguimiento=0.3,
     )
     detector_pose = DetectorPose(
         confianza_deteccion=config.CONFIANZA_DETECCION_MANO,
