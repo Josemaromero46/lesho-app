@@ -40,11 +40,16 @@ class ReconocedorPalabra {
 
   // Mínimo de fotogramas para intentar clasificar (a bajo fps una seña son pocos).
   static const int _minFrames = 8;
-  // Muestreo temporal durante la grabación: un fotograma cada ~150 ms (~6.7 por
-  // segundo). Es la perilla que intercambia densidad de la trayectoria contra
-  // tiempo de espera al soltar; con el remuestreo a 40 del preprocesamiento, esta
-  // densidad conserva la seña completa.
-  static const int _intervaloMuestreoMs = 150;
+  // Muestreo temporal durante la grabación. Es la perilla que intercambia densidad
+  // de la trayectoria contra tiempo de espera al soltar. Se fija en 33 ms, o sea 30
+  // por segundo, que es el ritmo con el que se grabó el dataset: en la práctica
+  // toma TODOS los fotogramas que entrega la cámara del A13 (más lenta que eso), y
+  // en un teléfono rápido no pasa de la densidad del entrenamiento.
+  //
+  // Con 150 ms las señas entraban con 8 a 13 fotogramas, contra los 40 a 45 de las
+  // tomas del dataset, y el acierto bajaba. Se puede pagar de sobra: procesar corre
+  // en paralelo con la grabación, así que al soltar solo queda drenar la cola.
+  static const int _intervaloMuestreoMs = 33;
   // Tope de fotogramas muestreados (memoria y tiempo; ~12 s de seña).
   static const int _maxMuestreados = 80;
   // La Pose corre cada este número de fotogramas procesados: el torso es estable

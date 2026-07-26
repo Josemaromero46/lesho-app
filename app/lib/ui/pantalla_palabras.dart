@@ -8,6 +8,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:lesho_app/captura/controlador_camara.dart';
 import 'package:lesho_app/control/reconocedor_palabra.dart';
 import 'package:lesho_app/core/constantes.dart';
+import 'package:lesho_app/core/etiquetas_legibles.dart';
 import 'package:lesho_app/core/marco.dart';
 import 'package:lesho_app/core/normalizacion.dart';
 import 'package:lesho_app/inferencia/cargador_modelos.dart';
@@ -315,7 +316,7 @@ class _EstadoPantallaPalabras extends State<PantallaPalabras>
               child: Column(
                 children: [
                   Text(
-                    '${_resultado!.sena}  (${(_resultado!.confianza * 100).toStringAsFixed(0)}%)',
+                    '${textoLegible(_resultado!.sena)}  (${(_resultado!.confianza * 100).toStringAsFixed(0)}%)',
                     style: Theme.of(context).textTheme.displaySmall?.copyWith(
                           color: colores.tertiary,
                           fontWeight: FontWeight.bold,

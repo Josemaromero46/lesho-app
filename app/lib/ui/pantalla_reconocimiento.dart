@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:lesho_app/core/constantes.dart';
+import 'package:lesho_app/core/etiquetas_legibles.dart';
 import 'package:lesho_app/core/normalizacion.dart';
 import 'package:lesho_app/captura/controlador_camara.dart';
 import 'package:lesho_app/control/maquina_estados.dart';
@@ -245,7 +246,9 @@ class _EstadoPantallaReconocimiento extends State<PantallaReconocimiento>
     final resultado = await _recon!.detener();
     if (!mounted) return;
     if (resultado != null) {
-      _maquina!.agregarPalabra(resultado.sena);
+      // La clase del modelo va sin tildes por contrato; en pantalla se escribe
+      // con la ortografía correcta (MAMA -> MAMÁ, POR_FAVOR -> POR FAVOR).
+      _maquina!.agregarPalabra(textoLegible(resultado.sena));
     }
     setState(() => _reconociendoPalabra = false);
   }

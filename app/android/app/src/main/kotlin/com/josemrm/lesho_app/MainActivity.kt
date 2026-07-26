@@ -41,6 +41,15 @@ class MainActivity : FlutterActivity() {
     private var numManosActual = -1
     private var timestampMs: Long = 0
 
+    // Arreglo de píxeles reusado entre fotogramas (ver nv21ABitmap).
+    private var bufferArgb = IntArray(0)
+
+    // Acumuladores para medir el costo REAL del deletreo en vivo. Se reportan cada
+    // 20 fotogramas para no llenar el registro.
+    private var vivoN = 0
+    private var vivoConv = 0L
+    private var vivoHands = 0L
+
     private val hiloDeteccion = HandlerThread("mediapipe").apply { start() }
     private val handlerDeteccion = Handler(hiloDeteccion.looper)
     private val handlerPrincipal = Handler(Looper.getMainLooper())
@@ -191,9 +200,15 @@ class MainActivity : FlutterActivity() {
     /// viejo comprimía a JPEG y lo descomprimía POR FOTOGRAMA: lento y con pérdida
     /// (el pipeline de entrenamiento en Python nunca pasa por JPEG). Conversión
     /// BT.601 estándar de Android.
+    ///
+    /// El arreglo de píxeles se REUSA entre fotogramas: crearlo cada vez son 1.2 MB
+    /// de basura por fotograma, y en gama baja el recolector de memoria se nota como
+    /// tirones en el deletreo. Es seguro porque toda la detección corre en un solo
+    /// hilo (handlerDeteccion) y createBitmap copia el arreglo.
     private fun nv21ABitmap(nv21: ByteArray, width: Int, height: Int): Bitmap {
         val frameSize = width * height
-        val argb = IntArray(frameSize)
+        if (bufferArgb.size != frameSize) bufferArgb = IntArray(frameSize)
+        val argb = bufferArgb
         var yp = 0
         for (j in 0 until height) {
             var uvp = frameSize + (j shr 1) * width
@@ -240,14 +255,31 @@ class MainActivity : FlutterActivity() {
     ): Map<String, Any?> {
         val h = hands ?: return mapOf("manos" to emptyList<Any>(), "pose" to null)
 
+        var t = System.currentTimeMillis()
         val mpImage = prepararImagen(nv21, width, height, rotation)
+        val msConv = System.currentTimeMillis() - t
         timestampMs += 33
 
+        t = System.currentTimeMillis()
         val manos = detectarManos(h, mpImage, timestampMs)
+        val msHands = System.currentTimeMillis() - t
+
         val puntosPose = if (conPoseFrame) {
             pose?.let { detectarPose(it, mpImage, timestampMs) }
         } else {
             null
+        }
+
+        // Promedio cada 20 fotogramas: dice cuánto cuesta de verdad un fotograma
+        // del deletreo en vivo, separando conversión de inferencia.
+        vivoN++; vivoConv += msConv; vivoHands += msHands
+        if (vivoN >= 20) {
+            android.util.Log.d(
+                "LESHO_T",
+                "vivo x$vivoN conv=${vivoConv / vivoN}ms hands=${vivoHands / vivoN}ms " +
+                    "total=${(vivoConv + vivoHands) / vivoN}ms"
+            )
+            vivoN = 0; vivoConv = 0; vivoHands = 0
         }
 
         return mapOf("manos" to manos, "pose" to puntosPose)
