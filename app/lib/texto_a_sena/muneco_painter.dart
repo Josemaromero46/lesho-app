@@ -17,7 +17,9 @@ import 'package:lesho_app/texto_a_sena/clip_sena.dart';
 const _propBrazo = 0.32; // grosor de la manga (hombro a codo)
 const _propAntebrazo = 0.24; // grosor del antebrazo (piel)
 const _propCuello = 0.32;
-const _propDedo = 0.118;
+// Grosor del dedo respecto al ANCHO DE NUDILLOS (puntos 5 a 17) en pantalla, no
+// al ancho de hombros: así los dedos no se amontonan cuando la mano se ve chica.
+const _propDedoMano = 0.24;
 const _propRadioCabeza = 0.46;
 const _ovaloCabeza = 1.14; // cabeza ovalada (mas alta que ancha)
 const _angosteCaderas = 0.80; // caderas mas angostas que lo medido
@@ -71,6 +73,10 @@ class ColoresMuneco {
 /// Contorno oscuro (casi negro cálido) y color de las uñas.
 const _contorno = Color(0xFF3A2C28);
 const _colUna = Color(0xFFF8E4CE);
+
+/// Rostro: ojo casi negro cálido y su brillo.
+const _colOjo = Color(0xFF2A2E34);
+const _colBrillo = Color(0xFFF5F5F5);
 
 /// Tres tonos derivados de un color base, para el sombreado.
 class _Tonos {
@@ -196,13 +202,14 @@ class MunecoPainter extends CustomPainter {
   /// línea oscura, sin fundirse.
   void _cadena(
       Canvas canvas, List<(Offset, Offset, double, double)> segmentos, _Tonos t,
-      {bool contorno = true}) {
+      {bool contorno = true, double? grosor}) {
     if (contorno) {
+      final g = grosor ?? _g;
       final p = Paint()
         ..color = _contorno
         ..isAntiAlias = true;
       for (final (a, b, ra, rb) in segmentos) {
-        _capsulaSolida(canvas, a, b, ra + _g, rb + _g, p);
+        _capsulaSolida(canvas, a, b, ra + g, rb + g, p);
       }
     }
     for (final (indice, factor, corr) in _capas) {
@@ -307,15 +314,80 @@ class MunecoPainter extends CustomPainter {
     );
   }
 
+  /// Cabeza ovalada (piel) con casquete de pelo y rostro amigable.
+  ///
+  /// El rostro es estático y frontal (el muñeco siempre se ve de frente). Sirve
+  /// para que las señas que se hacen EN LA CARA (cerca de los ojos, la boca, la
+  /// frente) se lean respecto a esos rasgos, y para que la figura sea cálida para
+  /// niños. La mano, que se dibuja después, tapa el rostro cuando la seña pasa
+  /// por delante de la cara.
   void _cabeza(Canvas canvas, List<P3> cuerpo) {
     final c = _centroCabeza(cuerpo);
     final rx = _propRadioCabeza * _s;
     final ry = rx * _ovaloCabeza;
     _elipseContorneada(canvas, c, rx, ry, _piel);
     _pelo(canvas, c, rx, ry);
+    _rostro(canvas, c, rx, ry);
   }
 
-  /// Casquete de pelo sobre la parte de arriba de la cabeza (sin rostro).
+  /// Ojos con brillo, cejas y sonrisa, sobre la mitad baja de la cara.
+  void _rostro(Canvas canvas, Offset c, double rx, double ry) {
+    final ojoDx = 0.36 * rx;
+    final ojoY = c.dy + 0.06 * ry;
+    final rOjo = 0.135 * rx;
+
+    for (final signo in [-1.0, 1.0]) {
+      final oc = Offset(c.dx + signo * ojoDx, ojoY);
+      // Ojo: óvalo oscuro con un brillo chico arriba a la izquierda.
+      canvas.drawOval(
+        Rect.fromCenter(
+            center: oc, width: 2 * rOjo * 0.82, height: 2 * rOjo),
+        Paint()
+          ..color = _colOjo
+          ..isAntiAlias = true,
+      );
+      canvas.drawCircle(
+        oc + Offset(-rOjo * 0.28, -rOjo * 0.40),
+        rOjo * 0.30,
+        Paint()
+          ..color = _colBrillo
+          ..isAntiAlias = true,
+      );
+      // Ceja: arco corto por encima del ojo (de 200 a 340 grados).
+      final ceja = oc + Offset(0, -rOjo * 1.7);
+      canvas.drawArc(
+        Rect.fromCenter(
+            center: ceja, width: 2 * rOjo * 1.05, height: 2 * rOjo * 0.7),
+        200 * math.pi / 180,
+        140 * math.pi / 180,
+        false,
+        Paint()
+          ..color = _contorno
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = math.max(2, _g * 0.8)
+          ..strokeCap = StrokeCap.round
+          ..isAntiAlias = true,
+      );
+    }
+
+    // Sonrisa: arco abierto hacia arriba en la mitad baja de la cara.
+    final boca = Offset(c.dx, c.dy + 0.40 * ry);
+    canvas.drawArc(
+      Rect.fromCenter(
+          center: boca, width: 2 * 0.26 * rx, height: 2 * 0.20 * ry),
+      22 * math.pi / 180,
+      136 * math.pi / 180,
+      false,
+      Paint()
+        ..color = _contorno
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = math.max(2, _g * 0.9)
+        ..strokeCap = StrokeCap.round
+        ..isAntiAlias = true,
+    );
+  }
+
+  /// Casquete de pelo sobre la parte de arriba de la cabeza.
   void _pelo(Canvas canvas, Offset c, double rx, double ry) {
     const pasos = 40;
     final pts = <Offset>[];
@@ -376,30 +448,161 @@ class MunecoPainter extends CustomPainter {
 
   // -- Mano ilustrada: dedos contorneados con uñas ---------------------------
 
+  /// Mano definida: palma con contorno y dedos contorneados con uñas.
+  ///
+  /// La profundidad se decide POR TRAMO del dedo, no por dedo entero: un dedo
+  /// enrollado tiene el nudillo por delante (se ve) y la punta doblada hacia
+  /// atrás (se oculta tras la mano). Solo un dedo DOBLADO de verdad puede tapar
+  /// tramos; un dedo ESTIRADO (como los de la letra B) va siempre adelante, así
+  /// no se "hunde" en la palma.
   void _mano(Canvas canvas, List<P3> mano) {
     final puntos = mano.map(_px).toList();
-    final rDedo = _propDedo * _s / 2;
 
-    final zPalma =
+    // Grosor del dedo proporcional al tamaño REAL de la mano en pantalla (ancho
+    // de nudillos, estable con los dedos abiertos o juntos). Piso relativo a S
+    // para que nunca desaparezcan.
+    final anchoNudillos = (puntos[5] - puntos[17]).distance;
+    final rDedo = math.max(_propDedoMano * anchoNudillos / 2, 0.035 * _s);
+    // Contorno de los dedos más fino que el del cuerpo, para que dos dedos
+    // vecinos no fundan sus contornos y parezca que las bases convergen.
+    final gDedo = math.min(_g, 0.42 * rDedo);
+
+    final profPalma =
         _palmaIdx.map((i) => mano[i].z).reduce((a, b) => a + b) /
             _palmaIdx.length;
-    final detras = <(double, List<int>)>[];
-    final delante = <(double, List<int>)>[];
-    for (final dedo in _dedos) {
-      final zDedo =
-          dedo.map((i) => mano[i].z).reduce((a, b) => a + b) / dedo.length;
-      (zDedo > zPalma + 0.004 ? detras : delante).add((zDedo, dedo));
+    var minProf = mano[0].z, maxProf = mano[0].z;
+    for (final p in mano) {
+      if (p.z < minProf) minProf = p.z;
+      if (p.z > maxProf) maxProf = p.z;
     }
-    detras.sort((a, b) => b.$1.compareTo(a.$1));
-    delante.sort((a, b) => b.$1.compareTo(a.$1));
+    // Margen adaptativo: un tramo va detrás solo si está claramente más lejos
+    // que la palma.
+    final margenProf = math.max(1e-6, 0.10 * (maxProf - minProf));
 
-    for (final (_, dedo) in detras) {
-      _dedo(canvas, puntos, mano, dedo, rDedo);
+    // Cuánto se ve el DORSO de la mano. Es un dato estable, a diferencia de la z
+    // de las puntas, así que sirve para ocultar las falanges enrolladas.
+    final dorsoCam = _dorsoCamara(mano);
+    final dorso = dorsoCam > 0.05;
+
+    const radios = [1.00, 0.94, 0.88, 0.82];
+    // (profundidad media, segmentos, dedo, llega a la punta, radio de la punta)
+    final atras =
+        <(double, List<(Offset, Offset, double, double)>, List<int>, bool, double)>[];
+    final adelante =
+        <(double, List<(Offset, Offset, double, double)>, List<int>, bool, double)>[];
+
+    for (final dedo in _dedos) {
+      // El pulgar es más grueso que los demás dedos.
+      final rBase = rDedo * (identical(dedo, _dedos[0]) ? 1.35 : 1.0);
+      double rz(int k) {
+        final factor = (1.0 - mano[dedo[k]].z * _ganZDedos)
+            .clamp(_factorZMin, _factorZMax);
+        return rBase * radios[k] * factor;
+      }
+
+      // Doblez: ángulo entre la falange proximal y la distal. El umbral es alto
+      // a propósito (~86 grados) para no "doblar" de más un dedo estirado.
+      final doblez = _anguloDoblez(mano, dedo);
+      final doblado = doblez > 1.5;
+
+      final clases = <bool>[];
+      for (var k = 0; k < 3; k++) {
+        if (k == 0 || !doblado) {
+          clases.add(false); // el nudillo, y todo dedo estirado, van adelante
+          continue;
+        }
+        final profSeg = (mano[dedo[k]].z + mano[dedo[k + 1]].z) / 2;
+        clases.add(dorso || profSeg > profPalma + margenProf);
+      }
+
+      // Los tramos contiguos de la misma clase se unen en una cadena, para que
+      // el dedo siga siendo liso; la costura cae en el borde de la palma.
+      var j = 0;
+      while (j < 3) {
+        final clase = clases[j];
+        final ini = j;
+        while (j < 3 && clases[j] == clase) {
+          j++;
+        }
+        final segs = <(Offset, Offset, double, double)>[
+          for (var k = ini; k < j; k++)
+            (puntos[dedo[k]], puntos[dedo[k + 1]], rz(k), rz(k + 1)),
+        ];
+        var suma = 0.0;
+        for (var k = ini; k < j; k++) {
+          suma += (mano[dedo[k]].z + mano[dedo[k + 1]].z) / 2;
+        }
+        final profMedia = suma / (j - ini);
+        final item = (profMedia, segs, dedo, j == 3, rz(3));
+        (clase ? atras : adelante).add(item);
+      }
+    }
+
+    atras.sort((a, b) => b.$1.compareTo(a.$1));
+    adelante.sort((a, b) => b.$1.compareTo(a.$1));
+
+    for (final tramo in atras) {
+      _cadena(canvas, tramo.$2, _piel, grosor: gDedo);
     }
     _palma(canvas, puntos, rDedo);
-    for (final (_, dedo) in delante) {
-      _dedo(canvas, puntos, mano, dedo, rDedo);
+    for (final (_, segs, dedo, tienePunta, rPunta) in adelante) {
+      _cadena(canvas, segs, _piel, grosor: gDedo);
+      if (tienePunta) {
+        final vis = (_facingUna(mano, dedo) * 1.7 + 0.15).clamp(0.0, 1.0);
+        _una(canvas, puntos[dedo[3]], puntos[dedo[2]], rPunta, vis);
+      }
     }
+  }
+
+  /// Ángulo de doblez del dedo: 0 recto, pi enrollado.
+  double _anguloDoblez(List<P3> mano, List<int> dedo) {
+    final a = mano[dedo[0]], b = mano[dedo[1]];
+    final c = mano[dedo[2]], d = mano[dedo[3]];
+    final px = b.x - a.x, py = b.y - a.y, pz = b.z - a.z;
+    final qx = d.x - c.x, qy = d.y - c.y, qz = d.z - c.z;
+    final n1 = math.sqrt(px * px + py * py + pz * pz);
+    final n2 = math.sqrt(qx * qx + qy * qy + qz * qz);
+    if (n1 < 1e-9 || n2 < 1e-9) return 0;
+    final coseno =
+        ((px * qx + py * qy + pz * qz) / (n1 * n2)).clamp(-1.0, 1.0);
+    return math.acos(coseno);
+  }
+
+  /// Cuánto se ve el DORSO de la mano, por la normal del plano de la palma
+  /// (muñeca, base del índice, base del meñique).
+  double _dorsoCamara(List<P3> mano) {
+    final w = mano[0];
+    final ax = mano[5].x - w.x, ay = mano[5].y - w.y, az = mano[5].z - w.z;
+    final bx = mano[17].x - w.x, by = mano[17].y - w.y, bz = mano[17].z - w.z;
+    final nx = ay * bz - az * by;
+    final ny = az * bx - ax * bz;
+    final nz = ax * by - ay * bx;
+    final norma = math.sqrt(nx * nx + ny * ny + nz * nz);
+    if (norma < 1e-9) return 0;
+    return vistaEspejo ? nz / norma : -(nz / norma);
+  }
+
+  /// Cuánto se ve la UÑA del dedo, en el rango [-1, 1]: mayor que 0 uña, menor
+  /// que 0 yema.
+  ///
+  /// Combina dos señales estables, y se queda con la mayor. La primera es la
+  /// normal de la palma, confiable para los dedos estirados. La segunda detecta
+  /// que un dedo se enrolla y su punta va HACIA la cámara, que es justo cuando
+  /// la normal de la palma no cambia. Tomar el máximo evita el parpadeo de la
+  /// uña cuando la mano se ve de canto.
+  double _facingUna(List<P3> mano, List<int> dedo) {
+    final caraPalma = _dorsoCamara(mano);
+
+    final doblez = _anguloDoblez(mano, dedo);
+    final enrollado = ((doblez - 1.05) / 0.9).clamp(0.0, 1.0);
+    final w = mano[0], m9 = mano[9];
+    final ex = m9.x - w.x, ey = m9.y - w.y, ez = m9.z - w.z;
+    final escala = math.sqrt(ex * ex + ey * ey + ez * ez) + 1e-9;
+    final hacia = ((mano[dedo[0]].z - mano[dedo[3]].z) / escala * 2.0)
+        .clamp(0.0, 1.0);
+    final caraEnrollado = enrollado * hacia;
+
+    return math.max(caraPalma, caraEnrollado);
   }
 
   void _palma(Canvas canvas, List<Offset> puntos, double rDedo) {
@@ -439,31 +642,18 @@ class MunecoPainter extends CustomPainter {
     }
   }
 
-  void _dedo(Canvas canvas, List<Offset> puntos, List<P3> mano,
-      List<int> cadena, double rBase) {
-    const radios = [1.00, 0.94, 0.88, 0.82];
-    double rz(int k) {
-      final factor = (1.0 - mano[cadena[k]].z * _ganZDedos)
-          .clamp(_factorZMin, _factorZMax);
-      return rBase * radios[k] * factor;
-    }
-
-    final segmentos = <(Offset, Offset, double, double)>[
-      for (var k = 0; k + 1 < cadena.length; k++)
-        (puntos[cadena[k]], puntos[cadena[k + 1]], rz(k), rz(k + 1)),
-    ];
-    _cadena(canvas, segmentos, _piel);
-    _una(canvas, puntos[cadena[3]], puntos[cadena[2]], rz(3));
-  }
-
   /// Uña: óvalo claro en la punta, orientado a lo largo del dedo.
-  void _una(Canvas canvas, Offset punta, Offset previa, double r) {
+  ///
+  /// Solo se dibuja cuando se ve el dorso ([vis] alto), y con tamaño fijo (no se
+  /// encoge). Así deja de parpadear cuando la mano se ve de canto.
+  void _una(Canvas canvas, Offset punta, Offset previa, double r, double vis) {
+    if (vis <= 0.35) return;
     final d = punta - previa;
     final largo = d.distance;
     final dir = largo > 1e-3 ? d / largo : const Offset(0, -1);
-    final centro = punta - dir * (r * 0.30);
+    final centro = punta - dir * (r * 0.22);
     final ang = math.atan2(dir.dy, dir.dx);
-    final ejeX = r * 0.78, ejeY = r * 0.58;
+    final ejeX = r * 0.80, ejeY = r * 0.60;
 
     canvas.save();
     canvas.translate(centro.dx, centro.dy);

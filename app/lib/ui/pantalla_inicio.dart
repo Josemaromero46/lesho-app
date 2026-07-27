@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:lesho_app/ui/pantalla_palabras.dart';
-import 'package:lesho_app/ui/pantalla_prueba_muneco.dart';
 import 'package:lesho_app/ui/pantalla_reconocimiento.dart';
 import 'package:lesho_app/ui/pantalla_texto_a_sena.dart';
 
-/// Pantalla de inicio: selección entre las dos direcciones de comunicación.
+/// Pantalla de inicio: la elección entre las dos direcciones de comunicación.
 ///
-/// Diseñada para ser usada tanto por niños como por personas oyentes.
-/// Botones grandes y texto claro para facilitar la elección.
+/// Es la primera decisión de la app, y la toman dos personas muy distintas: un
+/// niño sordo y una persona oyente. Por eso el peso visual está en el ICONO y en
+/// el color de cada tarjeta, no en el texto: un niño sordo puede no leer español
+/// con fluidez, así que debe poder elegir sin leer. El texto queda como apoyo
+/// para la persona oyente.
 class PantallaInicio extends StatelessWidget {
   const PantallaInicio({super.key});
 
@@ -18,24 +19,26 @@ class PantallaInicio extends StatelessWidget {
     return Scaffold(
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+          padding: const EdgeInsets.fromLTRB(24, 28, 24, 24),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const SizedBox(height: 16),
-              _Encabezado(),
-              const SizedBox(height: 48),
+              const _Marca(),
+              const SizedBox(height: 32),
+              // Las tarjetas ocupan todo el alto disponible (área táctil grande,
+              // que en una app usada por niños es una ventaja concreta) y su
+              // contenido va CENTRADO dentro de cada una. Estirarlas empujando el
+              // texto al fondo dejaba un hueco muerto enorme en el medio.
               Expanded(
                 child: Column(
                   children: [
                     Expanded(
                       child: _TarjetaDireccion(
-                        titulo: 'El niño firma',
+                        titulo: 'Traducir señas a texto',
                         descripcion:
-                            'Coloca el teléfono frente a ti y empieza a hacer señas. La app convierte las señas en texto.',
+                            'El niño hace las señas frente a la cámara y aparecen escritas.',
                         icono: Icons.sign_language_rounded,
-                        color: colores.primary,
-                        colorContenedor: colores.primaryContainer,
+                        acento: colores.primary,
                         onTap: () => Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -47,12 +50,11 @@ class PantallaInicio extends StatelessWidget {
                     const SizedBox(height: 20),
                     Expanded(
                       child: _TarjetaDireccion(
-                        titulo: 'La persona oyente escribe',
+                        titulo: 'Escribir para mostrar señas',
                         descripcion:
-                            'Escribe lo que quieres decir y la app muestra la seña correspondiente en pantalla.',
+                            'Escribe una frase y el muñeco la hace en señas para el niño.',
                         icono: Icons.keyboard_rounded,
-                        color: colores.tertiary,
-                        colorContenedor: colores.tertiaryContainer,
+                        acento: colores.secondary,
                         onTap: () => Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -64,26 +66,6 @@ class PantallaInicio extends StatelessWidget {
                   ],
                 ),
               ),
-              const SizedBox(height: 4),
-              TextButton.icon(
-                onPressed: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const PantallaPalabras()),
-                ),
-                icon: const Icon(Icons.science_outlined, size: 18),
-                label: const Text('Probar señas dinámicas (prueba)'),
-              ),
-              TextButton.icon(
-                onPressed: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (_) => const PantallaPruebaMuneco()),
-                ),
-                icon: const Icon(Icons.accessibility_new_rounded, size: 18),
-                label: const Text('Probar muñeco de señas (prueba)'),
-              ),
-              const SizedBox(height: 8),
-              _PieVersion(),
             ],
           ),
         ),
@@ -92,121 +74,111 @@ class PantallaInicio extends StatelessWidget {
   }
 }
 
-class _Encabezado extends StatelessWidget {
+/// Marca de la app. Sobria a propósito: nombre y qué es, nada más.
+class _Marca extends StatelessWidget {
+  const _Marca();
+
   @override
   Widget build(BuildContext context) {
+    final colores = Theme.of(context).colorScheme;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           'LESHO',
           style: Theme.of(context).textTheme.displayMedium?.copyWith(
-                color: Theme.of(context).colorScheme.primary,
-                letterSpacing: 2,
+                color: colores.primary,
+                letterSpacing: 3,
               ),
         ),
-        const SizedBox(height: 4),
+        const SizedBox(height: 6),
         Text(
-          'Lenguaje de Señas Hondureño',
-          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                color: Theme.of(context).colorScheme.onSurface.withValues(alpha:0.6),
-              ),
-        ),
-        const SizedBox(height: 16),
-        Text(
-          'Elige cómo quieres comunicarte:',
-          style: Theme.of(context).textTheme.titleLarge,
+          'Lengua de Señas Hondureña',
+          style: Theme.of(context).textTheme.bodyMedium,
         ),
       ],
     );
   }
 }
 
+/// Tarjeta de una dirección de comunicación.
+///
+/// Superficie blanca sobre el fondo arena, con un filete fino: el color entra
+/// solo por el icono, que es la pieza grande y reconocible. Así la pantalla se
+/// lee tranquila y aun así cada opción se distingue de un vistazo.
 class _TarjetaDireccion extends StatelessWidget {
   final String titulo;
   final String descripcion;
   final IconData icono;
-  final Color color;
-  final Color colorContenedor;
+  final Color acento;
   final VoidCallback onTap;
 
   const _TarjetaDireccion({
     required this.titulo,
     required this.descripcion,
     required this.icono,
-    required this.color,
-    required this.colorContenedor,
+    required this.acento,
     required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 120),
-        decoration: BoxDecoration(
-          color: colorContenedor,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: color.withValues(alpha:0.3), width: 1.5),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Row(
-            children: [
-              Container(
-                width: 64,
-                height: 64,
-                decoration: BoxDecoration(
-                  color: color,
-                  borderRadius: BorderRadius.circular(16),
+    final colores = Theme.of(context).colorScheme;
+
+    return Material(
+      color: colores.surface,
+      borderRadius: BorderRadius.circular(16),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(16),
+        child: Ink(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: colores.outlineVariant),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(28),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  width: 80,
+                  height: 80,
+                  decoration: BoxDecoration(
+                    color: acento,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Icon(icono, color: Colors.white, size: 44),
                 ),
-                child: Icon(icono, color: Colors.white, size: 34),
-              ),
-              const SizedBox(width: 20),
-              Expanded(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                const SizedBox(height: 24),
+                Text(
+                  titulo,
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
+                const SizedBox(height: 6),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    Text(
-                      titulo,
-                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                            color: color,
-                          ),
+                    Expanded(
+                      child: Text(
+                        descripcion,
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
                     ),
-                    const SizedBox(height: 6),
-                    Text(
-                      descripcion,
-                      style: Theme.of(context).textTheme.bodyMedium,
+                    const SizedBox(width: 12),
+                    Icon(
+                      Icons.arrow_forward_rounded,
+                      color: acento,
+                      size: 24,
                     ),
                   ],
                 ),
-              ),
-              const SizedBox(width: 8),
-              Icon(
-                Icons.arrow_forward_ios_rounded,
-                color: color.withValues(alpha:0.6),
-                size: 18,
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
-    );
-  }
-}
-
-class _PieVersion extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Text(
-      'UNAH · Campus Comayagua · 2026',
-      textAlign: TextAlign.center,
-      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            color: Theme.of(context).colorScheme.onSurface.withValues(alpha:0.35),
-            fontSize: 12,
-          ),
     );
   }
 }

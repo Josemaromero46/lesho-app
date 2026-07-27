@@ -28,8 +28,6 @@ from dataclasses import dataclass
 import cv2
 
 from comun.clips import (
-    CUERPO_CADERA_DER,
-    CUERPO_CADERA_IZQ,
     CUERPO_CODO_DER,
     CUERPO_CODO_IZQ,
     INDICES_POSE_CLIP,
@@ -472,9 +470,13 @@ class SesionCaptura:
         if visibles(CUERPO_CODO_IZQ, CUERPO_CODO_DER) < len(cuerpos) * 0.5:
             self._marcar_invalido("Codos fuera de cuadro, alejese un poco")
             return False
-        if visibles(CUERPO_CADERA_IZQ, CUERPO_CADERA_DER) < len(cuerpos) * 0.5:
-            self._marcar_invalido("Caderas fuera de cuadro, alejese un poco")
-            return False
+        # Las CADERAS ya no se exigen. Antes obligaban a alejarse de la camara, y
+        # eso dejaba la mano con pocos pixeles: MediaPipe no lograba separar los
+        # dedos cuando van juntos. Sentarse mas cerca (~70 cm) da cerca de 45% mas
+        # de detalle en los dedos, que es lo que cuesta capturar. Pose estima la
+        # posicion de las caderas aunque queden fuera de cuadro, y el torso es la
+        # parte mas indulgente del muneco; ademas cada toma se revisa en el muneco
+        # antes de guardarla, asi que un torso raro se ve y se repite en el momento.
         return True
 
     def _componer_vector(self, manos) -> list:

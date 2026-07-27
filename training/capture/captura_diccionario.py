@@ -185,7 +185,7 @@ class SesionCapturaClips(SesionCaptura):
         lineas = [
             "ENTER grabar   ·   ESPACIO para frases compuestas (BUENOS DIAS)",
             "RETROCESO corregir   ·   ESC terminar la sesion",
-            "Encuadre: cara, hombros, codos y caderas visibles",
+            "Encuadre: cara, hombros y codos visibles (acerquese: mejor detalle)",
         ]
         y = 400
         for linea in lineas:
@@ -291,12 +291,19 @@ class SesionCapturaClips(SesionCaptura):
 def _identificador(texto: str) -> str:
     """Convierte una palabra o frase a identificador de clip.
 
-    Convencion del proyecto (la misma de las 50 clases): MAYUSCULAS y espacios
-    a guion bajo. Una sena COMPUESTA se escribe con espacios en la lista
-    ("BUENOS DIAS") y se convierte en un solo identificador (BUENOS_DIAS),
-    porque en LESHO es UNA sena, no dos.
+    Convencion del proyecto (la misma de las 50 clases): MAYUSCULAS, SIN tildes
+    de vocal, con enie, y espacios a guion bajo. Una sena COMPUESTA se escribe
+    con espacios en la lista ("BUENOS DIAS") y se convierte en un solo
+    identificador (BUENOS_DIAS), porque en LESHO es UNA sena, no dos.
+
+    Las tildes se quitan a proposito: la app normaliza igual lo que escribe la
+    persona oyente antes de buscar la sena (quita tildes de vocal y conserva la
+    enie). Si el clip se guardara como MAMA con tilde, la busqueda nunca lo
+    encontraria. Al sacarlas aqui, escribir la palabra con o sin tilde da el
+    mismo clip.
     """
-    return "_".join(texto.upper().split())
+    tildes = str.maketrans("ÁÉÍÓÚÜ", "AEIOUU")
+    return "_".join(texto.upper().translate(tildes).split())
 
 
 def _cargar_palabras(texto_palabras, ruta_archivo) -> list:

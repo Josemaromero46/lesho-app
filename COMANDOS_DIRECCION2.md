@@ -39,10 +39,17 @@ repite (con otra cuenta de 3 segundos), y vuelve a pedir la palabra. ESC
 termina y muestra el resumen. La enie se escribe normal; en un teclado en
 ingles la tecla ; la produce.
 
-ENCUADRE (más exigente que el del dataset): el muñeco dibuja brazos y torso
-completos, así que además de la cara y los hombros deben verse los CODOS y
-las CADERAS. Sentarse a ~1 metro de la cámara. Si una toma sale con "Codos
-fuera de cuadro" o "Caderas fuera de cuadro", alejarse un poco y repetir.
+ENCUADRE: deben verse la cara, los hombros y los CODOS (el muñeco dibuja los
+brazos). Las caderas ya NO se exigen: obligaban a alejarse y la mano quedaba
+con pocos píxeles, que es justo lo que impedía separar los dedos cuando van
+juntos. Sentarse a ~70 cm da cerca de 45% más de detalle en los dedos. Si sale
+"Codos fuera de cuadro", alejarse un poco y repetir.
+
+LUZ (lo que más ayuda con los dedos juntos): usar luz LATERAL, no frontal. La
+luz de costado marca sombras ENTRE los dedos, y esas sombras son la pista que
+MediaPipe usa para separarlos; la luz plana de frente los funde. Conviene
+además un fondo liso que contraste con la piel, y girar un poco la mano en las
+señas de dedos juntos en vez de mostrarla de canto.
 
 Teclas durante la grabación: ESPACIO pausa (solo en modo lista), R repetir
 toma, Q salir. Durante la revisión: ENTER guardar, R repetir (3 s de cuenta).
