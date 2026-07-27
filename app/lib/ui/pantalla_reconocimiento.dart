@@ -283,7 +283,7 @@ class _EstadoPantallaReconocimiento extends State<PantallaReconocimiento>
         backgroundColor: Colors.transparent,
         foregroundColor: colores.onSurface,
         elevation: 0,
-        title: const Text('El niño firma'),
+        title: const Text('Traducir señas a texto'),
         actions: [
           if (_maquina != null)
             IconButton(
@@ -317,12 +317,6 @@ class _EstadoPantallaReconocimiento extends State<PantallaReconocimiento>
                       painter: _PintorManos(_manoIzq, _manoDer),
                     ),
                   ),
-                if (_maquina != null && _errorCarga == null && !_cargando)
-                  Positioned(
-                    top: 8,
-                    left: 8,
-                    child: _HudDiagnostico(maquina: _maquina!),
-                  ),
                 // Aviso de grabación de palabra sobre la cámara.
                 if (grabando || _reconociendoPalabra)
                   Positioned(
@@ -352,14 +346,28 @@ class _EstadoPantallaReconocimiento extends State<PantallaReconocimiento>
     final hayModeloB = _recon != null;
 
     return Container(
-      color: Colors.white,
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      padding: const EdgeInsets.fromLTRB(20, 18, 20, 20),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // Recuadro de texto: crece según la necesidad hasta 3 líneas, y de ahí
-          // se puede subir/bajar con scroll (baja solo cuando entra texto nuevo).
+          // El texto reconocido es el resultado de toda la app, así que lleva el
+          // peso visual del panel. Crece hasta 3 líneas y de ahí hace scroll,
+          // bajando solo cuando entra texto nuevo.
+          Text(
+            'Texto reconocido',
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontSize: 12.5,
+                  letterSpacing: 0.6,
+                  fontWeight: FontWeight.w600,
+                  color: colores.onSurfaceVariant,
+                ),
+          ),
+          const SizedBox(height: 8),
           ConstrainedBox(
             constraints: const BoxConstraints(maxHeight: _altoTresLineas),
             child: SingleChildScrollView(
@@ -367,21 +375,22 @@ class _EstadoPantallaReconocimiento extends State<PantallaReconocimiento>
               child: Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  texto.isEmpty ? 'Firma para escribir...' : texto,
+                  texto.isEmpty ? 'Haz una seña para empezar' : texto,
                   style: TextStyle(
                     fontSize: _fontTexto,
                     height: _lineaTexto,
-                    letterSpacing: 2,
-                    fontWeight: FontWeight.w600,
+                    letterSpacing: texto.isEmpty ? 0 : 2,
+                    fontWeight:
+                        texto.isEmpty ? FontWeight.w400 : FontWeight.w600,
                     color: texto.isEmpty
-                        ? colores.onSurface.withValues(alpha: 0.25)
+                        ? colores.onSurfaceVariant.withValues(alpha: 0.7)
                         : colores.onSurface,
                   ),
                 ),
               ),
             ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 16),
           Row(
             children: [
               // Botón de espacio.
@@ -393,18 +402,27 @@ class _EstadoPantallaReconocimiento extends State<PantallaReconocimiento>
                   icon: const Icon(Icons.space_bar_rounded),
                   label: const Text('Espacio'),
                   style: OutlinedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    foregroundColor: colores.onSurfaceVariant,
+                    side: BorderSide(color: colores.outlineVariant),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
                 ),
               ),
               const SizedBox(width: 12),
-              // Botón de grabar/detener palabra (Modelo B).
+              // Botón de grabar/detener palabra (Modelo B). Es la acción
+              // principal del panel, así que va relleno y con más peso.
               Expanded(
                 flex: 2,
                 child: FilledButton.icon(
                   style: FilledButton.styleFrom(
                     backgroundColor: grabando ? colores.error : colores.primary,
-                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
                   onPressed: (!hayModeloB || _reconociendoPalabra ||
                           !_reconocimientoListo || _errorCarga != null)
@@ -545,31 +563,53 @@ class _AvisoPalabra extends StatelessWidget {
 }
 
 /// Aviso centrado mientras MediaPipe inicializa. El preview de la cámara ya se ve
-/// detrás; esto solo indica que la detección se está preparando.
+/// detrás; esto indica que la detección se está preparando y, de paso, aprovecha
+/// esa espera para dar las dos indicaciones de uso que más cambian el resultado:
+/// apoyar el teléfono (hacen falta las dos manos libres) y la distancia. Es el
+/// momento justo para decirlo, porque es cuando la persona puede acomodarse.
 class _ChipPreparando extends StatelessWidget {
   const _ChipPreparando();
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      margin: const EdgeInsets.symmetric(horizontal: 32),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
       decoration: BoxDecoration(
-        color: Colors.black.withValues(alpha: 0.6),
-        borderRadius: BorderRadius.circular(12),
+        color: Colors.black.withValues(alpha: 0.66),
+        borderRadius: BorderRadius.circular(16),
       ),
-      child: const Row(
+      child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          SizedBox(
-            width: 18,
-            height: 18,
-            child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+          const Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SizedBox(
+                width: 18,
+                height: 18,
+                child: CircularProgressIndicator(
+                    strokeWidth: 2, color: Colors.white),
+              ),
+              SizedBox(width: 10),
+              Text(
+                'Preparando el reconocimiento',
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600),
+              ),
+            ],
           ),
-          SizedBox(width: 10),
+          const SizedBox(height: 14),
           Text(
-            'Preparando reconocimiento...',
+            'Apoya el teléfono en una superficie y colócate\na un brazo de distancia, con buena luz.',
+            textAlign: TextAlign.center,
             style: TextStyle(
-                color: Colors.white, fontSize: 14, fontWeight: FontWeight.w600),
+              color: Colors.white.withValues(alpha: 0.85),
+              fontSize: 13.5,
+              height: 1.4,
+            ),
           ),
         ],
       ),
@@ -623,65 +663,4 @@ class _PintorManos extends CustomPainter {
   @override
   bool shouldRepaint(_PintorManos old) =>
       old.izquierda != izquierda || old.derecha != derecha;
-}
-
-/// HUD de diagnóstico para la prueba en el teléfono: manos, letra candidata,
-/// movimiento y confianza. Se quita en la versión final para niños.
-class _HudDiagnostico extends StatelessWidget {
-  final MaquinaEstados maquina;
-
-  const _HudDiagnostico({required this.maquina});
-
-  @override
-  Widget build(BuildContext context) {
-    final hayManos = maquina.manosVisibles > 0;
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-      decoration: BoxDecoration(
-        color: Colors.black.withValues(alpha: 0.55),
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(
-                hayManos ? Icons.front_hand_rounded : Icons.do_not_touch_rounded,
-                size: 16,
-                color: hayManos ? Colors.greenAccent : Colors.white38,
-              ),
-              const SizedBox(width: 6),
-              Text(
-                'Manos: ${maquina.manosVisibles}',
-                style: const TextStyle(color: Colors.white, fontSize: 13),
-              ),
-            ],
-          ),
-          const SizedBox(height: 2),
-          Text(
-            maquina.candidato.isEmpty
-                ? 'Candidata: -'
-                : 'Candidata: ${maquina.candidato} (${(maquina.confianza * 100).toStringAsFixed(0)}%)',
-            style: const TextStyle(color: Colors.white, fontSize: 13),
-          ),
-          Text(
-            'Mov: ${maquina.movimiento.toStringAsFixed(4)}',
-            style: const TextStyle(color: Colors.white70, fontSize: 12),
-          ),
-          Text(
-            'Det/s: ${maquina.fps.toStringAsFixed(1)}',
-            style: TextStyle(
-              color: maquina.fps >= 15
-                  ? Colors.greenAccent
-                  : (maquina.fps >= 8 ? Colors.amberAccent : Colors.redAccent),
-              fontSize: 12,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 }
