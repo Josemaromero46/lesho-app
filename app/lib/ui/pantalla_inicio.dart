@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lesho_app/ui/pantalla_prueba_muneco.dart';
 import 'package:lesho_app/ui/pantalla_reconocimiento.dart';
 import 'package:lesho_app/ui/pantalla_texto_a_sena.dart';
 
@@ -75,6 +76,11 @@ class PantallaInicio extends StatelessWidget {
 }
 
 /// Marca de la app. Sobria a propósito: nombre y qué es, nada más.
+///
+/// El nombre esconde un atajo de desarrollo: al mantenerlo presionado se abre la
+/// pantalla del muñeco, que sirve para revisar en el teléfono los clips recién
+/// grabados. No hay ninguna pista visual, así que para quien usa la app no
+/// existe.
 class _Marca extends StatelessWidget {
   const _Marca();
 
@@ -84,12 +90,18 @@ class _Marca extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'LESHO',
-          style: Theme.of(context).textTheme.displayMedium?.copyWith(
-                color: colores.primary,
-                letterSpacing: 3,
-              ),
+        GestureDetector(
+          onLongPress: () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const PantallaPruebaMuneco()),
+          ),
+          child: Text(
+            'LESHO',
+            style: Theme.of(context).textTheme.displayMedium?.copyWith(
+                  color: colores.primary,
+                  letterSpacing: 3,
+                ),
+          ),
         ),
         const SizedBox(height: 6),
         Text(

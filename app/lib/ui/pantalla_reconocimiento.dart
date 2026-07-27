@@ -143,12 +143,9 @@ class _EstadoPantallaReconocimiento extends State<PantallaReconocimiento>
       // El Modelo B (palabras) es opcional: si falta, solo funciona el deletreo.
       if (_cargador.tieneModeloB) {
         _recon = ReconocedorPalabra(ModeloB(_cargador));
-        // El esqueleto durante la grabación se dibuja con las detecciones que el
-        // reconocedor ya hace, sin correr detecciones aparte.
-        _recon!.onDeteccionVivo = (d) {
-          _manoIzq = d.manoIzquierda;
-          _manoDer = d.manoDerecha;
-        };
+        // Durante la grabación NO se dibuja el esqueleto: como el procesamiento
+        // va unos fotogramas detrás de la cámara, el esqueleto se veía retrasado
+        // respecto a la mano real, y eso confunde más de lo que ayuda.
         // Las señas INICIO/FIN se quitaron: daban falsos positivos (algunas señas
         // que juntan las puntas de los dedos se confundían con FIN y cerraban la
         // palabra a media seña). La palabra ahora se abre y se cierra SOLO con el
@@ -233,6 +230,10 @@ class _EstadoPantallaReconocimiento extends State<PantallaReconocimiento>
   // Abre la grabación de una palabra (por el botón "Grabar palabra").
   void _iniciarPalabra() {
     if (_recon == null || _recon!.grabando || _reconociendoPalabra) return;
+    // Se borran los landmarks para que no quede congelado en pantalla el último
+    // esqueleto dibujado justo antes de empezar a grabar.
+    _manoIzq = null;
+    _manoDer = null;
     _recon!.iniciar(_detector);
     _maquina!.modoPalabra = true;
     setState(() {});
@@ -311,7 +312,7 @@ class _EstadoPantallaReconocimiento extends State<PantallaReconocimiento>
                     error: _errorCarga,
                   ),
                 ),
-                if (_errorCarga == null && !_cargando)
+                if (_errorCarga == null && !_cargando && !grabando)
                   Positioned.fill(
                     child: CustomPaint(
                       painter: _PintorManos(_manoIzq, _manoDer),
