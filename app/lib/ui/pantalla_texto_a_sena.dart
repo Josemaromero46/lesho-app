@@ -34,9 +34,17 @@ class _EstadoPantallaTextoASena extends State<PantallaTextoASena> {
   List<_Paso> _pasos = [];
   int _indice = 0;
   bool _preparando = false;
+  // La frase llegó al final: el muñeco se queda en la última seña, en vez de
+  // desaparecer de golpe, y se ofrece repetirla.
+  bool _finalizado = false;
+  // Cuenta las veces que se reprodujo la frase. Entra en la clave del
+  // reproductor para que al repetir se cree uno nuevo: si la frase tiene una
+  // sola seña, el índice no cambia y sin esto el clip no volvería a arrancar.
+  int _pase = 0;
   List<String> _sinClip = [];
 
-  bool get _reproduciendo => _pasos.isNotEmpty;
+  bool get _hayEscena => _pasos.isNotEmpty;
+  bool get _reproduciendo => _hayEscena && !_finalizado;
 
   @override
   void dispose() {
@@ -56,6 +64,7 @@ class _EstadoPantallaTextoASena extends State<PantallaTextoASena> {
       _preparando = true;
       _pasos = [];
       _indice = 0;
+      _finalizado = false;
       _sinClip = [];
     });
 
@@ -82,17 +91,28 @@ class _EstadoPantallaTextoASena extends State<PantallaTextoASena> {
   }
 
   void _siguiente() {
+    if (!mounted) return;
     if (_indice + 1 < _pasos.length) {
       setState(() => _indice++);
     } else {
-      setState(() => _pasos = []);
+      setState(() => _finalizado = true);
     }
+  }
+
+  /// Vuelve a reproducir la frase desde la primera seña.
+  void _repetir() {
+    setState(() {
+      _indice = 0;
+      _finalizado = false;
+      _pase++;
+    });
   }
 
   void _detener() {
     setState(() {
       _pasos = [];
       _indice = 0;
+      _finalizado = false;
     });
   }
 
@@ -124,7 +144,7 @@ class _EstadoPantallaTextoASena extends State<PantallaTextoASena> {
       return const Center(child: CircularProgressIndicator());
     }
 
-    if (!_reproduciendo) {
+    if (!_hayEscena) {
       return _EstadoInicial(sinClip: _sinClip);
     }
 
@@ -142,8 +162,12 @@ class _EstadoPantallaTextoASena extends State<PantallaTextoASena> {
               ),
               clipBehavior: Clip.antiAlias,
               child: ReproductorSena(
-                key: ValueKey(_indice),
+                key: ValueKey('$_pase-$_indice'),
                 clip: paso.clip,
+                // Sin bucle: la frase avanza al siguiente clip cuando este
+                // termina. Con `repetir` en true (su valor por defecto) el clip
+                // se repetiría para siempre y nunca avisaría que acabó.
+                repetir: false,
                 alTerminar: _siguiente,
               ),
             ),
@@ -198,11 +222,19 @@ class _EstadoPantallaTextoASena extends State<PantallaTextoASena> {
           ),
           const SizedBox(height: 14),
           FilledButton.icon(
-            onPressed: _preparando ? null : (_reproduciendo ? _detener : _mostrar),
+            onPressed: _preparando
+                ? null
+                : _reproduciendo
+                    ? _detener
+                    : (_finalizado ? _repetir : _mostrar),
             icon: Icon(_reproduciendo
                 ? Icons.stop_rounded
-                : Icons.play_arrow_rounded),
-            label: Text(_reproduciendo ? 'Detener' : 'Mostrar en señas'),
+                : (_finalizado
+                    ? Icons.replay_rounded
+                    : Icons.play_arrow_rounded)),
+            label: Text(_reproduciendo
+                ? 'Detener'
+                : (_finalizado ? 'Repetir' : 'Mostrar en señas')),
             style: FilledButton.styleFrom(
               backgroundColor:
                   _reproduciendo ? colores.error : colores.secondary,
