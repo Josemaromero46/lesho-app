@@ -42,9 +42,25 @@ class _EstadoPantallaTextoASena extends State<PantallaTextoASena> {
   // sola seña, el índice no cambia y sin esto el clip no volvería a arrancar.
   int _pase = 0;
   List<String> _sinClip = [];
+  /// La frase que está en pantalla. Si el texto escrito cambia respecto a esta,
+  /// el botón vuelve a ofrecer mostrar en vez de repetir.
+  String _fraseEnPantalla = '';
 
   bool get _hayEscena => _pasos.isNotEmpty;
   bool get _reproduciendo => _hayEscena && !_finalizado;
+
+  /// Solo tiene sentido repetir si terminó Y el texto sigue siendo el mismo que
+  /// se reprodujo. Si la persona escribió otra cosa, lo que corresponde es
+  /// mostrarla, no repetir la anterior.
+  bool get _puedeRepetir =>
+      _finalizado && _controladorTexto.text.trim() == _fraseEnPantalla;
+
+  @override
+  void initState() {
+    super.initState();
+    // Redibuja al escribir: el botón depende de si el texto cambió.
+    _controladorTexto.addListener(() => setState(() {}));
+  }
 
   @override
   void dispose() {
@@ -66,6 +82,7 @@ class _EstadoPantallaTextoASena extends State<PantallaTextoASena> {
       _indice = 0;
       _finalizado = false;
       _sinClip = [];
+      _fraseEnPantalla = frase;
     });
 
     final unidades = _diccionario.traducir(frase);
@@ -222,19 +239,22 @@ class _EstadoPantallaTextoASena extends State<PantallaTextoASena> {
           ),
           const SizedBox(height: 14),
           FilledButton.icon(
-            onPressed: _preparando
+            // Se desactiva si no hay nada que hacer: sin texto escrito y sin una
+            // frase que repetir, el botón no haría nada al tocarlo.
+            onPressed: (_preparando ||
+                    (_controladorTexto.text.trim().isEmpty && !_puedeRepetir))
                 ? null
                 : _reproduciendo
                     ? _detener
-                    : (_finalizado ? _repetir : _mostrar),
+                    : (_puedeRepetir ? _repetir : _mostrar),
             icon: Icon(_reproduciendo
                 ? Icons.stop_rounded
-                : (_finalizado
+                : (_puedeRepetir
                     ? Icons.replay_rounded
                     : Icons.play_arrow_rounded)),
             label: Text(_reproduciendo
                 ? 'Detener'
-                : (_finalizado ? 'Repetir' : 'Mostrar en señas')),
+                : (_puedeRepetir ? 'Repetir' : 'Mostrar en señas')),
             style: FilledButton.styleFrom(
               backgroundColor:
                   _reproduciendo ? colores.error : colores.secondary,
