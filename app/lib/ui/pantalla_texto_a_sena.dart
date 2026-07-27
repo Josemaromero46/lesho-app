@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:lesho_app/texto_a_sena/cola_reproduccion.dart';
-import 'package:video_player/video_player.dart';
+import 'package:lesho_app/texto_a_sena/clip_sena.dart';
+import 'package:lesho_app/texto_a_sena/diccionario_senas.dart';
+import 'package:lesho_app/texto_a_sena/reproductor_sena.dart';
 
-/// Pantalla de texto a seña (Dirección 2: persona oyente escribe -> video).
+/// Pantalla de texto a seña (Dirección 2: la persona oyente escribe, el niño ve).
 ///
-/// La persona oyente escribe una frase. La app tokeniza el texto, busca
-/// cada palabra en el diccionario visual y reproduce los videos en secuencia.
-/// Si una palabra no tiene video, hace el fallback de deletreo letra por letra.
+/// La persona escribe una frase, el diccionario la descompone en unidades (una
+/// seña propia por palabra, o el deletreo letra por letra cuando la palabra no
+/// tiene seña registrada) y el muñeco las reproduce en orden.
+///
+/// Los clips que aún no se han grabado se saltan sin romper la reproducción: se
+/// avisa al final qué palabras no se pudieron mostrar, en vez de dejar la
+/// pantalla colgada.
 class PantallaTextoASena extends StatefulWidget {
   const PantallaTextoASena({super.key});
 
@@ -14,30 +19,81 @@ class PantallaTextoASena extends StatefulWidget {
   State<PantallaTextoASena> createState() => _EstadoPantallaTextoASena();
 }
 
+/// Un paso de la reproducción: el clip ya cargado y la palabra que representa.
+class _Paso {
+  final ClipSena clip;
+  final String etiqueta;
+  const _Paso(this.clip, this.etiqueta);
+}
+
 class _EstadoPantallaTextoASena extends State<PantallaTextoASena> {
-  final _cola = ColaReproduccion();
+  final _diccionario = DiccionarioSenas();
   final _controladorTexto = TextEditingController();
   final _focoTexto = FocusNode();
 
-  @override
-  void initState() {
-    super.initState();
-    _cola.addListener(() => setState(() {}));
-  }
+  List<_Paso> _pasos = [];
+  int _indice = 0;
+  bool _preparando = false;
+  List<String> _sinClip = [];
+
+  bool get _reproduciendo => _pasos.isNotEmpty;
 
   @override
   void dispose() {
-    _cola.dispose();
     _controladorTexto.dispose();
     _focoTexto.dispose();
     super.dispose();
   }
 
-  Future<void> _mostrarSena() async {
-    final texto = _controladorTexto.text.trim();
-    if (texto.isEmpty) return;
+  /// Traduce la frase y carga los clips necesarios. Los que falten se anotan
+  /// para avisar al final, y la reproducción sigue con los que sí están.
+  Future<void> _mostrar() async {
+    final frase = _controladorTexto.text.trim();
+    if (frase.isEmpty) return;
     _focoTexto.unfocus();
-    await _cola.reproducirFrase(texto);
+
+    setState(() {
+      _preparando = true;
+      _pasos = [];
+      _indice = 0;
+      _sinClip = [];
+    });
+
+    final unidades = _diccionario.traducir(frase);
+    final pasos = <_Paso>[];
+    final faltantes = <String>[];
+
+    for (final unidad in unidades) {
+      for (final ruta in unidad.clips) {
+        try {
+          pasos.add(_Paso(await ClipSena.desdeAsset(ruta), unidad.texto));
+        } catch (_) {
+          if (!faltantes.contains(unidad.texto)) faltantes.add(unidad.texto);
+        }
+      }
+    }
+
+    if (!mounted) return;
+    setState(() {
+      _preparando = false;
+      _pasos = pasos;
+      _sinClip = faltantes;
+    });
+  }
+
+  void _siguiente() {
+    if (_indice + 1 < _pasos.length) {
+      setState(() => _indice++);
+    } else {
+      setState(() => _pasos = []);
+    }
+  }
+
+  void _detener() {
+    setState(() {
+      _pasos = [];
+      _indice = 0;
+    });
   }
 
   @override
@@ -49,165 +105,178 @@ class _EstadoPantallaTextoASena extends State<PantallaTextoASena> {
         backgroundColor: Colors.transparent,
         foregroundColor: colores.onSurface,
         elevation: 0,
-        title: const Text('Mostrar seña'),
+        title: const Text('Escribir para mostrar señas'),
       ),
       body: SafeArea(
         child: Column(
           children: [
-            Expanded(
-              child: _AreaVideo(cola: _cola),
-            ),
-            _PanelEntrada(
-              controlador: _controladorTexto,
-              foco: _focoTexto,
-              cola: _cola,
-              onMostrar: _mostrarSena,
-            ),
+            Expanded(child: _escena(colores)),
+            _panelEntrada(colores),
           ],
         ),
       ),
     );
   }
-}
 
-// ---------------------------------------------------------------------------
-// Widgets internos
-// ---------------------------------------------------------------------------
-
-class _AreaVideo extends StatelessWidget {
-  final ColaReproduccion cola;
-
-  const _AreaVideo({required this.cola});
-
-  @override
-  Widget build(BuildContext context) {
-    final colores = Theme.of(context).colorScheme;
-
-    if (!cola.reproduciendo && cola.controlador == null) {
-      return Center(
-        child: Padding(
-          padding: const EdgeInsets.all(40),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(
-                Icons.play_circle_outline_rounded,
-                size: 80,
-                color: colores.tertiary.withValues(alpha:0.4),
-              ),
-              const SizedBox(height: 20),
-              Text(
-                'Escribe algo abajo y presiona\n"Mostrar seña"',
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                      color: colores.onSurface.withValues(alpha:0.45),
-                    ),
-              ),
-            ],
-          ),
-        ),
-      );
-    }
-
-    final controlador = cola.controlador;
-
-    if (controlador == null || !controlador.value.isInitialized) {
+  /// El muñeco, o el estado inicial cuando todavía no hay nada que mostrar.
+  Widget _escena(ColorScheme colores) {
+    if (_preparando) {
       return const Center(child: CircularProgressIndicator());
     }
 
-    return Column(
-      children: [
-        Expanded(
-          child: Center(
-            child: AspectRatio(
-              aspectRatio: controlador.value.aspectRatio,
-              child: VideoPlayer(controlador),
+    if (!_reproduciendo) {
+      return _EstadoInicial(sinClip: _sinClip);
+    }
+
+    final paso = _pasos[_indice];
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 4, 20, 12),
+      child: Column(
+        children: [
+          Expanded(
+            child: Container(
+              decoration: BoxDecoration(
+                color: colores.surface,
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: colores.outlineVariant),
+              ),
+              clipBehavior: Clip.antiAlias,
+              child: ReproductorSena(
+                key: ValueKey(_indice),
+                clip: paso.clip,
+                alTerminar: _siguiente,
+              ),
             ),
           ),
-        ),
-        if (cola.totalVideos > 1)
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-            child: Row(
-              children: [
+          const SizedBox(height: 14),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                paso.etiqueta.toUpperCase(),
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      color: colores.primary,
+                      letterSpacing: 1.5,
+                    ),
+              ),
+              if (_pasos.length > 1) ...[
+                const SizedBox(width: 12),
                 Text(
-                  'Video ${cola.videoActual} de ${cola.totalVideos}',
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: colores.onSurface.withValues(alpha:0.5),
-                      ),
+                  '${_indice + 1} de ${_pasos.length}',
+                  style: Theme.of(context).textTheme.bodyMedium,
                 ),
               ],
-            ),
-          ),
-      ],
-    );
-  }
-}
-
-class _PanelEntrada extends StatelessWidget {
-  final TextEditingController controlador;
-  final FocusNode foco;
-  final ColaReproduccion cola;
-  final VoidCallback onMostrar;
-
-  const _PanelEntrada({
-    required this.controlador,
-    required this.foco,
-    required this.cola,
-    required this.onMostrar,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final colores = Theme.of(context).colorScheme;
-
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha:0.06),
-            blurRadius: 12,
-            offset: const Offset(0, -3),
+            ],
           ),
         ],
       ),
-      padding: const EdgeInsets.fromLTRB(20, 20, 20, 24),
+    );
+  }
+
+  Widget _panelEntrada(ColorScheme colores) {
+    return Container(
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      padding: const EdgeInsets.fromLTRB(20, 18, 20, 20),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           TextField(
-            controller: controlador,
-            focusNode: foco,
-            maxLines: 3,
+            controller: _controladorTexto,
+            focusNode: _focoTexto,
+            maxLines: 2,
             minLines: 1,
             textCapitalization: TextCapitalization.sentences,
+            textInputAction: TextInputAction.send,
             decoration: const InputDecoration(
-              hintText: 'Escribe lo que quieres decir...',
-              prefixIcon: Icon(Icons.edit_rounded),
+              hintText: 'Escribe lo que quieres decir',
             ),
-            onSubmitted: (_) => onMostrar(),
+            onSubmitted: (_) => _mostrar(),
           ),
           const SizedBox(height: 14),
           FilledButton.icon(
-            onPressed: cola.reproduciendo ? null : onMostrar,
-            icon: cola.reproduciendo
-                ? const SizedBox(
-                    width: 18,
-                    height: 18,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      color: Colors.white,
-                    ),
-                  )
-                : const Icon(Icons.play_arrow_rounded),
-            label: Text(cola.reproduciendo ? 'Reproduciendo...' : 'Mostrar seña'),
+            onPressed: _preparando ? null : (_reproduciendo ? _detener : _mostrar),
+            icon: Icon(_reproduciendo
+                ? Icons.stop_rounded
+                : Icons.play_arrow_rounded),
+            label: Text(_reproduciendo ? 'Detener' : 'Mostrar en señas'),
             style: FilledButton.styleFrom(
-              backgroundColor: colores.tertiary,
+              backgroundColor:
+                  _reproduciendo ? colores.error : colores.secondary,
+              foregroundColor:
+                  _reproduciendo ? Colors.white : colores.onSecondary,
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// Estado inicial: invita a escribir y, si la última frase tuvo palabras sin
+/// clip grabado, lo dice con claridad en vez de fallar en silencio.
+class _EstadoInicial extends StatelessWidget {
+  final List<String> sinClip;
+
+  const _EstadoInicial({required this.sinClip});
+
+  @override
+  Widget build(BuildContext context) {
+    final colores = Theme.of(context).colorScheme;
+
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 40),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 96,
+              height: 96,
+              decoration: BoxDecoration(
+                color: colores.secondaryContainer,
+                borderRadius: BorderRadius.circular(24),
+              ),
+              child: Icon(
+                Icons.accessibility_new_rounded,
+                size: 52,
+                color: colores.secondary,
+              ),
+            ),
+            const SizedBox(height: 24),
+            Text(
+              'Escribe una frase y el muñeco la hará en señas.',
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                    color: colores.onSurfaceVariant,
+                  ),
+            ),
+            if (sinClip.isNotEmpty) ...[
+              const SizedBox(height: 24),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                decoration: BoxDecoration(
+                  color: colores.secondaryContainer,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Text(
+                  'Todavía no hay seña grabada para: ${sinClip.join(", ")}',
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: colores.onSecondaryContainer,
+                      ),
+                ),
+              ),
+            ],
+          ],
+        ),
       ),
     );
   }
