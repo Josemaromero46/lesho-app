@@ -5,9 +5,7 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:lesho_app/core/constantes.dart';
 import 'package:lesho_app/core/etiquetas_legibles.dart';
-import 'package:lesho_app/core/normalizacion.dart';
 import 'package:lesho_app/captura/controlador_camara.dart';
 import 'package:lesho_app/control/maquina_estados.dart';
 import 'package:lesho_app/control/reconocedor_palabra.dart';
@@ -51,10 +49,6 @@ class _EstadoPantallaReconocimiento extends State<PantallaReconocimiento>
   // Cola para serializar el soltar/reabrir de la cámara en los cambios de ciclo de
   // vida (evita que se pisen si el usuario sale y entra muy rápido).
   Future<void> _colaCamara = Future.value();
-
-  // Últimas manos detectadas, para dibujar el esqueleto sobre el preview.
-  List<Punto>? _manoIzq;
-  List<Punto>? _manoDer;
 
   // Recuadro de texto: control de scroll para bajar al final cuando entra texto.
   final ScrollController _scrollTexto = ScrollController();
@@ -211,8 +205,6 @@ class _EstadoPantallaReconocimiento extends State<PantallaReconocimiento>
     _procesandoFrame = true;
     try {
       final deteccion = await _detector.procesar(imagen, conPose: false);
-      _manoIzq = deteccion.manoIzquierda;
-      _manoDer = deteccion.manoDerecha;
       if (deteccion.hayMano) {
         _maquina!.procesarManos(
           deteccion.manoIzquierda,
@@ -230,10 +222,6 @@ class _EstadoPantallaReconocimiento extends State<PantallaReconocimiento>
   // Abre la grabación de una palabra (por el botón "Grabar palabra").
   void _iniciarPalabra() {
     if (_recon == null || _recon!.grabando || _reconociendoPalabra) return;
-    // Se borran los landmarks para que no quede congelado en pantalla el último
-    // esqueleto dibujado justo antes de empezar a grabar.
-    _manoIzq = null;
-    _manoDer = null;
     _recon!.iniciar(_detector);
     _maquina!.modoPalabra = true;
     setState(() {});
@@ -312,12 +300,6 @@ class _EstadoPantallaReconocimiento extends State<PantallaReconocimiento>
                     error: _errorCarga,
                   ),
                 ),
-                if (_errorCarga == null && !_cargando && !grabando)
-                  Positioned.fill(
-                    child: CustomPaint(
-                      painter: _PintorManos(_manoIzq, _manoDer),
-                    ),
-                  ),
                 // Aviso de grabación de palabra sobre la cámara.
                 if (grabando || _reconociendoPalabra)
                   Positioned(
@@ -616,52 +598,4 @@ class _ChipPreparando extends StatelessWidget {
       ),
     );
   }
-}
-
-/// Dibuja el esqueleto de la(s) mano(s) sobre el preview, con los landmarks
-/// normalizados [0,1] que devuelve MediaPipe.
-class _PintorManos extends CustomPainter {
-  final List<Punto>? izquierda;
-  final List<Punto>? derecha;
-
-  _PintorManos(this.izquierda, this.derecha);
-
-  // Conexiones de los 21 landmarks de la mano (topología de MediaPipe Hands).
-  static const List<List<int>> _huesos = [
-    [0, 1], [1, 2], [2, 3], [3, 4], // pulgar
-    [0, 5], [5, 6], [6, 7], [7, 8], // índice
-    [5, 9], [9, 10], [10, 11], [11, 12], // medio
-    [9, 13], [13, 14], [14, 15], [15, 16], // anular
-    [13, 17], [17, 18], [18, 19], [19, 20], // meñique
-    [0, 17], // base de la palma
-  ];
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    for (final mano in [izquierda, derecha]) {
-      if (mano == null || mano.length != Constantes.numLandmarks) continue;
-      _dibujarMano(canvas, size, mano);
-    }
-  }
-
-  void _dibujarMano(Canvas canvas, Size size, List<Punto> mano) {
-    final lineas = Paint()
-      ..color = const Color(0xCC00E5A0)
-      ..strokeWidth = 3
-      ..style = PaintingStyle.stroke;
-    final puntos = Paint()..color = const Color(0xFFFFFFFF);
-
-    Offset aPantalla(Punto p) => Offset(p.x * size.width, p.y * size.height);
-
-    for (final hueso in _huesos) {
-      canvas.drawLine(aPantalla(mano[hueso[0]]), aPantalla(mano[hueso[1]]), lineas);
-    }
-    for (final p in mano) {
-      canvas.drawCircle(aPantalla(p), 4, puntos);
-    }
-  }
-
-  @override
-  bool shouldRepaint(_PintorManos old) =>
-      old.izquierda != izquierda || old.derecha != derecha;
 }
