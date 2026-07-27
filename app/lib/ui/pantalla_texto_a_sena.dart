@@ -19,11 +19,13 @@ class PantallaTextoASena extends StatefulWidget {
   State<PantallaTextoASena> createState() => _EstadoPantallaTextoASena();
 }
 
-/// Un paso de la reproducción: el clip ya cargado y la palabra que representa.
+/// Un paso de la reproducción: el clip ya cargado y a qué palabra de la frase
+/// pertenece. Una palabra deletreada aporta varios pasos (uno por letra), todos
+/// con el mismo índice, para poder resaltarla entera mientras se deletrea.
 class _Paso {
   final ClipSena clip;
-  final String etiqueta;
-  const _Paso(this.clip, this.etiqueta);
+  final int indicePalabra;
+  const _Paso(this.clip, this.indicePalabra);
 }
 
 class _EstadoPantallaTextoASena extends State<PantallaTextoASena> {
@@ -32,6 +34,9 @@ class _EstadoPantallaTextoASena extends State<PantallaTextoASena> {
   final _focoTexto = FocusNode();
 
   List<_Paso> _pasos = [];
+  /// Las palabras de la frase que sí tienen seña, en orden. Se muestran todas y
+  /// se resalta la que el muñeco está haciendo.
+  List<String> _palabras = [];
   int _indice = 0;
   bool _preparando = false;
   // La frase llegó al final: el muñeco se queda en la última seña, en vez de
@@ -79,6 +84,7 @@ class _EstadoPantallaTextoASena extends State<PantallaTextoASena> {
     setState(() {
       _preparando = true;
       _pasos = [];
+      _palabras = [];
       _indice = 0;
       _finalizado = false;
       _sinClip = [];
@@ -87,22 +93,28 @@ class _EstadoPantallaTextoASena extends State<PantallaTextoASena> {
 
     final unidades = _diccionario.traducir(frase);
     final pasos = <_Paso>[];
+    final palabras = <String>[];
     final faltantes = <String>[];
 
     for (final unidad in unidades) {
+      // Solo entran a la frase en pantalla las palabras que llegaron a tener al
+      // menos un clip: mostrar una que nunca se va a resaltar confundiría.
+      final desde = pasos.length;
       for (final ruta in unidad.clips) {
         try {
-          pasos.add(_Paso(await ClipSena.desdeAsset(ruta), unidad.texto));
+          pasos.add(_Paso(await ClipSena.desdeAsset(ruta), palabras.length));
         } catch (_) {
           if (!faltantes.contains(unidad.texto)) faltantes.add(unidad.texto);
         }
       }
+      if (pasos.length > desde) palabras.add(unidad.texto);
     }
 
     if (!mounted) return;
     setState(() {
       _preparando = false;
       _pasos = pasos;
+      _palabras = palabras;
       _sinClip = faltantes;
     });
   }
@@ -128,6 +140,7 @@ class _EstadoPantallaTextoASena extends State<PantallaTextoASena> {
   void _detener() {
     setState(() {
       _pasos = [];
+      _palabras = [];
       _indice = 0;
       _finalizado = false;
     });
@@ -190,23 +203,23 @@ class _EstadoPantallaTextoASena extends State<PantallaTextoASena> {
             ),
           ),
           const SizedBox(height: 14),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+          // La frase completa, con la palabra que el muñeco está haciendo
+          // resaltada: así se ve el avance y cuánto falta.
+          Wrap(
+            alignment: WrapAlignment.center,
+            spacing: 12,
+            runSpacing: 6,
             children: [
-              Text(
-                paso.etiqueta.toUpperCase(),
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      color: colores.primary,
-                      letterSpacing: 1.5,
-                    ),
-              ),
-              if (_pasos.length > 1) ...[
-                const SizedBox(width: 12),
+              for (var i = 0; i < _palabras.length; i++)
                 Text(
-                  '${_indice + 1} de ${_pasos.length}',
-                  style: Theme.of(context).textTheme.bodyMedium,
+                  _palabras[i].toUpperCase(),
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        letterSpacing: 1.5,
+                        color: i == paso.indicePalabra
+                            ? colores.primary
+                            : colores.onSurfaceVariant.withValues(alpha: 0.45),
+                      ),
                 ),
-              ],
             ],
           ),
         ],
