@@ -1,0 +1,116 @@
+% Custom Cover Page using TikZ
+% Based on UNAH thesis template
+
+% Define custom colors for this cover
+\definecolor{amarilloTesis}{HTML}{FFD700}
+\definecolor{azulFondo}{HTML}{2B3A64}
+
+% Define Helvetica Neue font (or TeX Gyre Heros as fallback)
+\newfontfamily\helveticaneue{TeX Gyre Heros}[
+    UprightFont = *,
+    BoldFont = * Bold,
+    ItalicFont = * Italic,
+    BoldItalicFont = * Bold Italic
+]
+
+% If Helvetica Neue is not available, use TeX Gyre Heros (Helvetica clone)
+% Uncomment the line below if you don't have Helvetica Neue installed:
+% \newfontfamily\helveticaneue{TeX Gyre Heros}
+
+% Save current geometry
+\newgeometry{left=0cm, right=0cm, top=0cm, bottom=0cm}
+
+\begin{titlepage}
+    \thispagestyle{empty}
+    
+    \begin{tikzpicture}[remember picture, overlay]
+        
+        % --- Background Image ---
+        \node at (current page.center) {
+            \includegraphics[width=\paperwidth, height=\paperheight]{Figures/Theme/Cover.pdf}
+        };
+        
+        % --- Thesis Title ---
+        \node[
+            text=black,
+            font=\helveticaneue\bfseries\huge,
+            align=left,
+            text width=0.8\paperwidth,
+            anchor=north west
+        ] at ([xshift=2.5cm, yshift=-2.5cm]current page.north west)
+        {\GetCustomTitle};
+        
+        % --- "Tesis de Pregrado" Label ---
+        \node[
+            text=amarilloTesis,
+            font=\helveticaneue\bfseries\Huge,
+            anchor=west
+        ] at ([xshift=2.5cm, yshift=-10.5cm]current page.north west) {\GetThesisTypeCustom};
+        
+        % --- Faculty Block ---
+        \node[
+            text=white,
+            font=\helveticaneue\footnotesize,
+            align=left, 
+            anchor=west
+        ] at ([xshift=15.3cm, yshift=-9.5cm]current page.north west) {\GetFaculty};
+        
+        % --- Department Block ---
+        \node[
+            text=white,
+            font=\helveticaneue\footnotesize,
+            align=left,
+            anchor=west
+        ] at ([xshift=15.3cm, yshift=-10.8cm]current page.north west) {\GetDepartmentCustom};
+        
+        % --- Author Name ---
+        \node[
+            text=white,
+            font=\helveticaneue\large,
+            align=left,
+            anchor=north west
+        ] at ([xshift=2.5cm, yshift=-14cm]current page.north west) {
+            Presentada por: \\
+            \textcolor{amarilloTesis}{\bfseries\Large \GetCustomAuthor}
+        };
+        
+        % --- Advisors Block ---
+        \node[
+            font=\helveticaneue\small,
+            align=left,
+            anchor=north west
+        ] at ([xshift=12.5cm, yshift=-14cm]current page.north west) {
+            \textcolor{amarilloTesis}{Asesor Metodológico:} \\
+            \textcolor{white}{\GetAsesorMetodologico}
+        };
+        
+        % --- Date (centered at bottom) ---
+        \node[
+            text=white,
+            font=\helveticaneue\normalsize,
+        ] at ([xshift=5cm, yshift=5.5cm]current page.south) {\GetCustomDate};
+        
+        % --- Decorative Illustration (bottom left) ---
+        \node[
+            anchor=south west, 
+            xshift=1cm,      
+            yshift=1cm       
+        ] at (current page.south west) {
+            \includegraphics[width=10cm]{Figures/Theme/Ilustration.pdf} 
+        };
+        
+        % --- University Logo (bottom right) ---
+        \node[
+            anchor=south east, 
+            xshift=-0.5cm,      
+            yshift=-0.5cm       
+        ] at (current page.south east) {
+            \includegraphics[width=8cm]{Figures/Theme/Logotypes/backpage.pdf} 
+        };
+        
+    \end{tikzpicture}
+    
+\end{titlepage}
+
+% Restore geometry
+\restoregeometry

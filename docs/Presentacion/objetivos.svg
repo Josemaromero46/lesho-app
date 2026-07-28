@@ -1,0 +1,62 @@
+<svg viewBox="0 0 1400 620" xmlns="http://www.w3.org/2000/svg" font-family="Georgia, 'Times New Roman', serif">
+  <rect x="0" y="0" width="1400" height="620" fill="#ffffff"/>
+
+  <!-- ======================= OBJETIVO GENERAL ======================= -->
+  <g id="general">
+    <text x="96" y="34" font-size="15" letter-spacing="1.6" fill="#8A93A0">OBJETIVO GENERAL</text>
+
+    <rect x="96" y="50" width="1246" height="140" rx="12" fill="#1F3A5F"/>
+    <text x="719" y="98" font-size="25" fill="#ffffff" text-anchor="middle">Desarrollar una aplicación de inteligencia artificial para la comunicación</text>
+    <text x="719" y="132" font-size="25" fill="#ffffff" text-anchor="middle">entre niños sordos y personas oyentes mediante el reconocimiento de</text>
+    <text x="719" y="166" font-size="25" fill="#ffffff" text-anchor="middle">señas del LESHO, ejecutada por completo en el dispositivo.</text>
+  </g>
+
+  <!-- ======================= OBJETIVOS ESPECIFICOS ======================= -->
+  <g id="especificos">
+    <text x="96" y="240" font-size="15" letter-spacing="1.6" fill="#8A93A0">OBJETIVOS ESPECÍFICOS</text>
+
+    <!-- 1 -->
+    <g id="obj-1">
+      <rect x="96" y="258" width="299" height="222" rx="12" fill="#F7F4EE" stroke="#E3DDD2" stroke-width="2"/>
+      <circle cx="245" cy="308" r="28" fill="#1F3A5F"/>
+      <text x="245" y="318" font-size="28" font-weight="bold" fill="#ffffff" text-anchor="middle">1</text>
+      <text x="245" y="374" font-size="23" font-weight="bold" fill="#1A1D24" text-anchor="middle">Construir el</text>
+      <text x="245" y="402" font-size="23" font-weight="bold" fill="#1A1D24" text-anchor="middle">conjunto de datos</text>
+      <text x="245" y="434" font-size="17" fill="#5C6472" text-anchor="middle">alfabeto y señas dinámicas,</text>
+      <text x="245" y="456" font-size="17" fill="#5C6472" text-anchor="middle">con protocolo reproducible</text>
+    </g>
+
+    <!-- 2 -->
+    <g id="obj-2">
+      <rect x="411" y="258" width="299" height="222" rx="12" fill="#F7F4EE" stroke="#E3DDD2" stroke-width="2"/>
+      <circle cx="560" cy="308" r="28" fill="#1F3A5F"/>
+      <text x="560" y="318" font-size="28" font-weight="bold" fill="#ffffff" text-anchor="middle">2</text>
+      <text x="560" y="374" font-size="23" font-weight="bold" fill="#1A1D24" text-anchor="middle">Diseñar los</text>
+      <text x="560" y="402" font-size="23" font-weight="bold" fill="#1A1D24" text-anchor="middle">modelos</text>
+      <text x="560" y="434" font-size="17" fill="#5C6472" text-anchor="middle">para señas estáticas y</text>
+      <text x="560" y="456" font-size="17" fill="#5C6472" text-anchor="middle">dinámicas, aptos para móviles</text>
+    </g>
+
+    <!-- 3 -->
+    <g id="obj-3">
+      <rect x="726" y="258" width="299" height="222" rx="12" fill="#F7F4EE" stroke="#E3DDD2" stroke-width="2"/>
+      <circle cx="875" cy="308" r="28" fill="#1F3A5F"/>
+      <text x="875" y="318" font-size="28" font-weight="bold" fill="#ffffff" text-anchor="middle">3</text>
+      <text x="875" y="374" font-size="23" font-weight="bold" fill="#1A1D24" text-anchor="middle">Desarrollar la</text>
+      <text x="875" y="402" font-size="23" font-weight="bold" fill="#1A1D24" text-anchor="middle">aplicación</text>
+      <text x="875" y="434" font-size="17" fill="#5C6472" text-anchor="middle">con las dos direcciones</text>
+      <text x="875" y="456" font-size="17" fill="#5C6472" text-anchor="middle">de comunicación, sin nube</text>
+    </g>
+
+    <!-- 4 -->
+    <g id="obj-4">
+      <rect x="1041" y="258" width="299" height="222" rx="12" fill="#F7F4EE" stroke="#E3DDD2" stroke-width="2"/>
+      <circle cx="1190" cy="308" r="28" fill="#1F3A5F"/>
+      <text x="1190" y="318" font-size="28" font-weight="bold" fill="#ffffff" text-anchor="middle">4</text>
+      <text x="1190" y="374" font-size="23" font-weight="bold" fill="#1A1D24" text-anchor="middle">Evaluar el</text>
+      <text x="1190" y="402" font-size="23" font-weight="bold" fill="#1A1D24" text-anchor="middle">sistema</text>
+      <text x="1190" y="434" font-size="17" fill="#5C6472" text-anchor="middle">desempeño técnico</text>
+      <text x="1190" y="456" font-size="17" fill="#5C6472" text-anchor="middle">y usabilidad con usuarios</text>
+    </g>
+  </g>
+</svg>

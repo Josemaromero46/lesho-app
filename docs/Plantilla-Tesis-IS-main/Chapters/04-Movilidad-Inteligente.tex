@@ -1,0 +1,147 @@
+\chapter{Visión por Computadora Aplicada al Reconocimiento de Gestos}
+\label{cp:vision-computadora}
+
+\insertminitoc
+\parindent0pt
+
+Conocidas las características lingüísticas del \acrshort{lesho}, el siguiente paso es entender cómo
+un sistema computacional puede interpretar los gestos de las manos a partir de imágenes.
+Este capítulo aborda las bases técnicas de la visión por computadora aplicada al
+reconocimiento de gestos: desde los fundamentos del procesamiento de imágenes hasta la
+extracción y normalización de puntos de referencia anatómicos de la mano y del cuerpo, que
+constituyen la entrada de los modelos de clasificación utilizados en este proyecto.
+
+\section{Fundamentos de la Visión por Computadora}
+
+La visión por computadora es una disciplina de la inteligencia artificial que tiene como
+objetivo dotar a las máquinas de la capacidad de interpretar y comprender el contenido de
+imágenes y videos digitales. Según Szeliski, esta disciplina abarca un conjunto amplio de
+técnicas destinadas a analizar e interpretar imágenes, con aplicaciones que van desde la
+búsqueda de imágenes y la navegación autónoma hasta tareas cotidianas de procesamiento
+de fotografías y videos personales \cite{szeliski_cv_2022}.
+
+El procesamiento de imágenes digitales constituye la base sobre la cual operan las técnicas
+de visión por computadora. Una imagen digital se representa como una matriz de valores
+numéricos, donde cada elemento, denominado píxel, contiene información sobre la
+intensidad o el color en una posición específica. Gonzalez y Woods describen que el
+procesamiento de imágenes abarca operaciones que van desde la mejora y restauración de
+imágenes hasta la extracción de características y el reconocimiento de objetos, organizadas
+en niveles de procesamiento de complejidad creciente \cite{gonzalez_dip_2018}.
+
+Entre las tareas fundamentales de la visión por computadora se encuentran la detección de
+objetos, que consiste en localizar la presencia y posición de entidades de interés dentro de
+una imagen, y la segmentación, que separa las regiones relevantes del fondo. Estas tareas
+han experimentado avances significativos con la incorporación de técnicas de aprendizaje
+profundo, que han superado a los métodos tradicionales basados en características diseñadas
+manualmente en numerosos dominios de aplicación \cite{szeliski_cv_2022}.
+
+\section{Detección de Manos en Imágenes}
+
+La detección de manos en imágenes constituye un caso particular del problema de detección
+de objetos, con desafíos específicos derivados de la naturaleza articulada y deformable de
+la mano. A diferencia de objetos rígidos, las manos presentan una alta variabilidad de
+configuraciones, oclusiones frecuentes entre los dedos, oclusiones mutuas cuando se
+emplean ambas manos, y ausencia de patrones de alto contraste que faciliten su
+localización \cite{bazarevsky_blazepalm_2019}.
+
+Los enfoques tradicionales de detección de manos se basaban en características de bajo nivel
+como el color de la piel, los contornos y la forma. Estos métodos presentaban limitaciones
+de robustez ante variaciones de iluminación, fondos complejos y diferencias en el tono de
+piel de los usuarios. El advenimiento del aprendizaje profundo permitió superar muchas de
+estas limitaciones mediante modelos capaces de aprender representaciones jerárquicas
+directamente a partir de los datos \cite{szeliski_cv_2022}.
+
+Un avance relevante en esta dirección fue la presentación por parte de Bazarevsky y Zhang,
+investigadores de Google, de un detector de palma denominado BlazePalm. En lugar de
+detectar la mano completa con sus dedos articulados, este modelo detecta la palma, que al
+ser un objeto más rígido y de proporciones más estables, resulta significativamente más
+sencillo de localizar mediante cuadros delimitadores. Este enfoque alcanza una precisión
+promedio cercana al 95.7\,\% en la detección de palmas y opera en tiempo real en
+dispositivos móviles \cite{bazarevsky_blazepalm_2019}.
+
+\section{MediaPipe Hands y la Extracción de Landmarks}
+
+Entre las soluciones disponibles para la detección y seguimiento de manos en tiempo real,
+MediaPipe Hands es la herramienta seleccionada para este proyecto por su precisión,
+su eficiencia en dispositivos móviles y su disponibilidad como software de código abierto.
+
+MediaPipe es un framework de código abierto desarrollado por Google para la construcción
+de canales de procesamiento de datos perceptuales de distintas modalidades, como video y
+audio. El framework organiza el procesamiento como un grafo dirigido de componentes
+modulares, lo que permite construir soluciones de aprendizaje automático multiplataforma
+y reutilizables \cite{lugaresi_mediapipe_2019}.
+
+La solución MediaPipe Hands implementa un canal de procesamiento compuesto por tres
+modelos que operan de forma coordinada. El primero es el detector de palma BlazePalm, que
+opera sobre la imagen completa y devuelve un cuadro delimitador orientado de la mano. El
+segundo es un modelo de landmarks que opera sobre la región recortada definida por el
+detector y devuelve puntos clave tridimensionales de alta fidelidad. El tercero es un
+clasificador que asigna la configuración de puntos clave a un conjunto discreto de
+gestos \cite{bazarevsky_blazepalm_2019}.
+
+El modelo de landmarks identifica 21 puntos anatómicos por mano, cada uno con
+coordenadas tridimensionales que representan su posición en el plano de la imagen y su
+profundidad relativa. Para el entrenamiento de este modelo, los investigadores anotaron
+manualmente alrededor de 30\,000 imágenes reales con las 21 coordenadas, y
+complementaron el conjunto con datos sintéticos para mejorar la robustez del modelo ante
+variaciones \cite{bazarevsky_blazepalm_2019}. Una característica relevante del canal de procesamiento es que el
+detector de palma no se ejecuta en cada fotograma. La ubicación de la mano en fotogramas
+sucesivos se infiere a partir de los puntos clave del fotograma anterior, y el detector solo
+se reactiva cuando la confianza de la inferencia cae por debajo de un umbral determinado,
+lo que optimiza el rendimiento en tiempo real \cite{bazarevsky_blazepalm_2019}.
+
+La representación de los gestos mediante landmarks ofrece ventajas significativas frente al
+procesamiento directo de píxeles. Al reducir cada mano a 21 puntos con tres coordenadas,
+la dimensionalidad de la entrada disminuye drásticamente, lo que permite el uso de modelos
+de clasificación más ligeros y rápidos. Además, esta representación es intrínsecamente más
+robusta ante variaciones de iluminación, color de fondo y tono de piel, dado que captura la
+geometría de la mano en lugar de su apariencia visual \cite{zhang_mediapipe_2020}.
+
+\section{Normalización de Coordenadas para Invarianza Espacial}
+
+Las coordenadas de los landmarks entregadas por MediaPipe están normalizadas respecto a
+las dimensiones de la imagen, con valores en el rango de cero a uno. Sin embargo, estas
+coordenadas absolutas dependen de la posición de la mano dentro del encuadre, lo que
+significa que una misma seña ejecutada en distintas regiones de la imagen produce vectores
+de coordenadas diferentes. Para que un modelo de clasificación reconozca una seña con
+independencia de su ubicación en el encuadre, es necesario aplicar un proceso de
+normalización adicional \cite{szeliski_cv_2022}.
+
+La técnica de normalización más utilizada en el reconocimiento de gestos consiste en
+expresar las coordenadas de todos los landmarks de forma relativa a un punto de referencia
+fijo de la propia mano, habitualmente la muñeca. Al trasladar el origen del sistema de
+coordenadas a este punto, la posición absoluta de la mano en el encuadre deja de influir en
+la representación, y solo se conserva la configuración geométrica interna de la mano. Este
+procedimiento confiere al sistema invarianza ante la traslación \cite{zhang_mediapipe_2020}.
+
+De forma complementaria, suele aplicarse una normalización de escala que ajusta el tamaño
+del conjunto de landmarks a un rango estándar, de modo que la distancia entre la mano y la
+cámara no afecte la representación. Con ambos procedimientos, traslación y escala, la
+representación de una seña se vuelve consistente independientemente de dónde y a qué
+distancia se ejecute frente a la cámara, lo que mejora la capacidad de generalización del
+modelo de clasificación \cite{szeliski_cv_2022}.
+
+\section{MediaPipe Pose y la Ubicación de las Manos en el Cuerpo}
+
+El reconocimiento de la configuración de la mano no basta para distinguir todas las señas.
+Como se expuso en el capítulo anterior, la ubicación o lugar de articulación es uno de los
+parámetros formacionales de las señas, por lo que una misma configuración de la mano
+ejecutada en zonas distintas del cuerpo puede corresponder a señas diferentes. La
+normalización respecto a la muñeca, descrita en la sección anterior, conserva la forma de la
+mano pero elimina la información de dónde se realiza la seña respecto al cuerpo.
+
+Para recuperar esa información, este proyecto incorpora MediaPipe Pose, una solución del
+mismo framework que estima la postura del cuerpo a partir de la imagen. MediaPipe Pose
+identifica 33 puntos de referencia corporales, entre ellos los hombros y varias anclas del
+rostro como la nariz, los ojos, las orejas y la boca. A partir de estos puntos se construye
+un marco de referencia del cuerpo, en el que el centro de los hombros actúa como origen y el
+ancho de los hombros como unidad de escala, de modo que la posición de cada mano se expresa
+en relación con el cuerpo y no con su lugar en el encuadre.
+
+Este marco confiere a la ubicación una invarianza equivalente a la que la normalización de
+la mano ofrece para la forma. Al dividir la posición de la mano entre el ancho de los
+hombros, se cancela el efecto de la distancia de la persona a la cámara, ya que tanto la mano
+como los hombros se ven más grandes o más pequeños en la misma proporción. La combinación de
+la configuración de las manos, obtenida con MediaPipe Hands, y de su ubicación en el cuerpo,
+obtenida con MediaPipe Pose, conforma la entrada del modelo de reconocimiento de señas
+dinámicas que se describe en los capítulos de metodología e implementación.

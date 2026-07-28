@@ -1,0 +1,28 @@
+\cleardoublepage
+\thispagestyle{empty} % Sin encabezado, sin pie de página
+
+% === Registrar la parte en el índice ===
+\refstepcounter{part} % Incrementa el contador de partes
+\addcontentsline{toc}{part}{Parte \thepart: Conclusiones y Recomendaciones}
+
+% === Fondo decorativo ===
+\AddToShipoutPictureBG*{%
+	\put(0,0){%
+		\parbox[b][\paperheight]{\paperwidth}{%
+			\vfill
+			\centering
+			\includegraphics[width=\paperwidth,height=\paperheight]{Figures/Theme/Front-Page-E.pdf}%
+			\vfill
+		}%
+	}%
+}
+
+% === Contenido de la portada de parte ===
+\vspace*{\fill}
+\begin{center}
+	{\Huge\bfseries Parte \thepart}\\[2cm]
+	{\Huge\bfseries CONCLUSIONES Y RECOMENDACIONES}
+\end{center}
+\vspace*{\fill}
+
+\clearpage

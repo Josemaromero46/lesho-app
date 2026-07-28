@@ -1,0 +1,156 @@
+\chapter{Investigaciones Previas Relacionadas}
+\label{chap:investigaciones-previas}
+
+\insertminitoc
+\parindent0pt
+
+La revisión de investigaciones previas permite situar el presente trabajo dentro del estado
+del arte en reconocimiento de lengua de señas y en el desarrollo tecnológico vinculado al
+\acrshort{lesho} en Honduras. Este capítulo organiza los antecedentes en tres áreas: los sistemas de
+reconocimiento basados en dispositivos físicos, los sistemas basados en visión por
+computadora, y los recursos y desarrollos específicos para el contexto hondureño. A partir
+de este análisis se identifican las brechas que fundamentan la propuesta de este proyecto.
+
+\section{Sistemas de Reconocimiento de Lengua de Señas Basados en Sensores Físicos}
+
+Los primeros enfoques para el reconocimiento automático de lengua de señas se
+fundamentaron en el uso de dispositivos de captura de datos montados directamente sobre
+el cuerpo del usuario. Este tipo de sistemas emplean guantes instrumentados con sensores
+inerciales, acelerómetros y giroscopios que miden la posición, orientación y movimiento de
+cada dedo y de la mano en su conjunto.
+
+Ji et al. diseñaron un guante de datos de bajo costo equipado con 16 unidades de medición
+inercial capaces de capturar movimientos complejos de lengua de señas china. Utilizando
+modelos de aprendizaje automático como árboles de decisión, máquinas de soporte
+vectorial y bosques aleatorios, junto con una red \acrshort{lstm} con mecanismo de atención,
+lograron una precisión de 98.85\,\% en el reconocimiento de 20 señas dinámicas \cite{ji_dataglove_2023}.
+
+Otros enfoques han empleado dispositivos comerciales como el Leap Motion, un sensor
+óptico que captura la posición tridimensional de los dedos sin contacto físico. Mittal et al.
+desarrollaron un modelo \acrshort{lstm} modificado para el reconocimiento continuo de lengua de
+señas utilizando datos del Leap Motion, reportando resultados competitivos en la
+clasificación de secuencias gestuales \cite{mittal_lstm_2019}.
+
+Si bien los sistemas basados en sensores alcanzan altas tasas de precisión, presentan
+limitaciones prácticas que restringen su adopción fuera del entorno de laboratorio. El costo
+de los dispositivos, la necesidad de calibración, la incomodidad de uso prolongado y la
+dependencia de hardware especializado constituyen barreras relevantes, especialmente en
+contextos de bajos recursos donde la accesibilidad económica es un factor determinante \cite{sadik_survey_2025}.
+
+\section{Sistemas de Reconocimiento Basados en Visión por Computadora}
+
+Como alternativa a los sistemas basados en sensores, el enfoque basado en visión por
+computadora utiliza cámaras convencionales para capturar los gestos del usuario y
+procesarlos mediante algoritmos de aprendizaje profundo. Este enfoque no requiere
+dispositivos adicionales, lo que reduce el costo y mejora la comodidad del usuario.
+
+Los avances recientes en frameworks de estimación de pose, particularmente MediaPipe
+de Google, han simplificado la extracción de puntos de referencia anatómicos de la mano
+en tiempo real. MediaPipe Hands identifica 21 landmarks por mano con coordenadas
+tridimensionales, lo que permite representar cualquier gesto como un vector numérico que
+puede ser procesado por modelos de clasificación \cite{zhang_mediapipe_2020}.
+
+La combinación de MediaPipe con redes recurrentes de tipo \acrshort{lstm} se ha consolidado como
+uno de los enfoques más utilizados en la literatura reciente para el reconocimiento de señas
+dinámicas. Khartheesvar et al. aplicaron MediaPipe Holistic junto con una red \acrshort{lstm} para
+el reconocimiento de Lengua de Señas India, alcanzando una precisión de 94.8\,\% en el
+dataset INCLUDE y 87.4\,\% en el dataset INCLUDE-50. Los autores destacaron la capacidad
+de MediaPipe para capturar secuencias de movimiento dinámico y la eficiencia de \acrshort{lstm}
+para modelar las dependencias temporales inherentes a las señas \cite{khartheesvar_indian_2024}.
+
+Srivastava et al. propusieron un sistema de reconocimiento continuo de lengua de señas
+que utiliza MediaPipe Holistic para la extracción de landmarks de mano, cuerpo y rostro, y
+una red \acrshort{lstm} como clasificador. Evaluado sobre un dataset propio de Lengua de Señas
+India con 45 señas y gestos, el sistema alcanzó una precisión de 88.23\,\% en tiempo real \cite{srivastava_continuous_2024}.
+
+La integración de estos modelos en aplicaciones móviles también ha sido explorada.
+Sousa et al. desarrollaron una aplicación móvil en Flutter para la traducción del
+alfabeto de la Lengua de Señas Portuguesa, integrando dos enfoques entrenados sobre
+un dataset propio: una red neuronal convolucional optimizada con TensorFlow Lite para
+clasificación de imágenes on-device, y un método basado en MediaPipe para la extracción
+de landmarks con clasificación mediante un perceptrón multicapa. La evaluación reportó
+valores de F1 de aproximadamente 76\,\% para el enfoque basado en \acrshort{cnn} y 77\,\% para el
+enfoque de MediaPipe con \acrshort{mlp}, lo que demuestra la viabilidad de ejecutar el reconocimiento
+de señas directamente en el dispositivo y sin conexión a internet \cite{sousa_lgp_flutter_2025}.
+
+A pesar de estos avances, una revisión exhaustiva publicada por Sadik et al. identificó que
+la gran mayoría de los sistemas de reconocimiento reportados en la literatura se concentran
+en un número reducido de lenguas de señas con grandes conjuntos de datos disponibles,
+como la Lengua de Señas Americana (\acrshort{asl}), la Lengua de Señas China (\acrshort{csl}) y la Lengua
+de Señas India (\acrshort{isl}). Las lenguas de señas regionales o con menor documentación
+permanecen desatendidas en la investigación, lo que limita la transferibilidad de los
+resultados a contextos lingüísticos distintos \cite{sadik_survey_2025}.
+
+\section{Antecedentes sobre \acrshort{lesho} en Honduras}
+
+Además de los avances registrados a nivel internacional, resulta necesario examinar el
+estado del \acrshort{lesho} desde el punto de vista de su documentación formal y del desarrollo
+tecnológico que se ha impulsado en Honduras. Este contexto local permite identificar con
+mayor precisión los recursos disponibles y las necesidades específicas que la investigación
+busca atender.
+
+El Lenguaje de Señas Hondureño (\acrshort{lesho}) cuenta con un proceso de documentación que se
+inició en 1983 con la publicación del primer diccionario impreso denominado ``Las Manos
+Hablan'', elaborado en el seno de la Asociación de Sordos de Honduras (\acrshort{ash}). A este le
+sucedió una segunda obra en 2005, titulada ``Comuniquemos Mejor'', y un tercer diccionario
+en 2019, denominado ``Diccionario de \acrshort{lesho} Tomo I, Primera Edición'', que documenta
+más de 900 señas \cite{ash_diccionario_2019}.
+
+En el ámbito digital, el Programa de Servicios a Estudiantes con Necesidades Especiales
+(\acrshort{prosene}) de la Universidad Nacional Autónoma de Honduras desarrolló el Diccionario
+Digital de \acrshort{lesho}, que constituye el primer recurso de este tipo para la lengua. Este
+diccionario contiene más de 700 señas en formato de video y fue creado a partir de la
+recopilación de términos del entorno universitario por parte de la comunidad estudiantil
+sorda de la \acrshort{unah} \cite{unah_diccionario_2024}.
+
+En cuanto al desarrollo tecnológico, el antecedente más relevante en Honduras es el
+Proyecto Sherly, desarrollado por la investigadora Yeny Carías en la \acrshort{unah}. Este sistema
+convierte la voz captada por un micrófono en texto, y posteriormente traduce el texto a
+una animación de un avatar tridimensional que ejecuta las señas correspondientes en
+\acrshort{lesho}. El proyecto fue reconocido por MIT Technology Review y está orientado a reducir
+la brecha comunicacional en entornos educativos universitarios \cite{proceso_sherly_2014}.
+
+Williams y Parks realizaron una encuesta sociolingüística de la comunidad sorda hondureña
+en la que documentaron la existencia de variaciones regionales del \acrshort{lesho}, el papel central
+de la \acrshort{ash} en la estandarización de la lengua, y la situación educativa de las personas sordas
+en Honduras. El estudio reportó que más de 3\,000 personas han recibido formación en
+\acrshort{lesho} a través de cursos ofrecidos por la \acrshort{ash} y la \acrshort{unah} \cite{williams_encuesta_2015}.
+
+En síntesis, los esfuerzos previos en Honduras se han concentrado en la documentación
+lexicográfica del \acrshort{lesho} y en la dirección de traducción de texto o voz hacia lengua de
+señas. Durante la revisión bibliográfica realizada no se identificaron antecedentes
+documentados de sistemas que aborden la dirección inversa, es decir, el reconocimiento
+automático de señas del \acrshort{lesho} mediante visión por computadora para su conversión a
+texto o lenguaje natural.
+
+\section{Brechas Identificadas en la Literatura}
+
+A partir de la revisión de los antecedentes presentados en las secciones anteriores, se
+identifican las siguientes brechas que justifican el desarrollo de la presente investigación:
+
+En primer lugar, durante la revisión bibliográfica realizada no se identificaron sistemas
+de reconocimiento de \acrshort{lesho} basados en visión por computadora. Los trabajos previos en
+Honduras se han enfocado exclusivamente en la dirección de texto a señas, dejando sin
+atender la dirección inversa que permitiría a una persona sorda expresarse hacia un
+oyente sin que este conozca la lengua de señas.
+
+En segundo lugar, durante la revisión bibliográfica realizada no se identificaron
+antecedentes documentados de un conjunto de datos de landmarks de \acrshort{lesho} orientado al
+entrenamiento de modelos de inteligencia artificial. Los recursos existentes son de
+naturaleza lexicográfica, es decir, diccionarios de consulta visual, pero no conjuntos de
+datos estructurados para el aprendizaje automático.
+
+En tercer lugar, las soluciones reportadas en la literatura internacional no son
+directamente aplicables al contexto hondureño, dado que cada lengua de señas posee un
+vocabulario y una gramática propios. Un modelo entrenado con la Lengua de Señas
+Americana o la Lengua de Señas India no reconoce señas del \acrshort{lesho}.
+
+En cuarto lugar, los sistemas existentes a nivel internacional operan predominantemente
+en una sola dirección. Son escasos los trabajos que implementan una solución bidireccional
+que integre tanto el reconocimiento como la representación visual de señas en una misma
+aplicación.
+
+Estas brechas definen el espacio de contribución de la presente investigación, que busca
+desarrollar un sistema bidireccional de comunicación basado en reconocimiento automático
+de \acrshort{lesho} ejecutado on-device en una aplicación móvil, para el cual no se encontraron
+antecedentes documentados durante la revisión bibliográfica realizada.

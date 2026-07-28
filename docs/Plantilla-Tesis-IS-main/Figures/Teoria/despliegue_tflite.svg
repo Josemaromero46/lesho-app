@@ -1,0 +1,83 @@
+<svg viewBox="0 0 1020 400" xmlns="http://www.w3.org/2000/svg" font-family="Helvetica, Arial, sans-serif">
+  <rect x="0" y="0" width="1020" height="400" fill="#ffffff"/>
+
+  <!-- ===================== ETAPAS ===================== -->
+  <text x="30" y="30" font-size="18" font-weight="bold" fill="#333333">Del modelo entrenado al teléfono: tres pasos</text>
+
+  <!-- origen -->
+  <g>
+    <rect x="30" y="60" width="170" height="96" rx="10" fill="#F2F5F9" stroke="#B9C4D4" stroke-width="2"/>
+    <text x="115" y="104" font-size="17" font-weight="bold" fill="#41485A" text-anchor="middle">Modelo entrenado</text>
+    <text x="115" y="128" font-size="14" fill="#6B7280" text-anchor="middle">TensorFlow y Keras</text>
+    <text x="115" y="148" font-size="14" fill="#8A93A0" text-anchor="middle">float32</text>
+  </g>
+
+  <line x1="208" y1="108" x2="246" y2="108" stroke="#9AA3B0" stroke-width="2.5"/>
+  <path d="M 246 108 l -11 -7 l 0 14 z" fill="#9AA3B0"/>
+
+  <!-- paso 1 -->
+  <g>
+    <rect x="256" y="60" width="200" height="96" rx="10" fill="#DAE8FC" stroke="#6C8EBF" stroke-width="2"/>
+    <circle cx="282" cy="80" r="14" fill="#6C8EBF"/>
+    <text x="282" y="86" font-size="15" font-weight="bold" fill="#ffffff" text-anchor="middle">1</text>
+    <text x="356" y="104" font-size="17" font-weight="bold" fill="#2F4C6E" text-anchor="middle">Convertir</text>
+    <text x="356" y="128" font-size="15" fill="#2F4C6E" text-anchor="middle">TFLite Converter</text>
+  </g>
+
+  <line x1="464" y1="108" x2="502" y2="108" stroke="#9AA3B0" stroke-width="2.5"/>
+  <path d="M 502 108 l -11 -7 l 0 14 z" fill="#9AA3B0"/>
+
+  <!-- paso 2 -->
+  <g>
+    <rect x="512" y="60" width="200" height="96" rx="10" fill="#D5E8D4" stroke="#82B366" stroke-width="2"/>
+    <circle cx="538" cy="80" r="14" fill="#82B366"/>
+    <text x="538" y="86" font-size="15" font-weight="bold" fill="#ffffff" text-anchor="middle">2</text>
+    <text x="612" y="104" font-size="17" font-weight="bold" fill="#3F6B2E" text-anchor="middle">Cuantizar</text>
+    <text x="612" y="128" font-size="15" fill="#3F6B2E" text-anchor="middle">float32 a int8</text>
+  </g>
+
+  <line x1="720" y1="108" x2="758" y2="108" stroke="#9AA3B0" stroke-width="2.5"/>
+  <path d="M 758 108 l -11 -7 l 0 14 z" fill="#9AA3B0"/>
+
+  <!-- paso 3 -->
+  <g>
+    <rect x="768" y="60" width="222" height="96" rx="10" fill="#FFE6CC" stroke="#D79B00" stroke-width="2"/>
+    <circle cx="794" cy="80" r="14" fill="#D79B00"/>
+    <text x="794" y="86" font-size="15" font-weight="bold" fill="#ffffff" text-anchor="middle">3</text>
+    <text x="879" y="104" font-size="17" font-weight="bold" fill="#8A5E15" text-anchor="middle">Empaquetar</text>
+    <text x="879" y="128" font-size="15" fill="#8A5E15" text-anchor="middle">dentro de la app Flutter</text>
+  </g>
+
+  <!-- efecto de la cuantizacion -->
+  <line x1="612" y1="156" x2="612" y2="186" stroke="#82B366" stroke-width="2" stroke-dasharray="5 4"/>
+  <rect x="470" y="186" width="284" height="52" rx="8" fill="#ffffff" stroke="#82B366" stroke-width="2"/>
+  <text x="612" y="208" font-size="15" font-weight="bold" fill="#3F6B2E" text-anchor="middle">Hasta cuatro veces más liviano</text>
+  <text x="612" y="228" font-size="14" fill="#3F6B2E" text-anchor="middle">menos memoria y inferencia más rápida</text>
+
+  <!-- ===================== EN EL TELEFONO ===================== -->
+  <text x="30" y="284" font-size="18" font-weight="bold" fill="#333333">Ya en el teléfono</text>
+
+  <g>
+    <rect x="30" y="300" width="290" height="76" rx="10" fill="#E1D5E7" stroke="#9673A6" stroke-width="2"/>
+    <text x="175" y="328" font-size="16" font-weight="bold" fill="#6B4C7F" text-anchor="middle">Archivo .tflite</text>
+    <text x="175" y="352" font-size="14" fill="#6B4C7F" text-anchor="middle">se carga con el plugin tflite_flutter</text>
+  </g>
+
+  <line x1="328" y1="338" x2="366" y2="338" stroke="#9AA3B0" stroke-width="2.5"/>
+  <path d="M 366 338 l -11 -7 l 0 14 z" fill="#9AA3B0"/>
+
+  <g>
+    <rect x="376" y="300" width="290" height="76" rx="10" fill="#E1D5E7" stroke="#9673A6" stroke-width="2"/>
+    <text x="521" y="328" font-size="16" font-weight="bold" fill="#6B4C7F" text-anchor="middle">Intérprete nativo</text>
+    <text x="521" y="352" font-size="14" fill="#6B4C7F" text-anchor="middle">corre en un hilo en segundo plano</text>
+  </g>
+
+  <line x1="674" y1="338" x2="712" y2="338" stroke="#9AA3B0" stroke-width="2.5"/>
+  <path d="M 712 338 l -11 -7 l 0 14 z" fill="#9AA3B0"/>
+
+  <g>
+    <rect x="722" y="300" width="268" height="76" rx="10" fill="#ffffff" stroke="#9673A6" stroke-width="2"/>
+    <text x="856" y="328" font-size="16" font-weight="bold" fill="#6B4C7F" text-anchor="middle">La interfaz sigue fluida</text>
+    <text x="856" y="352" font-size="14" fill="#6B4C7F" text-anchor="middle">y todo ocurre sin internet</text>
+  </g>
+</svg>

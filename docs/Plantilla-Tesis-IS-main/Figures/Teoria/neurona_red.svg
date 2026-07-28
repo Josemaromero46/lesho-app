@@ -1,0 +1,117 @@
+<svg viewBox="0 0 1020 470" xmlns="http://www.w3.org/2000/svg" font-family="Helvetica, Arial, sans-serif">
+  <rect x="0" y="0" width="1020" height="470" fill="#ffffff"/>
+
+  <!-- ================= PANEL A: LA NEURONA ================= -->
+  <text x="30" y="30" font-size="19" font-weight="bold" fill="#333333">a) Neurona artificial</text>
+
+  <!-- entradas -->
+  <g font-size="17" fill="#333333">
+    <circle cx="60" cy="120" r="21" fill="#DAE8FC" stroke="#6C8EBF" stroke-width="2"/>
+    <text x="60" y="126" text-anchor="middle">x<tspan font-size="12" dy="4">1</tspan></text>
+    <circle cx="60" cy="196" r="21" fill="#DAE8FC" stroke="#6C8EBF" stroke-width="2"/>
+    <text x="60" y="202" text-anchor="middle">x<tspan font-size="12" dy="4">2</tspan></text>
+    <circle cx="60" cy="272" r="21" fill="#DAE8FC" stroke="#6C8EBF" stroke-width="2"/>
+    <text x="60" y="278" text-anchor="middle">x<tspan font-size="12" dy="4">n</tspan></text>
+    <circle cx="60" cy="230" r="2.4" fill="#9AA3B0"/><circle cx="60" cy="240" r="2.4" fill="#9AA3B0"/><circle cx="60" cy="250" r="2.4" fill="#9AA3B0"/>
+  </g>
+
+  <!-- pesos -->
+  <g stroke="#9AA3B0" stroke-width="2" fill="none">
+    <line x1="81" y1="120" x2="176" y2="185"/>
+    <line x1="81" y1="196" x2="176" y2="194"/>
+    <line x1="81" y1="272" x2="176" y2="203"/>
+  </g>
+  <g font-size="15" fill="#6C8EBF" font-style="italic">
+    <text x="118" y="140">w<tspan font-size="12" dy="4">1</tspan></text>
+    <text x="118" y="188">w<tspan font-size="12" dy="4">2</tspan></text>
+    <text x="118" y="264">w<tspan font-size="12" dy="4">n</tspan></text>
+  </g>
+
+  <!-- suma -->
+  <circle cx="200" cy="196" r="26" fill="#FFF2CC" stroke="#D6B656" stroke-width="2"/>
+  <text x="200" y="205" font-size="24" text-anchor="middle" fill="#7F6420">Σ</text>
+  <text x="200" y="248" font-size="14" text-anchor="middle" fill="#777777">+ sesgo</text>
+
+  <line x1="226" y1="196" x2="270" y2="196" stroke="#9AA3B0" stroke-width="2"/>
+
+  <!-- activacion -->
+  <rect x="270" y="158" width="96" height="76" rx="8" fill="#D5E8D4" stroke="#82B366" stroke-width="2"/>
+  <polyline points="288,218 318,218 348,176" fill="none" stroke="#4C7A2E" stroke-width="3"/>
+  <text x="318" y="248" font-size="14" text-anchor="middle" fill="#4C7A2E">ReLU</text>
+
+  <line x1="366" y1="196" x2="410" y2="196" stroke="#9AA3B0" stroke-width="2"/>
+  <circle cx="432" cy="196" r="21" fill="#E1D5E7" stroke="#9673A6" stroke-width="2"/>
+  <text x="432" y="202" font-size="17" text-anchor="middle" fill="#333333">y</text>
+  <text x="432" y="240" font-size="14" text-anchor="middle" fill="#777777">salida</text>
+
+  <!-- lo que calcula la neurona -->
+  <rect x="40" y="326" width="420" height="106" rx="10" fill="#F7F4EE" stroke="#E3DDD2" stroke-width="2"/>
+  <text x="250" y="352" font-size="15" font-weight="bold" fill="#333333" text-anchor="middle">Lo que calcula la neurona</text>
+  <text x="250" y="382" font-size="18" fill="#41485A" text-anchor="middle" font-style="italic">y = f ( x · w + sesgo )</text>
+  <text x="250" y="404" font-size="14" fill="#5C6472" text-anchor="middle">x · w suma cada entrada multiplicada por su peso</text>
+  <text x="250" y="422" font-size="14" fill="#5C6472" text-anchor="middle">y f es la función de activación</text>
+
+  <!-- separador -->
+  <line x1="500" y1="40" x2="500" y2="430" stroke="#E3DDD2" stroke-width="2"/>
+
+  <!-- ================= PANEL B: LA RED PROFUNDA ================= -->
+  <text x="540" y="30" font-size="19" font-weight="bold" fill="#333333">b) Red profunda con varias capas ocultas</text>
+
+  <!-- conexiones -->
+  <g stroke="#D8DEE8" stroke-width="1.4">
+    <!-- entrada -> oculta 1 -->
+    <line x1="588" y1="110" x2="688" y2="92"/><line x1="588" y1="110" x2="688" y2="150"/><line x1="588" y1="110" x2="688" y2="208"/><line x1="588" y1="110" x2="688" y2="266"/>
+    <line x1="588" y1="176" x2="688" y2="92"/><line x1="588" y1="176" x2="688" y2="150"/><line x1="588" y1="176" x2="688" y2="208"/><line x1="588" y1="176" x2="688" y2="266"/>
+    <line x1="588" y1="242" x2="688" y2="92"/><line x1="588" y1="242" x2="688" y2="150"/><line x1="588" y1="242" x2="688" y2="208"/><line x1="588" y1="242" x2="688" y2="266"/>
+    <line x1="588" y1="308" x2="688" y2="92"/><line x1="588" y1="308" x2="688" y2="150"/><line x1="588" y1="308" x2="688" y2="208"/><line x1="588" y1="308" x2="688" y2="266"/>
+    <!-- oculta 1 -> oculta 2 -->
+    <line x1="688" y1="92" x2="800" y2="120"/><line x1="688" y1="92" x2="800" y2="178"/><line x1="688" y1="92" x2="800" y2="236"/>
+    <line x1="688" y1="150" x2="800" y2="120"/><line x1="688" y1="150" x2="800" y2="178"/><line x1="688" y1="150" x2="800" y2="236"/>
+    <line x1="688" y1="208" x2="800" y2="120"/><line x1="688" y1="208" x2="800" y2="178"/><line x1="688" y1="208" x2="800" y2="236"/>
+    <line x1="688" y1="266" x2="800" y2="120"/><line x1="688" y1="266" x2="800" y2="178"/><line x1="688" y1="266" x2="800" y2="236"/>
+    <!-- oculta 2 -> salida -->
+    <line x1="800" y1="120" x2="920" y2="140"/><line x1="800" y1="120" x2="920" y2="196"/><line x1="800" y1="120" x2="920" y2="252"/>
+    <line x1="800" y1="178" x2="920" y2="140"/><line x1="800" y1="178" x2="920" y2="196"/><line x1="800" y1="178" x2="920" y2="252"/>
+    <line x1="800" y1="236" x2="920" y2="140"/><line x1="800" y1="236" x2="920" y2="196"/><line x1="800" y1="236" x2="920" y2="252"/>
+  </g>
+
+  <!-- nodos -->
+  <g>
+    <circle cx="588" cy="110" r="15" fill="#DAE8FC" stroke="#6C8EBF" stroke-width="2"/>
+    <circle cx="588" cy="176" r="15" fill="#DAE8FC" stroke="#6C8EBF" stroke-width="2"/>
+    <circle cx="588" cy="242" r="15" fill="#DAE8FC" stroke="#6C8EBF" stroke-width="2"/>
+    <circle cx="588" cy="308" r="15" fill="#DAE8FC" stroke="#6C8EBF" stroke-width="2"/>
+
+    <circle cx="688" cy="92" r="15" fill="#FFF2CC" stroke="#D6B656" stroke-width="2"/>
+    <circle cx="688" cy="150" r="15" fill="#FFF2CC" stroke="#D6B656" stroke-width="2"/>
+    <circle cx="688" cy="208" r="15" fill="#FFF2CC" stroke="#D6B656" stroke-width="2"/>
+    <circle cx="688" cy="266" r="15" fill="#ffffff" stroke="#C0C6D0" stroke-width="2" stroke-dasharray="4 3"/>
+    <line x1="681" y1="259" x2="695" y2="273" stroke="#B85450" stroke-width="2.5"/>
+    <line x1="695" y1="259" x2="681" y2="273" stroke="#B85450" stroke-width="2.5"/>
+
+    <circle cx="800" cy="120" r="15" fill="#FFF2CC" stroke="#D6B656" stroke-width="2"/>
+    <circle cx="800" cy="178" r="15" fill="#ffffff" stroke="#C0C6D0" stroke-width="2" stroke-dasharray="4 3"/>
+    <line x1="793" y1="171" x2="807" y2="185" stroke="#B85450" stroke-width="2.5"/>
+    <line x1="807" y1="171" x2="793" y2="185" stroke="#B85450" stroke-width="2.5"/>
+    <circle cx="800" cy="236" r="15" fill="#FFF2CC" stroke="#D6B656" stroke-width="2"/>
+
+    <circle cx="920" cy="140" r="15" fill="#E1D5E7" stroke="#9673A6" stroke-width="2"/>
+    <circle cx="920" cy="196" r="15" fill="#E1D5E7" stroke="#9673A6" stroke-width="2"/>
+    <circle cx="920" cy="252" r="15" fill="#E1D5E7" stroke="#9673A6" stroke-width="2"/>
+  </g>
+
+  <!-- etiquetas de capa -->
+  <g font-size="15" fill="#666666" text-anchor="middle">
+    <text x="588" y="352">entrada</text>
+    <text x="760" y="352">capas ocultas</text>
+    <text x="920" y="352">salida</text>
+    <text x="920" y="372" font-size="14" fill="#9673A6">softmax</text>
+  </g>
+
+  <!-- nota del dropout -->
+  <g>
+    <line x1="688" y1="282" x2="688" y2="404" stroke="#B85450" stroke-width="1.5" stroke-dasharray="4 3"/>
+    <rect x="640" y="404" width="320" height="34" rx="8" fill="#F8CECC" stroke="#B85450" stroke-width="1.5"/>
+    <text x="800" y="426" font-size="15" text-anchor="middle" fill="#8A3A36">dropout: neuronas desactivadas al entrenar</text>
+  </g>
+</svg>

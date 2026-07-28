@@ -1,0 +1,63 @@
+<svg viewBox="0 0 1400 500" xmlns="http://www.w3.org/2000/svg" font-family="Georgia, 'Times New Roman', serif">
+  <rect x="0" y="0" width="1400" height="500" fill="#ffffff"/>
+
+  <!-- ===================== BLOQUE 1: MODELO A ===================== -->
+  <g id="bloque-modelo-a">
+    <text x="220" y="34" font-size="24" font-weight="bold" fill="#1a1a1a" text-anchor="middle">Modelo A (Alfabeto)</text>
+    <line x1="20" y1="50" x2="420" y2="50" stroke="#1a1a1a" stroke-width="2"/>
+
+    <text x="220" y="120" font-size="48" font-weight="bold" fill="#1F4E8C" text-anchor="middle">99.54 %</text>
+    <text x="220" y="146" font-size="17" fill="#333333" text-anchor="middle">exactitud global</text>
+
+    <text x="220" y="216" font-size="48" font-weight="bold" fill="#1F4E8C" text-anchor="middle">33</text>
+    <text x="220" y="242" font-size="17" fill="#333333" text-anchor="middle">clases reconocidas</text>
+
+    <text x="220" y="312" font-size="48" font-weight="bold" fill="#1F4E8C" text-anchor="middle">33.9 KB</text>
+    <text x="220" y="338" font-size="17" fill="#333333" text-anchor="middle">tamaño en TFLite</text>
+
+    <line x1="20" y1="360" x2="420" y2="360" stroke="#1a1a1a" stroke-width="2"/>
+  </g>
+
+  <!-- ===================== BLOQUE 2: MODELO B ===================== -->
+  <g id="bloque-modelo-b" transform="translate(480,0)">
+    <text x="220" y="34" font-size="24" font-weight="bold" fill="#1a1a1a" text-anchor="middle">Modelo B (Señas dinámicas)</text>
+    <line x1="20" y1="50" x2="420" y2="50" stroke="#1a1a1a" stroke-width="2"/>
+
+    <text x="220" y="120" font-size="48" font-weight="bold" fill="#2E7D46" text-anchor="middle">98.80 %</text>
+    <text x="220" y="146" font-size="17" fill="#333333" text-anchor="middle">exactitud global</text>
+
+    <text x="220" y="216" font-size="48" font-weight="bold" fill="#2E7D46" text-anchor="middle">50</text>
+    <text x="220" y="242" font-size="17" fill="#333333" text-anchor="middle">señas dinámicas</text>
+
+    <text x="220" y="312" font-size="48" font-weight="bold" fill="#2E7D46" text-anchor="middle">78.1 KB</text>
+    <text x="220" y="338" font-size="17" fill="#333333" text-anchor="middle">tamaño en TFLite</text>
+
+    <line x1="20" y1="360" x2="420" y2="360" stroke="#1a1a1a" stroke-width="2"/>
+  </g>
+
+  <!-- ===================== BLOQUE 3: DISPOSITIVO ===================== -->
+  <g id="bloque-dispositivo" transform="translate(960,0)">
+    <text x="220" y="34" font-size="24" font-weight="bold" fill="#1a1a1a" text-anchor="middle">Desempeño en el dispositivo</text>
+    <line x1="20" y1="50" x2="420" y2="50" stroke="#1a1a1a" stroke-width="2"/>
+
+    <text x="220" y="120" font-size="48" font-weight="bold" fill="#B85450" text-anchor="middle">~5 FPS</text>
+    <text x="220" y="146" font-size="17" fill="#333333" text-anchor="middle">reconocimiento dinámico</text>
+
+    <text x="220" y="216" font-size="48" font-weight="bold" fill="#B85450" text-anchor="middle">~78 %</text>
+    <text x="220" y="242" font-size="17" fill="#333333" text-anchor="middle">uso de CPU</text>
+
+    <text x="220" y="312" font-size="32" font-weight="bold" fill="#B85450" text-anchor="middle">Galaxy A13</text>
+    <text x="220" y="338" font-size="17" fill="#333333" text-anchor="middle">dispositivo de gama baja</text>
+
+    <line x1="20" y1="360" x2="420" y2="360" stroke="#1a1a1a" stroke-width="2"/>
+  </g>
+
+  <!-- ===================== FRASE DE CIERRE ===================== -->
+  <g id="frase-cierre">
+    <rect x="20" y="400" width="1360" height="70" fill="#F5F5F5" stroke="#d9d9d9" stroke-width="1"/>
+    <text x="700" y="443" font-size="24" font-style="italic" fill="#1a1a1a" text-anchor="middle">
+      Ambos modelos ocupan menos de 100 KB y funcionan sin conexión a internet.
+    </text>
+  </g>
+
+</svg>

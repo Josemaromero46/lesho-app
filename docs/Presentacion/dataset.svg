@@ -1,0 +1,86 @@
+<svg viewBox="0 0 1400 620" xmlns="http://www.w3.org/2000/svg" font-family="Georgia, 'Times New Roman', serif">
+  <rect x="0" y="0" width="1400" height="620" fill="#ffffff"/>
+
+  <!-- ======================= CIFRAS PRINCIPALES ======================= -->
+  <g id="cifras">
+    <g id="cifra-letras">
+      <text x="233" y="96" font-size="76" font-weight="bold" fill="#B57C1E" text-anchor="middle">30</text>
+      <text x="233" y="134" font-size="21" fill="#5C6472" text-anchor="middle">letras del alfabeto</text>
+      <line x1="60" y1="168" x2="406" y2="168" stroke="#E3DDD2" stroke-width="2"/>
+    </g>
+    <g id="cifra-senas">
+      <text x="700" y="96" font-size="76" font-weight="bold" fill="#B57C1E" text-anchor="middle">50</text>
+      <text x="700" y="134" font-size="21" fill="#5C6472" text-anchor="middle">señas dinámicas</text>
+      <line x1="527" y1="168" x2="873" y2="168" stroke="#E3DDD2" stroke-width="2"/>
+    </g>
+    <g id="cifra-videos">
+      <text x="1167" y="96" font-size="76" font-weight="bold" fill="#B57C1E" text-anchor="middle">0</text>
+      <text x="1167" y="134" font-size="21" fill="#5C6472" text-anchor="middle">videos guardados</text>
+      <line x1="994" y1="168" x2="1340" y2="168" stroke="#E3DDD2" stroke-width="2"/>
+    </g>
+  </g>
+
+  <!-- ======================= COMO SE CONSTRUYE ======================= -->
+  <g id="proceso">
+    <text x="700" y="228" font-size="27" font-weight="bold" fill="#1A1D24" text-anchor="middle">Del video no queda nada: solo coordenadas</text>
+    <text x="700" y="262" font-size="20" fill="#5C6472" text-anchor="middle">Cada seña se procesa en el momento y el video se descarta ahí mismo</text>
+
+    <!-- Paso 1: se graba -->
+    <g id="paso-graba">
+      <rect x="96" y="300" width="290" height="176" rx="10" fill="#F7F4EE" stroke="#E3DDD2" stroke-width="2"/>
+      <g transform="translate(196,338)">
+        <rect x="0" y="8" width="62" height="44" rx="7" fill="none" stroke="#5C6472" stroke-width="4"/>
+        <path d="M 62 24 L 88 12 L 88 48 L 62 36 Z" fill="none" stroke="#5C6472" stroke-width="4" stroke-linejoin="round"/>
+      </g>
+      <text x="241" y="432" font-size="22" font-weight="bold" fill="#1A1D24" text-anchor="middle">Se graba la seña</text>
+      <text x="241" y="458" font-size="17" fill="#5C6472" text-anchor="middle">frente a la cámara</text>
+    </g>
+
+    <path d="M 402 388 L 452 388" stroke="#B57C1E" stroke-width="4"/>
+    <path d="M 452 388 l -13 -9 l 0 18 z" fill="#B57C1E"/>
+
+    <!-- Paso 2: se extraen los puntos -->
+    <g id="paso-puntos">
+      <rect x="468" y="300" width="290" height="176" rx="10" fill="#F7F4EE" stroke="#E3DDD2" stroke-width="2"/>
+      <g transform="translate(566,336)" stroke="#B57C1E" stroke-width="3" fill="#B57C1E">
+        <line x1="46" y1="56" x2="20" y2="34"/><line x1="46" y1="56" x2="38" y2="22"/>
+        <line x1="46" y1="56" x2="56" y2="18"/><line x1="46" y1="56" x2="74" y2="28"/>
+        <circle cx="46" cy="56" r="6"/><circle cx="20" cy="34" r="5"/><circle cx="38" cy="22" r="5"/>
+        <circle cx="56" cy="18" r="5"/><circle cx="74" cy="28" r="5"/>
+      </g>
+      <text x="613" y="432" font-size="22" font-weight="bold" fill="#1A1D24" text-anchor="middle">Se extraen los puntos</text>
+      <text x="613" y="458" font-size="17" fill="#5C6472" text-anchor="middle">de las manos y el cuerpo</text>
+    </g>
+
+    <path d="M 774 388 L 824 388" stroke="#B57C1E" stroke-width="4"/>
+    <path d="M 824 388 l -13 -9 l 0 18 z" fill="#B57C1E"/>
+
+    <!-- Paso 3: se borra el video -->
+    <g id="paso-borra">
+      <rect x="840" y="300" width="290" height="176" rx="10" fill="#F7F4EE" stroke="#E3DDD2" stroke-width="2"/>
+      <g transform="translate(940,338)">
+        <rect x="0" y="8" width="62" height="44" rx="7" fill="none" stroke="#9AA3B0" stroke-width="4"/>
+        <path d="M 62 24 L 88 12 L 88 48 L 62 36 Z" fill="none" stroke="#9AA3B0" stroke-width="4" stroke-linejoin="round"/>
+        <line x1="-6" y1="58" x2="94" y2="2" stroke="#B85450" stroke-width="5" stroke-linecap="round"/>
+      </g>
+      <text x="985" y="432" font-size="22" font-weight="bold" fill="#1A1D24" text-anchor="middle">El video se descarta</text>
+      <text x="985" y="458" font-size="17" fill="#5C6472" text-anchor="middle">nunca se almacena</text>
+    </g>
+
+    <path d="M 1146 388 L 1196 388" stroke="#B57C1E" stroke-width="4"/>
+    <path d="M 1196 388 l -13 -9 l 0 18 z" fill="#B57C1E"/>
+
+    <!-- Resultado -->
+    <g id="paso-resultado">
+      <rect x="1212" y="300" width="130" height="176" rx="10" fill="#B57C1E"/>
+      <text x="1277" y="374" font-size="20" font-weight="bold" fill="#ffffff" text-anchor="middle">Solo</text>
+      <text x="1277" y="404" font-size="20" font-weight="bold" fill="#ffffff" text-anchor="middle">números</text>
+    </g>
+  </g>
+
+  <!-- ======================= APORTE ======================= -->
+  <g id="aporte">
+    <rect x="96" y="514" width="1246" height="72" rx="10" fill="#1F3A5F"/>
+    <text x="719" y="560" font-size="25" fill="#ffffff" text-anchor="middle">No se encontraron antecedentes de un conjunto de datos así para el LESHO</text>
+  </g>
+</svg>

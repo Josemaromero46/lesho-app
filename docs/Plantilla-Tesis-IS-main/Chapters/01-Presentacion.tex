@@ -1,0 +1,149 @@
+\chapter[Presentación]{Presentación}
+\label{cp:presentacion}
+
+\insertminitoc
+\parindent0pt
+
+\section{Planteamiento del Problema}
+
+Según la Organización Mundial de la Salud (\acrshort{oms}), más de 1\,500 millones de personas en
+el mundo presentan algún grado de pérdida auditiva, de las cuales aproximadamente 430
+millones requieren atención especializada. De este total, se estima que al menos 34 millones
+son niños \cite{who_deafness_2024}. Para esta población, la lengua de señas constituye el principal medio de
+comunicación y expresión, configurando una forma de interacción con valores y costumbres
+propias que difieren de las de la población oyente.
+
+En Honduras, la comunidad sorda está organizada en torno a la Asociación de Sordos de
+Honduras (\acrshort{ash}), institución que ha impulsado el desarrollo y la documentación del
+Lenguaje de Señas Hondureño (\acrshort{lesho}), el cual fue reconocido oficialmente como la lengua
+natural de la comunidad sorda mediante el Decreto Legislativo No. 321-2013 \cite{congreso_decreto_2013}, \cite{ash_diccionario_2019}. Sin
+embargo, según datos de la Comisión Nacional de los Derechos Humanos (\acrshort{conadeh}),
+en Honduras existen aproximadamente 100\,000 personas con discapacidad auditiva, de las
+cuales únicamente alrededor del 1\,\% cuenta con un carné oficial de identificación, lo que
+evidencia el bajo nivel de reconocimiento institucional de esta población \cite{conadeh_discriminados}.
+
+La brecha de comunicación entre niños sordos y personas oyentes se manifiesta en
+prácticamente todos los entornos cotidianos, incluyendo el hogar, la comunidad y los
+espacios de atención en salud. La mayoría de los niños sordos nacen en hogares de padres
+oyentes que no conocen el \acrshort{lesho}, lo que retrasa el acceso temprano a una lengua completa
+y limita su desarrollo socioemocional \cite{williams_encuesta_2015}. A esto se suma la escasez de intérpretes
+certificados fuera de entornos educativos especializados, especialmente en zonas rurales
+o de bajos recursos donde su presencia es prácticamente inexistente.
+
+A pesar de que existen soluciones tecnológicas para el reconocimiento de otras lenguas de
+señas, como la Lengua de Señas Americana o la Lengua de Señas Brasileña, no existe a la
+fecha una aplicación móvil que permita a un niño sordo expresarse en \acrshort{lesho} hacia una
+persona oyente en tiempo real, ni que facilite la comunicación en la dirección inversa
+representando el español de forma visual en la lengua materna del niño. Las herramientas
+comerciales disponibles no contemplan el vocabulario ni las particularidades del \acrshort{lesho}, y
+su idioma de interfaz y su costo representan barreras adicionales para la población
+hondureña \cite{sadik_survey_2025}.
+
+\subsection{Preguntas de Investigación}
+
+¿Es posible desarrollar una aplicación móvil que reconozca gestos del Lenguaje de Señas
+Hondureño en tiempo real utilizando visión por computadora y aprendizaje profundo
+ejecutado directamente en el dispositivo?
+
+¿Puede una solución bidireccional facilitar la comunicación entre niños sordos y personas
+oyentes sin requerir conocimiento previo del \acrshort{lesho} por parte de ninguna de las dos partes?
+
+¿Qué nivel de precisión y usabilidad puede alcanzar un sistema de este tipo desarrollado
+con un conjunto de datos propio de \acrshort{lesho} de alcance acotado?
+
+\subsection{Justificación del Estudio}
+
+La igualdad en la comunicación es un derecho que debe garantizarse para todas las
+personas. Los niños sordos en Honduras enfrentan barreras cotidianas que van más allá
+del ámbito educativo, afectando su capacidad de expresarse y comprender en entornos
+familiares, comunitarios y de salud. La dependencia exclusiva de intérpretes humanos
+profundiza esta desigualdad en contextos donde su presencia es escasa o inexistente \cite{congreso_decreto_2013}.
+
+La relevancia de este trabajo radica en explorar una solución tecnológica contextualizada
+a la realidad hondureña, dado que la mayoría de herramientas existentes han sido diseñadas
+para otras lenguas de señas y otros entornos. El desarrollo de una aplicación móvil
+bidireccional que opere sin conexión a internet es especialmente pertinente en un país
+con cobertura de datos móviles desigual, donde no puede garantizarse el acceso a servicios
+en la nube de forma permanente.
+
+El estudio tiene impacto tanto académico como social. Desde el punto de vista académico,
+la construcción de un conjunto de datos de señas del \acrshort{lesho} orientado al entrenamiento de modelos
+de inteligencia artificial constituye un aporte al campo tecnológico local, ya que durante
+la revisión bibliográfica realizada no se encontraron antecedentes documentados de un
+recurso de este tipo para esta lengua.
+Desde el punto de vista social, la aplicación busca reducir la brecha de comunicación entre
+niños sordos y personas oyentes, aportando una herramienta de inclusión comunicativa
+de bajo costo y sin dependencia de infraestructura externa.
+
+\subsection{Viabilidad del Estudio}
+
+La viabilidad del estudio se analiza en función de los siguientes puntos.
+
+\begin{enumerate}
+    \item Disponibilidad de recursos.
+    \begin{itemize}
+        \item \textbf{Humanos:} la investigación será desarrollada por el tesista con la guía del asesor
+        correspondiente, y contará con la colaboración de personas con conocimiento de
+        \acrshort{lesho} vinculadas a fundaciones de atención a personas con discapacidad en el
+        departamento de Comayagua.
+        \item \textbf{Tecnológicos:} se dispone de herramientas de código abierto para el desarrollo,
+        incluyendo Flutter, MediaPipe y TensorFlow Lite, las cuales no requieren licencias
+        de pago y cuentan con documentación oficial extensa \cite{google_mediapipe_2024}, \cite{google_tflite_2024}, \cite{google_flutter_2024}.
+        \item \textbf{Datos:} el conjunto de datos de señas será construido durante la investigación siguiendo un
+        protocolo de captura documentado, con referencia al diccionario de \acrshort{lesho}
+        publicado por la \acrshort{ash} \cite{ash_diccionario_2019}.
+    \end{itemize}
+
+    \item Alcance del estudio.
+
+    La investigación se centrará en desarrollar una aplicación móvil funcional que
+    reconozca el alfabeto dactilológico y un vocabulario de 50 señas dinámicas, y que
+    permita representar visualmente señas del \acrshort{lesho} a partir de texto en español. El
+    estudio no pretende abarcar la totalidad del vocabulario del \acrshort{lesho} ni contempla
+    aspectos gramaticales como expresiones faciales o lenguaje corporal. La evaluación
+    se realizará en condiciones controladas con usuarios con conocimiento de la lengua.
+
+    \item Implicaciones del estudio.
+    \begin{itemize}
+        \item \textbf{Académicas:} contribuye al conocimiento en el campo del reconocimiento de gestos
+        y la accesibilidad tecnológica aplicada a la comunidad sorda hondureña.
+        \item \textbf{Tecnológicas:} promueve el desarrollo de soluciones con inteligencia artificial
+        ejecutada en el dispositivo, sin dependencia de servidores externos.
+        \item \textbf{Sociales:} fomenta la inclusión comunicativa de niños sordos en entornos
+        cotidianos, aportando una herramienta accesible y de bajo costo.
+    \end{itemize}
+
+    \item Consecuencias del estudio.
+
+    Los resultados obtenidos pueden servir como base para investigaciones futuras que
+    amplíen el vocabulario reconocido, incorporen componentes no manuales del \acrshort{lesho}
+    o extiendan la solución a otros contextos de uso. La metodología de construcción
+    del conjunto de datos y el proceso de entrenamiento de modelos quedan documentados de
+    forma reproducible para facilitar su extensión.
+\end{enumerate}
+
+\section{Objetivo General}
+
+Desarrollar una aplicación de inteligencia artificial para la comunicación entre niños
+sordos y oyentes mediante el reconocimiento de señas \acrshort{lesho}, ejecutada de forma
+completamente local en el dispositivo móvil.
+
+\section{Objetivos Específicos}
+
+\begin{enumerate}
+    \item Recopilar un conjunto de datos de señas \acrshort{lesho} que incluya el alfabeto dactilológico
+    completo y un vocabulario de señas dinámicas de uso cotidiano, siguiendo un protocolo
+    de captura documentado y reproducible.
+
+    \item Diseñar e implementar modelos de clasificación de señas estáticas y dinámicas
+    optimizados para su ejecución en dispositivos móviles con recursos computacionales
+    limitados.
+
+    \item Desarrollar una aplicación que integre el reconocimiento automático de señas y un
+    diccionario visual de señas pregrabadas, operando sin dependencia de servicios en la
+    nube.
+
+    \item Evaluar el desempeño técnico del sistema en términos de exactitud de clasificación y
+    latencia de inferencia, y valorar la usabilidad de la aplicación mediante pruebas con
+    usuarios que incluyan personas con conocimiento de \acrshort{lesho}.
+\end{enumerate}

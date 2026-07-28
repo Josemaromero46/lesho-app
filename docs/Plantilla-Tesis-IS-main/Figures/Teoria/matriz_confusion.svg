@@ -1,0 +1,89 @@
+<svg viewBox="0 0 1020 440" xmlns="http://www.w3.org/2000/svg" font-family="Helvetica, Arial, sans-serif">
+  <rect x="0" y="0" width="1020" height="440" fill="#ffffff"/>
+
+  <!-- ===================== LA MATRIZ ===================== -->
+  <text x="30" y="30" font-size="18" font-weight="bold" fill="#333333">Matriz de confusión (ejemplo de 4 clases)</text>
+
+  <!-- encabezado columnas -->
+  <text x="230" y="70" font-size="15" font-weight="bold" fill="#555555" text-anchor="middle">clase predicha</text>
+  <g font-size="15" fill="#555555" text-anchor="middle">
+    <text x="150" y="98">A</text><text x="220" y="98">B</text>
+    <text x="290" y="98">C</text><text x="360" y="98">D</text>
+  </g>
+
+  <!-- encabezado filas -->
+  <text x="42" y="215" font-size="15" font-weight="bold" fill="#555555" text-anchor="middle" transform="rotate(-90 42 215)">clase real</text>
+  <g font-size="15" fill="#555555" text-anchor="middle">
+    <text x="96" y="127">A</text><text x="96" y="185">B</text>
+    <text x="96" y="243">C</text><text x="96" y="301">D</text>
+  </g>
+
+  <!-- celdas -->
+  <g font-size="16" text-anchor="middle">
+    <!-- fila A -->
+    <rect x="118" y="106" width="64" height="52" fill="#82B366" stroke="#ffffff" stroke-width="2"/><text x="150" y="138" fill="#ffffff" font-weight="bold">37</text>
+    <rect x="188" y="106" width="64" height="52" fill="#F2F5F9" stroke="#ffffff" stroke-width="2"/><text x="220" y="138" fill="#8A93A0">2</text>
+    <rect x="258" y="106" width="64" height="52" fill="#F2F5F9" stroke="#ffffff" stroke-width="2"/><text x="290" y="138" fill="#8A93A0">0</text>
+    <rect x="328" y="106" width="64" height="52" fill="#F2F5F9" stroke="#ffffff" stroke-width="2"/><text x="360" y="138" fill="#8A93A0">1</text>
+    <!-- fila B -->
+    <rect x="118" y="164" width="64" height="52" fill="#F2F5F9" stroke="#ffffff" stroke-width="2"/><text x="150" y="196" fill="#8A93A0">1</text>
+    <rect x="188" y="164" width="64" height="52" fill="#82B366" stroke="#ffffff" stroke-width="2"/><text x="220" y="196" fill="#ffffff" font-weight="bold">35</text>
+    <rect x="258" y="164" width="64" height="52" fill="#F8CECC" stroke="#ffffff" stroke-width="2"/><text x="290" y="196" fill="#8A3A36" font-weight="bold">4</text>
+    <rect x="328" y="164" width="64" height="52" fill="#F2F5F9" stroke="#ffffff" stroke-width="2"/><text x="360" y="196" fill="#8A93A0">0</text>
+    <!-- fila C -->
+    <rect x="118" y="222" width="64" height="52" fill="#F2F5F9" stroke="#ffffff" stroke-width="2"/><text x="150" y="254" fill="#8A93A0">0</text>
+    <rect x="188" y="222" width="64" height="52" fill="#F8CECC" stroke="#ffffff" stroke-width="2"/><text x="220" y="254" fill="#8A3A36" font-weight="bold">5</text>
+    <rect x="258" y="222" width="64" height="52" fill="#82B366" stroke="#ffffff" stroke-width="2"/><text x="290" y="254" fill="#ffffff" font-weight="bold">33</text>
+    <rect x="328" y="222" width="64" height="52" fill="#F2F5F9" stroke="#ffffff" stroke-width="2"/><text x="360" y="254" fill="#8A93A0">2</text>
+    <!-- fila D -->
+    <rect x="118" y="280" width="64" height="52" fill="#F2F5F9" stroke="#ffffff" stroke-width="2"/><text x="150" y="312" fill="#8A93A0">1</text>
+    <rect x="188" y="280" width="64" height="52" fill="#F2F5F9" stroke="#ffffff" stroke-width="2"/><text x="220" y="312" fill="#8A93A0">1</text>
+    <rect x="258" y="280" width="64" height="52" fill="#F2F5F9" stroke="#ffffff" stroke-width="2"/><text x="290" y="312" fill="#8A93A0">1</text>
+    <rect x="328" y="280" width="64" height="52" fill="#82B366" stroke="#ffffff" stroke-width="2"/><text x="360" y="312" fill="#ffffff" font-weight="bold">37</text>
+  </g>
+
+  <!-- leyenda de la matriz -->
+  <g font-size="14">
+    <rect x="118" y="350" width="18" height="18" fill="#82B366"/>
+    <text x="144" y="364" fill="#555555">diagonal: aciertos</text>
+    <rect x="118" y="380" width="18" height="18" fill="#F8CECC" stroke="#B85450" stroke-width="1.5"/>
+    <text x="144" y="394" fill="#555555">confusión entre clases parecidas</text>
+  </g>
+
+  <!-- ===================== DE DONDE SALEN LAS METRICAS ===================== -->
+  <text x="470" y="30" font-size="18" font-weight="bold" fill="#333333">De dónde sale cada métrica</text>
+
+  <!-- fila resaltada -->
+  <rect x="112" y="160" width="284" height="60" fill="none" stroke="#6C8EBF" stroke-width="3" rx="4"/>
+  <line x1="396" y1="190" x2="462" y2="120" stroke="#6C8EBF" stroke-width="2" stroke-dasharray="5 4"/>
+  <path d="M 470 112 l -3 12 l -9 -8 z" fill="#6C8EBF"/>
+
+  <g>
+    <rect x="470" y="76" width="520" height="72" rx="10" fill="#DAE8FC" stroke="#6C8EBF" stroke-width="2"/>
+    <text x="490" y="104" font-size="16" font-weight="bold" fill="#2F4C6E">Sensibilidad (recall) de la clase B</text>
+    <text x="490" y="130" font-size="15" fill="#2F4C6E">de todas las muestras que en verdad eran B, cuántas se acertaron: 35 de 40</text>
+  </g>
+
+  <!-- columna resaltada -->
+  <rect x="186" y="102" width="68" height="234" fill="none" stroke="#D79B00" stroke-width="3" rx="4"/>
+  <polyline points="220,340 220,344 440,344 440,200 462,200" fill="none" stroke="#D79B00" stroke-width="2" stroke-dasharray="5 4"/>
+  <path d="M 470 200 l -11 -6 l 0 12 z" fill="#D79B00"/>
+
+  <g>
+    <rect x="470" y="164" width="520" height="72" rx="10" fill="#FFE6CC" stroke="#D79B00" stroke-width="2"/>
+    <text x="490" y="192" font-size="16" font-weight="bold" fill="#8A5E15">Precisión de la clase B</text>
+    <text x="490" y="218" font-size="15" fill="#8A5E15">de todas las que el modelo dijo que eran B, cuántas lo eran: 35 de 43</text>
+  </g>
+
+  <g>
+    <rect x="470" y="252" width="520" height="72" rx="10" fill="#D5E8D4" stroke="#82B366" stroke-width="2"/>
+    <text x="490" y="280" font-size="16" font-weight="bold" fill="#3F6B2E">Puntuación F1</text>
+    <text x="490" y="306" font-size="15" fill="#3F6B2E">media armónica de las dos anteriores: equilibra acertar y no equivocarse</text>
+  </g>
+
+  <g>
+    <rect x="470" y="340" width="520" height="72" rx="10" fill="#F7F4EE" stroke="#E3DDD2" stroke-width="2"/>
+    <text x="490" y="368" font-size="16" font-weight="bold" fill="#333333">Exactitud (accuracy)</text>
+    <text x="490" y="394" font-size="15" fill="#5C6472">toda la diagonal sobre el total de muestras</text>
+  </g>
+</svg>

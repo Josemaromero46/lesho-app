@@ -1,0 +1,119 @@
+\chapter{Desarrollo de Aplicaciones Móviles Inclusivas}
+\label{cp:aplicaciones-moviles}
+
+\insertminitoc
+\parindent0pt
+
+Una aplicación de reconocimiento de lengua de señas para niños sordos no es únicamente
+un proyecto de inteligencia artificial; es, ante todo, un producto de software que debe
+funcionar con fiabilidad en un dispositivo móvil, procesar video en tiempo real, presentar
+una interfaz comprensible para un público infantil y enmarcarse dentro del campo de la
+comunicación aumentativa y alternativa. El presente capítulo aborda estos cuatro ejes: el
+framework de desarrollo multiplataforma utilizado, la integración de modelos de
+inteligencia artificial con la cámara del dispositivo, los principios de diseño de
+interfaces accesibles para niños y el marco conceptual de las tecnologías de comunicación
+aumentativa y alternativa (\acrshort{caa}) en el que se inserta el sistema.
+
+\section{Desarrollo Móvil Multiplataforma con Flutter}
+
+Flutter es un framework de código abierto desarrollado por Google para la construcción de
+aplicaciones compiladas de forma nativa a partir de una base de código única en el lenguaje
+Dart \cite{google_flutter_2024}. A diferencia de otros frameworks multiplataforma que
+dependen de un puente de comunicación con los componentes nativos del sistema operativo,
+Flutter compila el código Dart de forma anticipada (ahead-of-time, \acrshort{aot}) a código de
+máquina nativo y utiliza su propio motor de renderizado gráfico para dibujar cada píxel de
+la interfaz, lo que produce un rendimiento cercano al de una aplicación nativa
+\cite{google_flutter_2024}.
+
+La arquitectura de Flutter se organiza en capas. La capa inferior es el motor (engine),
+escrito en C++, que se encarga del renderizado gráfico, la composición, la gestión de
+entrada y salida y la comunicación con el sistema operativo. Sobre esta capa se encuentra
+el framework en Dart, que proporciona un sistema de widgets reactivos con el cual se
+construye toda la interfaz de usuario. Cada elemento visual, desde un botón hasta la
+distribución de la pantalla, es un widget que se combina de forma declarativa con otros
+widgets para formar interfaces complejas \cite{google_flutter_2024}. Este modelo
+declarativo facilita la construcción de interfaces dinámicas que se actualizan en respuesta
+a cambios de estado, lo que resulta especialmente útil para una aplicación que muestra
+resultados de clasificación en tiempo real. Flutter permite generar aplicaciones para
+Android e iOS desde el mismo código, lo cual reduce el esfuerzo de desarrollo y
+mantenimiento del sistema.
+
+\section{Integración de Modelos de Inteligencia Artificial y Procesamiento de Cámara en Tiempo Real}
+
+El sistema propuesto requiere que la cámara frontal del dispositivo capture cuadros de
+video de forma continua, que MediaPipe Hands y MediaPipe Pose extraigan los landmarks de
+las manos y del cuerpo en cada cuadro, y que los modelos descritos en el capítulo 6, la
+red convolucional 1D para el alfabeto y la red \acrshort{lstm} para las señas dinámicas, clasifiquen
+los gestos detectados. Todo este procesamiento debe ocurrir en tiempo real, sin bloquear
+la interfaz de usuario y sin enviar datos a un servidor externo.
+
+En Flutter, el acceso a la cámara se gestiona a través del plugin camera, que proporciona
+un flujo de cuadros (stream) desde la cámara del dispositivo. Cada cuadro se transfiere
+como un arreglo de bytes al canal de procesamiento de MediaPipe Hands, que devuelve las
+coordenadas de los 21 landmarks por mano detectada \cite{google_mediapipe_2024},
+\cite{zhang_mediapipe_2020}. Estos landmarks se normalizan y se pasan al intérprete de
+TensorFlow Lite para obtener la predicción del modelo \cite{google_tflite_2024}. Para
+evitar que este procesamiento bloquee el hilo principal de la interfaz, la extracción de
+landmarks con MediaPipe se ejecuta en un hilo nativo en segundo plano, comunicado con
+Flutter mediante un canal de plataforma, de modo que el hilo de la interfaz permanece libre. Sousa et al. validaron la viabilidad de esta arquitectura en un
+sistema de reconocimiento de Lengua de Señas Portuguesa implementado con Flutter,
+MediaPipe y \acrshort{tflite}, donde reportaron tiempos de inferencia compatibles con una
+experiencia de uso fluida en dispositivos Android de gama media \cite{sousa_lgp_flutter_2025}.
+
+\section{Diseño de Interfaces para Niños y Accesibilidad}
+
+El público objetivo del sistema es la población infantil sorda, lo que impone restricciones
+de diseño particulares. Hourcade señala que las interfaces dirigidas a niños deben
+minimizar el uso de texto, privilegiar representaciones visuales e iconográficas, utilizar
+elementos de interacción de tamaño suficiente para las habilidades motoras en desarrollo y
+ofrecer retroalimentación inmediata ante cada acción del usuario \cite{hourcade_children_2008}.
+En el caso de niños sordos, estas consideraciones se intensifican: la lengua escrita suele
+ser una segunda lengua adquirida con dificultad, por lo que la interfaz debe apoyarse en
+recursos visuales como colores, iconos y animaciones para comunicar el estado del sistema
+y los resultados de la clasificación.
+
+Las directrices de accesibilidad de contenido web \acrshort{wcag} 2.1, publicadas por el \acrshort{w3c} en
+2018, establecen cuatro principios fundamentales: el contenido debe ser perceptible,
+operable, comprensible y robusto \cite{w3c_wcag_2018}. Si bien estas directrices fueron
+concebidas para contenido web, sus principios son aplicables al diseño de interfaces
+móviles. En particular, el principio de perceptibilidad exige que la información se
+presente de formas que el usuario pueda percibir, lo que para un usuario sordo implica que
+toda la retroalimentación del sistema debe ser visual o háptica, nunca exclusivamente
+auditiva. Flutter proporciona soporte nativo para herramientas de accesibilidad del sistema
+operativo como TalkBack (Android) y VoiceOver (iOS), y permite configurar etiquetas
+semánticas en los widgets para que los lectores de pantalla describan correctamente cada
+elemento de la interfaz \cite{google_flutter_2024}. La Convención sobre los Derechos de
+las Personas con Discapacidad de las Naciones Unidas refuerza este enfoque al establecer
+que las tecnologías de la información deben ser accesibles y estar disponibles para las
+personas con discapacidad en igualdad de condiciones \cite{onu_cdpd_2006}.
+
+\section{Tecnologías de Comunicación Aumentativa y Alternativa}
+
+El sistema desarrollado no es únicamente una aplicación móvil con modelos de inteligencia
+artificial; desde el punto de vista comunicativo, se enmarca dentro de un campo más amplio
+con una tradición consolidada de herramientas diseñadas para apoyar la comunicación de
+personas que no pueden depender exclusivamente del habla oral.
+
+La comunicación aumentativa y alternativa (\acrshort{caa}) es un término general que abarca todos
+los métodos de comunicación distintos al habla oral que permiten a las personas expresar
+pensamientos, necesidades y sentimientos. La American Speech-Language-Hearing Association
+(\acrshort{asha}) define la \acrshort{caa} como un conjunto de herramientas y estrategias que incluye tableros
+de imágenes, dispositivos generadores de habla, signos manuales, gestos y deletreo con los
+dedos \cite{asha_aac_nodate}. Los sistemas de \acrshort{caa} se clasifican en dos categorías: los
+sistemas sin ayuda (unaided), que utilizan únicamente el cuerpo del usuario, como las
+lenguas de señas y los gestos, y los sistemas con ayuda (aided), que requieren un
+dispositivo externo, desde un tablero de imágenes impreso hasta una aplicación en un
+teléfono inteligente \cite{beukelman_aac_2020}.
+
+Beukelman y Light clasifican los sistemas con ayuda según su nivel tecnológico: sin
+tecnología (tableros de papel), baja tecnología (dispositivos con botones y mensajes
+pregrabados) y alta tecnología (software con generación de habla, predicción de texto y
+acceso a vocabulario extenso) \cite{beukelman_aac_2020}. La aplicación desarrollada en
+el presente proyecto se ubica en esta última categoría, con la particularidad de que
+integra visión por computadora para interpretar los gestos del usuario en lugar de
+depender de la selección manual de símbolos en pantalla. La combinación de un módulo de
+reconocimiento de señas (dirección niño a oyente) con un diccionario visual de señas
+(dirección oyente a niño) convierte al sistema en una herramienta de
+comunicación bidireccional que abarca tanto la función aumentativa como la alternativa de
+la \acrshort{caa}, adaptada específicamente a las necesidades de la comunidad sorda hondureña y a la
+Lengua de Señas Hondureña (\acrshort{lesho}).

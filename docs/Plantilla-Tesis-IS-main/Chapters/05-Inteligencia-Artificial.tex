@@ -1,0 +1,251 @@
+\chapter[Inteligencia Artificial y su Aplicación en el Tráfico]{Inteligencia Artificial y su Aplicación en el Tráfico}
+\label{cp:inteligencia-artificial}
+
+\insertminitoc
+\parindent0pt
+
+\section{Concepto y ramas de la inteligencia artificial}
+\label{sec:concepto-ramas-IA}
+El termino \acrshort{ia}, a pesar que no posea una definición única y aceptada por todos, la mayor parte de los 
+investigadores en este campo concuerdan en un grupo de características fundamentales que distinguen a 
+estos sistemas: la capacidad de aprender y adaptarse, solucionar problemas complejos, entender el entorno 
+y razonar con eficacia incluso en situaciones inciertas. La \acrshort{ia} es un ámbito que se alimenta de la 
+convergencia de diversas disciplinas de investigación, lo que hace posible que no exista una única 
+definición correcta.  Por ende, es crucial que cada investigador establezca de manera precisa su 
+perspectiva personal sobre la \acrshort{ia}, pues las diversas interpretaciones conllevan consecuencias 
+significativas tanto a nivel práctico como teórico.  En realidad, la selección de un concepto inicial 
+determinará el camino y el resultado final de toda la investigación \cite{wang_defining_2019}. A pesar de 
+sus variaciones, todas las perspectivas acerca de la inteligencia artificial comparten un punto clave: la 
+disciplina se enfoca en analizar, diseñar y crear agentes inteligentes que tienen la habilidad de cumplir 
+objetivos o metas definidas previamente \cite{bartneck_what_2021, russell_artificial_2016}.
+
+La \acrshort{ia} no es solamente un progreso a nivel técnico, sino que también conlleva una transformación cognitiva 
+para las sociedades actuales. No solo se trata de automatizar procesos al adoptar esto, sino que también 
+significa una nueva manera de concebir los sistemas complejos como el tránsito urbano bajo un enfoque 
+predictivo y adaptativo. Este cambio de paradigma, que va más allá de la programación básica, modifica el 
+rol del ser humano como desarrollador de sistemas inteligentes que adquieren conocimiento a partir de la 
+experiencia, en lugar de ser solo un operador de aparatos fijos.
+La \acrshort{ia} se divide en muchas ramas y subcampos, que se enfocan en diferentes tipos de tareas o metodologías. 
+Las principales ramas o subcampos de la \acrshort{ia} son:
+
+\begin{itemize}
+    \item \textbf{Aprendizaje Automático \acrfull{ml}}: Esta disciplina se fundamenta en la creación de algoritmos que facilitan a los sistemas el reconocimiento y entendimiento de patrones directamente desde los datos, evitando así la necesidad de instrucciones explícitas de programación para cada tarea. La definición de esta área se concentra en la creación de sistemas informáticos que pueden mejorar de forma independiente a través de la experiencia adquirida. Este método destaca su esencia intrínsecamente interdisciplinaria, colocándolo en la intersección entre la computación y la estadística \cite{jordan_machine_2015}.
+    \item \textbf{\acrfull{pln}}: es el campo de la \acrshort{ia} que se ocupa de dotar a las máquinas de la capacidad de leer, comprender, interpretar y generar texto y voz humanos de una manera valiosa. volúmenes de contenido pertinente para elaborar y fundamentar respuestas precisas a las preguntas que los usuarios realizan en lenguaje natural. Estamos seguros de que los recientes desarrollos en la tecnología de Respuesta a Preguntas (QA) son fundamentales para capacitar a los profesionales en la realización de decisiones cruciales y puntuales. Los campos de uso de esta tecnología son diversos e incluyen: regulación, salud, ética empresarial, inteligencia de negocios, hallazgo de información, administración del conocimiento organizacional, protección y atención al cliente \cite{ferrucci_building_2010}.
+    \item \textbf{Visión por Computadora}: según \cite{goodfellow_deeplearning_2016}, este se centra en varias tareas principales.
+    \begin{itemize}
+        \item \textbf{Reconocimiento y Detección de Objetos}: Se centra en identificar la presencia de objetos dentro de una imagen y delimitar su ubicación exacta mediante cuadros de contorno. Un caso de aplicación directa es el reconocimiento facial. 
+        \item \textbf{Transcripción (Visión a Texto)}: Consiste en convertir información visual desestructurada en un formato de texto discreto. Ejemplos incluyen el \acrfull{ocr} y los sistemas avanzados (como el de Google Street View con redes convolucionales) para la lectura de múltiples dígitos.
+        \item \textbf{Salidas Estructuradas o Segmentación Semántica}: Implica generar una salida compleja donde los elementos están interconectados, como la segmentación precisa a nivel de píxel. En esta función, el sistema clasifica cada píxel de la imagen para identificar y cartografiar elementos específicos como, por ejemplo, carreteras en una fotografía aérea.
+        \item \textbf{Modelado Generativo}: Se refiere a la capacidad de los sistemas para sintetizar o crear imágenes nuevas, además de realizar tareas de restauración de imágenes, ya sea corrigiendo defectos o eliminando elementos no deseados.
+    \end{itemize}
+    \item \textbf{Sistemas Expertos}: Los Sistemas Expertos son aplicaciones informáticas creadas para replicar el razonamiento y la sabiduría de un experto humano en un área de conocimiento particular. Su propósito primordial es ayudar al usuario en la solución de problemas complejos que son intrínsecamente desorganizados y no predecibles. Esto incluye actividades fundamentales de análisis y diseño como la síntesis, la evaluación, el modelado y el proceso global de toma de decisiones. El cual se compone de tres elementos clave: base de conocimiento, motor de inferencia, interfaz de usuario \cite{janjanam_design_2021}.
+    \item \textbf{Robótica y Control Autónomo}: la idea de dotar a los robots con métodos de razonamiento de IA no es nueva, sino que fue una fuerza impulsora y un campo objetivo fundamental en los inicios de la IA. Aunque el campo de la IA se desvió posteriormente hacia otras aplicaciones, hoy en día estamos presenciando un resurgimiento de esta visión original, lo que subraya la importancia de integrar sistemas de razonamiento en robots autónomos \cite{siciliano_springer_2016}.
+\end{itemize}
+
+\begin{figure}[!htpb]
+    \centering
+    \includegraphics[width=0.5\linewidth]{Figures/Sistemas Expertos.pdf}
+    \caption[Diagrama representando los componentes del Sistema Experto.]{Diagrama representando los componentes del Sistema Experto.}
+    \label{fig:figure-Sistema-Expertos-01}
+\end{figure}
+
+Es importante señalar que la \acrshort{ia}, mediante sus diversas áreas, está avanzando de manera gradual hacia la 
+idea de inteligencia colectiva. Esto se concretiza en la creación de sistemas distribuidos que pueden 
+aprender y manejar información adquirida de millones de fuentes de datos al mismo tiempo.
+
+\section{Aprendizaje Automático (Machine Learning) y aprendizaje profundo (Deep Learning)}
+\label{sec:ml-dl}
+Retomando la seccion \ref{sec:concepto-ramas-IA}, ML como el campo de la \acrshort{ia} que se dedica a desarrollar algoritmos y modelos. 
+Estos hacen que los sistemas aprendan automáticamente de los datos, mejorando su rendimiento con el tiempo 
+sin ser programados explícitamente para cada situación nueva. Este campo incluye diferentes enfoques de 
+aprendizaje, como el supervisado, no supervisado y por refuerzo. El \acrshort{dl}, es una subcategoría del 
+aprendizaje automático que emplea redes neuronales artificiales. La capacidad para procesar datos de 
+entrada sin procesar y discernir autónomamente las representaciones internas requeridas para cumplir la 
+tarea de aprendizaje que se le ha encomendado es el mayor punto fuerte del DL, que se obtiene mediante 
+redes neuronales profundas \cite{janiesch_machine_2021}.
+
+A pesar del potencial que ambos aprendizajes poseen, aunque para \cite{sharifani_machine_2023} estos conllevan desafíos 
+significativos, relacionados a la ética y sociales:
+
+\begin{itemize}
+    \item \textbf{Privacidad de datos:} existen desafíos asociados con la privacidad de los datos.
+    \item \textbf{Consideraciones Éticas:} donde es crucial abordar las consideraciones éticas en su uso.
+    \item \textbf{Sesgo y Discriminación:} surgen si los datos de entrenamiento no son lo suficientemente diversos o si los algoritmos no están diseñados para considerar la equidad y la ética.
+    \item \textbf{Disrupción Laboral:} estos pueden alterar el mercado laboral, ya que representan una amenaza para los empleos que pueden ser automatizados.
+\end{itemize}
+
+\begin{figure}[!htpb]
+    \centering
+    \begin{subfigure}{0.8\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{Figures/Machine Learning.pdf}
+        \caption{Diagrama \acrshort{ml}}
+        \label{fig:figure-ml-05}
+    \end{subfigure}
+    \hspace{.5cm} % Adjust the space as needed.
+    \begin{subfigure}{0.8\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{Figures/Deep Learning.pdf}
+        \caption{Diagrama \acrshort{dl}}
+        \label{fig:figure-dl-05}
+    \end{subfigure}
+    \caption{Comparativa entre los diagramas de \acrshort{ml} y \acrshort{dl}.}
+    \label{fig:figure-ml-dl-05}
+\end{figure}
+
+\section{Algoritmos aplicables al análisis de tráfico vehicular}
+\label{sec:algoritmos-analisis-tráfico}
+La estimación del flujo vehicular que utiliza inteligencia artificial se apoya principalmente en algoritmos 
+diseñados para procesar de inmediato grandes cantidades de información. Estos métodos son esenciales para 
+determinar las tendencias de desplazamiento, prever la congestión y mejorar el manejo del tráfico vehicular. 
+Se dividen, en términos generales, en tres clases principales: 
+
+\begin{itemize}
+    \item Modelos de predicción de series temporales.
+    \item Algoritmos de optimización y control inteligente.
+    \item Algoritmos de \acrfull{ml}.
+\end{itemize}
+
+Para desarrollar sistemas de transporte más eficaces, adaptables y sostenibles, esas técnicas deben 
+combinarse.
+
+Según \cite{lv_traffic_2014}, las técnicas de \acrshort{dl} superan en precisión a los modelos estadísticos 
+tradicionales en la predicción del tráfico.  Su capacidad natural para reconocer y modelar las relaciones 
+no lineales entre las variables de flujo vehicular es lo que le da esta ventaja. Este salto tecnológico 
+representa una transformación estructural en la forma en que los ingenieros de transporte y urbanistas 
+pueden anticipar y gestionar el comportamiento del tráfico.
+
+En el ámbito del aprendizaje automático, técnicas como los árboles de decisión y las \acrfull{svm} se 
+emplean de forma extensa para categorizar las condiciones del tráfico y anticipar los patrones de flujo 
+vehicular. La integración SVM junto con métodos para la eliminación de ruido ha probado ser efectiva en 
+elevar la exactitud de los modelos, al minimizar las perturbaciones causadas por elementos externos en los 
+datos sin procesar relacionados con el flujo vehicular \cite{medina-salgado_urban_2022}.
+
+\subsection{Redes Neuronales}
+\label{subsec:redes-neuronales}
+
+Las \acrfull{ann}, constituyen el núcleo de los sistemas actuales que se enfocan en el análisis del tráfico. 
+Estas arquitecturas gestionan la información a través de nodos conectados, que obtienen conocimiento por 
+medio de datos de ejemplo. Se inspiran en la manera en que funciona el cerebro humano. Las \acrfull{rnn} y 
+las \acrfull{cnn}, en el contexto del tráfico vehicular, se presentan como las alternativas más comunes. 
+Las CNN son especialmente eficaces en la gestión de videos e imágenes captadas por cámaras colocadas a lo 
+largo de las vías, mientras que las RNN, y en particular sus versiones \acrfull{lstm}, son 
+ideales para modelar secuencias temporales y prever los patrones de circulación vehicular. Según Medina 
+Salgado et al \cite{medina-salgado_urban_2022} las \acrfull{rnn} se utilizan para extraer las características espaciales de los datos de 
+flujo de tráfico. Se han propuesto modelos descentralizados basados en \acrfull{cnn} para predecir el estado de 
+congestión en cada nodo. Así mismo menciona que los enfoques fundamentados en el aprendizaje profundo, 
+entre ellos las \acrfull{lstm}, han potenciado de manera significativa la precisión en las predicciones del flujo 
+vehicular, al demostrar una notable destreza para capturar las interdependencias espacio-temporales en 
+conjuntos de datos variados y procedentes de fuentes diversas.
+
+\subsection{Algoritmos de predicción de series temporales}
+\label{subsec:algoritmos-prediccion-series-temporales}
+A diferencia de los modelos fijos, los algoritmos de predicción de series temporales consiguen recoger las 
+variaciones temporales en los volúmenes de automóviles, lo que permite realizar predicciones exactas en 
+periodos cortos, medios y largos. A pesar de que métodos tradicionales como \acrfull{arima} y \acrfull{var} 
+siguen siendo relevantes, últimamente se ha observado un progreso significativo hacia técnicas híbridas que 
+combinan herramientas estadísticas con innovaciones en aprendizaje profundo. Los modelos ARIMA surgen como 
+una evolución de los enfoques \acrfull{ar}, de \acrfull{ma} y los \acrfull{arma}. Estos incorporan una 
+combinación lineal que abarca el valor actual, observaciones previas, diferencias no estacionales y errores 
+de pronóstico retardados derivados de los datos de series temporales en degradación, todo ello orientado a 
+pronosticar respuestas futuras \cite{syed_systematic_2025}.
+
+El desarrollo de estos modelos muestra como el futuro del análisis del tráfico esta en aprovechar las 
+fortalezas que tiene la estadística y la \acrshort{ia}. Además, los métodos basados en \acrfull{gnn} están adquiriendo una creciente importancia, debido a su efectividad para modelar el tráfico como una 
+estructura compleja de nodos interconectados (tales como calles, avenidas e intersecciones). Las \acrfull{gcn}, que 
+son una clase importante de las GNN, se utilizan específicamente para abordar la estructura de la red de 
+tráfico, ya que esta se organiza naturalmente como un grafo. La convolución gráfica se aplica de manera 
+directa sobre datos organizados en forma de gráficos, con el fin de reconocer patrones y atributos de gran 
+relevancia dentro del ámbito espacial de las redes de tráfico \cite{yu_spatio-temporal_2018}.
+
+\subsection{Algoritmos de Optimización y Control Inteligente}
+\label{subsec:algoritmos-optimizacion-control-inteligente}
+IBM \cite{noauthor_que_2023} define la optimización como un método matemático diseñado para hallar la solución más ventajosa, 
+es decir, la óptima a un problema, elegida entre un conjunto de opciones viables y siempre respetando 
+restricciones y metas concretas. Esta herramienta tan poderosa resulta indispensable en múltiples 
+disciplinas, como la investigación operativa, la ingeniería, la economía, las finanzas y la logística, 
+pues su uso permite aminorar gastos y potenciar la eficiencia en casi todos los procesos operativos.
+
+Estos modelos están orientados a reducir los tiempos de viaje, disminuir el consumo de combustible y 
+perfeccionar la sincronización de los semáforos. Las metaheurísticas, tales como el \acrfull{ga}, 
+la \acrfull{pso} y las \acrfull{aco}, resultan particularmente 
+valiosas para abordar problemas de optimización no lineales y de gran complejidad. Según \cite{bazzan_review_2014}, estas 
+técnicas de optimización bioinspiradas resultan de gran relevancia para la mejora del flujo de tráfico y 
+son fundamentales para la ingeniería del transporte.
+
+Por otra parte, los algoritmos de control inteligente los cuales se basan en \acrfull{rl}, son utilizados para el 
+control de la semaforización, habiendo obtenido buenos resultados en el descongestionamiento urbano. 
+Wei at al \cite{wei_intellilight_2018} propone un sistema de control semafórico llamado “IntelliLigth” con el cual logra una 
+mejora significativa en comparación a los métodos de referencia, siendo superior sobre los métodos de 
+línea base.
+
+\section{Simulación del tráfico vehicular con IA}
+\label{sec:simulacion-trafico-vehicular-ia}
+Antes de implementarse en la práctica, las simulaciones de tráfico son una herramienta esencial para 
+investigar, verificar y optimizar procedimientos de gestión del tránsito.  La utilización de IA en estas 
+situaciones posibilita el desarrollo de modelos más realistas y adaptativos, capaces de anticipar 
+situaciones críticas como accidentes o embotellamientos, así como cambios repentinos en el flujo. Lo mejor 
+es que permiten experimentar sin riesgos: explorar "qué pasaría si", realizar pruebas de sensibilidad y 
+entrenar algoritmos de control, optimización o predicción, todo sin afectar a los conductores ni al sistema 
+vial en sí.
+A continuación, detallo algunas de las herramientas y desarrollos más relevantes, basados en contribuciones 
+recientes de la comunidad académica e industrial, destacando su enfoque en la IA.
+
+\begin{table}[!htpb]
+    \caption{Herramientas de simulación de tráfico vehicular basadas en IA}.
+    \label{tab:table-05-herramientas-simulacion-trafico-ia}
+    \begin{tabularx}{\textwidth}{lX}
+        \toprule
+        \textbf{Herramienta} & \textbf{Descripción} \\ 
+        \midrule
+        SUMO (Simulation of Urban Mobility) & Simulador microscópico y multimodal open source, altamente portable, que maneja redes grandes con vehículos, transporte público y peatones. Incluye herramientas para importación de redes y cálculo de emisiones \cite{noauthor_eclipse_nodate}. \\
+        CityFlow & Simulador de tráfico open source optimizado para velocidad (hasta 20 veces más rápido que SUMO), enfocado en redes urbanas con renderizado interactivo y reproducibilidad \cite{noauthor_cityflow_nodate}. \\
+        BITS (Bi-Level Imitation for Traffic Simulation) & Modelo de imitación jerárquica para simular comportamientos vehiculares impredecibles, open source en GitHub \cite{xu_bits_2022}. \\
+        UXsim & Simulador macroscópico y mesoscópico en Python puro, ligero y customizable para redes a escala ciudad \cite{seo_uxsim_2023}. \\
+        MovSim & Simulador microscópico basado en carriles, con salida en CSV para análisis; soporta múltiples modelos de seguimiento de vehículos \cite{movsim_movsimmovsim_2025}. \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
+
+\section{Retos y limitaciones de la IA en la movilidad urbana}
+\label{sec:retos-limitaciones-ia-movilidad-urbana}
+El uso de la \acrshort{ia} en el transporte urbano tiene la capacidad de cambiar radicalmente este sector, 
+dado que puede hacer más eficientes, seguros y sostenibles los sistemas de transporte. Sin embargo, su 
+implementación a gran escala se ve obstaculizada por un conjunto de complejos retos técnicos, 
+institucionales, éticos y socioeconómicos que requieren una gestión cuidadosa. A continuación, se analizan 
+las limitaciones y los obstáculos más relevantes que han sido señalados en la literatura académica 
+contemporánea.  Para \cite{wei_intellilight_2018}, una de las limitantes con las que se encontró al desarrollar su trabajo, fue el 
+hecho que muchas investigaciones estaban realizadas en base a simulaciones, y menciona que eso no refleja 
+el tráfico vehicular en el mundo real.
+
+\subsection{Limitaciones técnicas y de infraestructura}
+\label{subsec:limitaciones-tecnicas-infraestructura}
+Una de las limitantes con mayor índice de recurrencia, recae en la infraestructura: sensores, cámaras, 
+conectividad, calidad de datos, disponibilidad de redes robustas. En ciudades desarrolladas esto se 
+resuelve fácilmente, en lugares menos favorecido, es un problema a gran escala. El triunfo de la IA en 
+ciudades, especialmente en economías en desarrollo, se basa en gran medida en una infraestructura de 
+telecomunicaciones robusta y accesible. No obstante, la dificultad y los elevados gastos de cumplimiento 
+generan obstáculos significativos para su implementación, los cuales se agravan por problemas operativos 
+fundamentales como la dispersión de datos y la limitada capacidad técnica e infraestructural en diversas 
+administraciones municipales \cite{das_connectivity_2025, jorgensen_impact_2025}.
+
+\subsection{Brechas en habilidades humanas e institucionales}
+\label{subsec:brechas-habilidades-humanas-institucionales}
+La implementación exitosa de IA depende no solo de tecnología, sino del capital humano y la 
+institucionalidad. Jørgensen y Ma \cite{jorgensen_impact_2025} mencionan, que existe poco personal capacitado, y 
+falta de comprensión de la IA por parte de autoridades ciudadanas conlleva al descarte de soluciones 
+valiosas. Asimismo \cite{calzada_digital_2025},  destaca que el desafío principal es si la "gran transformación" de la era de 
+la IA ayudará a integrar los mercados y las tecnologías en función de las necesidades sociales y las 
+instituciones democráticas, o si provocará una oleada de destrucción creativa que agrave las asimetrías 
+globales y los cercos digitales.
+
+\section{Escalabilidad, Adaptabilidad y generalización}
+Un modelo que demuestra ser efectivo en entornos limitados y controlados (como una sola intersección, un 
+tramo específico o durante periodos de bajo tráfico) es propenso a fallar cuando se intenta escalar a nivel 
+de toda la ciudad o durante condiciones complejas como las horas pico, el mal clima, los accidentes o las 
+obras de construcción. Esta falta de solidez se debe a que los datos de entrenamiento a menudo no contienen 
+suficiente diversidad de escenarios, lo que se traduce en una capacidad deficiente para generalizar su 
+aplicación a la realidad operativa. La capacidad de adaptarse y generalizar se dificulta debido a que los 
+entornos urbanos son complejos y contextuales, lo que implica que un modelo que ha sido entrenado en una 
+ciudad frecuentemente no funciona adecuadamente en otra sin un significativo desarrollo personalizado \cite{jorgensen_impact_2025}.
+

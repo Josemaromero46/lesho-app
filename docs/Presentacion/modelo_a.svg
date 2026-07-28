@@ -1,0 +1,70 @@
+<svg viewBox="0 0 1400 620" xmlns="http://www.w3.org/2000/svg" font-family="Georgia, 'Times New Roman', serif">
+  <rect x="0" y="0" width="1400" height="620" fill="#ffffff"/>
+
+  <!-- ======================= CIFRAS PRINCIPALES ======================= -->
+  <g id="cifras">
+    <g id="cifra-exactitud">
+      <text x="233" y="96" font-size="76" font-weight="bold" fill="#1F3A5F" text-anchor="middle">99.54 %</text>
+      <text x="233" y="134" font-size="21" fill="#5C6472" text-anchor="middle">exactitud</text>
+      <line x1="60" y1="168" x2="406" y2="168" stroke="#E3DDD2" stroke-width="2"/>
+    </g>
+    <g id="cifra-clases">
+      <text x="700" y="96" font-size="76" font-weight="bold" fill="#1F3A5F" text-anchor="middle">30</text>
+      <text x="700" y="134" font-size="21" fill="#5C6472" text-anchor="middle">letras del alfabeto</text>
+      <line x1="527" y1="168" x2="873" y2="168" stroke="#E3DDD2" stroke-width="2"/>
+    </g>
+    <g id="cifra-tamano">
+      <text x="1167" y="96" font-size="76" font-weight="bold" fill="#1F3A5F" text-anchor="middle">33.9 KB</text>
+      <text x="1167" y="134" font-size="21" fill="#5C6472" text-anchor="middle">tamaño del modelo</text>
+      <line x1="994" y1="168" x2="1340" y2="168" stroke="#E3DDD2" stroke-width="2"/>
+    </g>
+  </g>
+
+  <!-- ======================= EL RETO TECNICO ======================= -->
+  <g id="reto">
+    <text x="700" y="228" font-size="27" font-weight="bold" fill="#1A1D24" text-anchor="middle">Cinco letras del alfabeto se hacen con MOVIMIENTO</text>
+    <text x="700" y="262" font-size="20" fill="#5C6472" text-anchor="middle">Una foto no basta: hay pares con la misma forma de mano que solo se distinguen al moverse</text>
+
+    <!-- Par L / LL -->
+    <g id="par-l">
+      <rect x="118" y="300" width="340" height="180" rx="10" fill="#F7F4EE" stroke="#E3DDD2" stroke-width="2"/>
+      <text x="204" y="368" font-size="58" font-weight="bold" fill="#1A1D24" text-anchor="middle">L</text>
+      <text x="204" y="400" font-size="17" fill="#5C6472" text-anchor="middle">quieta</text>
+      <path d="M 248 360 L 316 360" stroke="#E8A13A" stroke-width="4"/>
+      <path d="M 316 360 l -12 -8 l 0 16 z" fill="#E8A13A"/>
+      <text x="282" y="342" font-size="16" fill="#B57C1E" text-anchor="middle">se mueve</text>
+      <text x="386" y="368" font-size="58" font-weight="bold" fill="#1F3A5F" text-anchor="middle">LL</text>
+      <text x="386" y="400" font-size="17" fill="#5C6472" text-anchor="middle">con trayectoria</text>
+    </g>
+
+    <!-- Par N / Ñ -->
+    <g id="par-n">
+      <rect x="530" y="300" width="340" height="180" rx="10" fill="#F7F4EE" stroke="#E3DDD2" stroke-width="2"/>
+      <text x="616" y="368" font-size="58" font-weight="bold" fill="#1A1D24" text-anchor="middle">N</text>
+      <text x="616" y="400" font-size="17" fill="#5C6472" text-anchor="middle">quieta</text>
+      <path d="M 660 360 L 728 360" stroke="#E8A13A" stroke-width="4"/>
+      <path d="M 728 360 l -12 -8 l 0 16 z" fill="#E8A13A"/>
+      <text x="694" y="342" font-size="16" fill="#B57C1E" text-anchor="middle">se mueve</text>
+      <text x="798" y="368" font-size="58" font-weight="bold" fill="#1F3A5F" text-anchor="middle">Ñ</text>
+      <text x="798" y="400" font-size="17" fill="#5C6472" text-anchor="middle">con trayectoria</text>
+    </g>
+
+    <!-- Par R / RR -->
+    <g id="par-r">
+      <rect x="942" y="300" width="340" height="180" rx="10" fill="#F7F4EE" stroke="#E3DDD2" stroke-width="2"/>
+      <text x="1028" y="368" font-size="58" font-weight="bold" fill="#1A1D24" text-anchor="middle">R</text>
+      <text x="1028" y="400" font-size="17" fill="#5C6472" text-anchor="middle">quieta</text>
+      <path d="M 1072 360 L 1140 360" stroke="#E8A13A" stroke-width="4"/>
+      <path d="M 1140 360 l -12 -8 l 0 16 z" fill="#E8A13A"/>
+      <text x="1106" y="342" font-size="16" fill="#B57C1E" text-anchor="middle">se mueve</text>
+      <text x="1210" y="368" font-size="58" font-weight="bold" fill="#1F3A5F" text-anchor="middle">RR</text>
+      <text x="1210" y="400" font-size="17" fill="#5C6472" text-anchor="middle">con trayectoria</text>
+    </g>
+  </g>
+
+  <!-- ======================= SOLUCION ======================= -->
+  <g id="solucion">
+    <rect x="118" y="512" width="1164" height="72" rx="10" fill="#1F3A5F"/>
+    <text x="700" y="558" font-size="25" fill="#ffffff" text-anchor="middle">Por eso el modelo no clasifica una foto, sino una ventana de 20 fotogramas</text>
+  </g>
+</svg>

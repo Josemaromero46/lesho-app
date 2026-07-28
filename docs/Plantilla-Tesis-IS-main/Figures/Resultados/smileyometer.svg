@@ -1,0 +1,45 @@
+<svg viewBox="0 0 720 185" role="img" xmlns="http://www.w3.org/2000/svg" font-family="'Segoe UI','Helvetica Neue',system-ui,Arial,sans-serif">
+<title>Escala de caritas (Smileyometer)</title>
+<desc>Escala visual de cinco caritas, de muy mal a muy bien, para que los ninos senalen su respuesta.</desc>
+<rect x="0" y="0" width="720" height="185" fill="#FFFFFF"/>
+
+<!-- 1 muy mal -->
+<g transform="translate(80,70)">
+<circle r="42" fill="#FFF3CC" stroke="#C0504D" stroke-width="3"/>
+<circle cx="-13" cy="-8" r="3.6" fill="#5A4A1E"/><circle cx="13" cy="-8" r="3.6" fill="#5A4A1E"/>
+<path d="M -15,15 Q 0,3 15,15" fill="none" stroke="#5A4A1E" stroke-width="3" stroke-linecap="round"/>
+</g>
+<text x="80" y="150" font-size="15" fill="#3B4250" text-anchor="middle">Muy mal</text>
+
+<!-- 2 mal -->
+<g transform="translate(220,70)">
+<circle r="42" fill="#FFF3CC" stroke="#D9863E" stroke-width="3"/>
+<circle cx="-13" cy="-8" r="3.6" fill="#5A4A1E"/><circle cx="13" cy="-8" r="3.6" fill="#5A4A1E"/>
+<path d="M -15,13 Q 0,6 15,13" fill="none" stroke="#5A4A1E" stroke-width="3" stroke-linecap="round"/>
+</g>
+<text x="220" y="150" font-size="15" fill="#3B4250" text-anchor="middle">Mal</text>
+
+<!-- 3 regular -->
+<g transform="translate(360,70)">
+<circle r="42" fill="#FFF3CC" stroke="#D6B656" stroke-width="3"/>
+<circle cx="-13" cy="-8" r="3.6" fill="#5A4A1E"/><circle cx="13" cy="-8" r="3.6" fill="#5A4A1E"/>
+<path d="M -15,10 L 15,10" fill="none" stroke="#5A4A1E" stroke-width="3" stroke-linecap="round"/>
+</g>
+<text x="360" y="150" font-size="15" fill="#3B4250" text-anchor="middle">Regular</text>
+
+<!-- 4 bien -->
+<g transform="translate(500,70)">
+<circle r="42" fill="#FFF3CC" stroke="#8FB35A" stroke-width="3"/>
+<circle cx="-13" cy="-8" r="3.6" fill="#5A4A1E"/><circle cx="13" cy="-8" r="3.6" fill="#5A4A1E"/>
+<path d="M -15,7 Q 0,16 15,7" fill="none" stroke="#5A4A1E" stroke-width="3" stroke-linecap="round"/>
+</g>
+<text x="500" y="150" font-size="15" fill="#3B4250" text-anchor="middle">Bien</text>
+
+<!-- 5 muy bien -->
+<g transform="translate(640,70)">
+<circle r="42" fill="#FFF3CC" stroke="#5EA046" stroke-width="3"/>
+<circle cx="-13" cy="-8" r="3.6" fill="#5A4A1E"/><circle cx="13" cy="-8" r="3.6" fill="#5A4A1E"/>
+<path d="M -15,5 Q 0,20 15,5" fill="none" stroke="#5A4A1E" stroke-width="3" stroke-linecap="round"/>
+</g>
+<text x="640" y="150" font-size="15" fill="#3B4250" text-anchor="middle">Muy bien</text>
+</svg>

@@ -1,0 +1,345 @@
+\chapter[Marco Metodológico]{Marco Metodológico}
+\label{ch:metodologia}
+
+\insertminitoc
+\parindent0pt
+
+El marco teórico desarrollado en los capítulos anteriores establece las bases conceptuales,
+técnicas y normativas que sustentan el sistema propuesto. El presente capítulo describe
+la metodología que se adoptará para su construcción y evaluación: el tipo y diseño de
+investigación, los actores involucrados, las técnicas e instrumentos que se utilizarán para la
+recolección y el procesamiento de los datos, el procedimiento que se seguirá a lo largo del
+desarrollo y los métodos de validación que se emplearán.
+
+\section{Tipo de investigación}
+
+Por su propósito, la investigación se clasifica como aplicada \cite{sampieri_metodologia_2014}.
+Su objetivo central no es generar conocimiento teórico nuevo, sino construir una
+herramienta tecnológica funcional que resuelve un problema concreto: la brecha de
+comunicación entre niños sordos, cuya lengua materna es el \acrshort{lesho}, y personas
+oyentes que no conocen esa lengua. El punto de partida son conocimientos ya establecidos
+en disciplinas como la visión por computadora, el aprendizaje profundo y el desarrollo
+de aplicaciones móviles, que se combinan y adaptan para producir un sistema funcional
+que facilita la comunicación entre ambas poblaciones en distintos contextos de la vida
+cotidiana.
+
+El enfoque adoptado es mixto \cite{sampieri_metodologia_2014}. La componente cuantitativa
+abarca la construcción del conjunto de datos de landmarks, el entrenamiento y la
+evaluación de los modelos de clasificación mediante métricas estándar como exactitud,
+precisión, sensibilidad y puntuación F1, y la medición del tamaño de los modelos
+exportados y los tiempos de inferencia en dispositivos reales. La componente cualitativa
+corresponde a las sesiones de validación con usuarios de la Fundación CasAyuda,
+donde se observa la interacción de los
+participantes con la aplicación y se recopila retroalimentación sobre la comprensión de
+la interfaz, la facilidad de uso y la adecuación de las señas reconocidas. Ambas
+componentes se complementan: las métricas cuantitativas miden el desempeño técnico del
+sistema, mientras que la observación cualitativa evalúa su pertinencia y usabilidad en
+el contexto real para el que será diseñado.
+
+El alcance de la investigación es exploratorio-descriptivo \cite{sampieri_metodologia_2014}.
+Es exploratorio porque, al momento de realizar el estudio, no existen antecedentes
+documentados de sistemas de reconocimiento automático de señas del \acrshort{lesho} entrenados
+con técnicas de aprendizaje profundo, ni conjuntos de datos de landmarks de la lengua
+disponibles públicamente. En ese sentido, la investigación abre un camino metodológico
+en un dominio no explorado previamente en Honduras. Es descriptivo porque documenta de
+forma sistemática el diseño del sistema, la arquitectura de los modelos, el proceso de
+construcción del conjunto de datos y el comportamiento del sistema medido a través de
+métricas reproducibles.
+
+El diseño es no experimental \cite{sampieri_metodologia_2014}. No se conformará un grupo
+de control ni se manipularán variables de forma aleatoria. El proceso seguirá un diseño de
+investigación de desarrollo tecnológico: se definirán los requisitos del sistema, se
+construirá el conjunto de datos, se entrenarán y validarán los modelos, se integrarán en una
+aplicación móvil y se realizarán pruebas con usuarios reales. Este diseño es coherente con
+la naturaleza del problema, donde el objetivo es demostrar la viabilidad técnica de una
+solución antes de escalarla a un vocabulario más amplio o a condiciones de uso más
+diversas.
+
+\section{Diseño Metodológico}
+
+La investigación se estructuró en cuatro fases secuenciales. La primera consistió en la
+consulta con personas con conocimiento del \acrshort{lesho} para definir el vocabulario que el
+sistema reconoce y muestra. La segunda comprendió la construcción del conjunto de datos
+de landmarks mediante sesiones de grabación con cuatro participantes. La tercera abarcó
+el entrenamiento de los modelos de clasificación y su integración en la aplicación móvil.
+La cuarta fase corresponde a la validación del sistema con usuarios de la Fundación
+CasAyuda. Cada fase produce entregables concretos que sirven como insumo para la
+siguiente.
+
+Una decisión metodológica transversal a todas las fases es el procesamiento
+completamente local en el dispositivo. Esta decisión implica que ningún dato de cámara
+se transmita a servidores externos, ni durante el uso de la aplicación ni durante la
+captura del conjunto de datos. Los frames de video se procesarán en tiempo real con
+MediaPipe Hands para extraer coordenadas de landmarks, y solo esas coordenadas se
+almacenarán de forma permanente. Los videos crudos no se conservarán. Esta restricción,
+motivada por consideraciones de privacidad, disponibilidad sin conexión a internet y
+minimización de costos de infraestructura, condiciona las decisiones de diseño tanto del
+script de captura de datos como de la arquitectura de la aplicación.
+
+La elección de representar las señas mediante vectores de landmarks en lugar de imágenes
+de video también responde a razones metodológicas. Al reducir cada mano a 21 puntos con
+tres coordenadas, la entrada de los modelos es invariante ante variaciones de
+iluminación, tono de piel y fondo, lo que hace que el conjunto de datos sea más
+generalizable a distintas condiciones de uso, dispositivos y entornos de grabación.
+
+\section{Población y Muestra}
+
+\subsection{Población}
+
+La población de esta investigación comprende tres grupos de personas involucrados en
+situaciones de comunicación mediada por el \acrshort{lesho} en Honduras: niños y jóvenes
+sordos que utilizan el \acrshort{lesho} como lengua materna, personas oyentes que interactúan
+con ellos en contextos cotidianos, y personas con dominio del \acrshort{lesho} que participarán
+como colaboradoras en la construcción del conjunto de datos y en la validación del
+sistema. Estos tres grupos constituyen el universo de personas directamente implicadas
+en el problema de comunicación que la aplicación busca atender.
+
+\subsection{Muestra}
+
+La muestra estará constituida por 30 personas seleccionadas mediante muestreo no
+probabilístico intencional \cite{sampieri_metodologia_2014}. Este tipo de muestreo es
+adecuado para investigaciones de carácter aplicado en las que no existe un marco
+muestral que permita selección aleatoria y cuyo objetivo no es la generalización
+estadística, sino la validación de un sistema funcional con participantes que cumplen
+criterios específicos de inclusión.
+
+El número de 30 participantes responde a tres criterios concurrentes. El primero es la
+necesidad de representar los tres perfiles involucrados en el problema de comunicación:
+personas sordas, personas con dominio del \acrshort{lesho} y personas oyentes. Sin presencia de
+los tres grupos no sería posible evaluar ambas direcciones de comunicación del sistema
+ni recopilar retroalimentación desde todas las perspectivas relevantes. El segundo
+criterio es la suficiencia para el análisis descriptivo de los resultados del
+cuestionario aplicado en la etapa de validación: muestras de esta magnitud permiten
+calcular frecuencias, porcentajes y medidas de tendencia central de forma interpretable
+sin requerir técnicas de inferencia estadística. El tercer criterio es la viabilidad
+de acceso: la población de personas con dominio del \acrshort{lesho} en Honduras con afiliación
+institucional verificable es reducida y está concentrada en organizaciones especializadas
+como la Fundación CasAyuda, lo que limita de forma real el tamaño de muestra
+alcanzable con garantías de idoneidad.
+
+Los participantes se distribuirán en tres grupos según su función en la investigación:
+
+\begin{itemize}
+    \item \textbf{Personas sordas:} usuarios del módulo de reconocimiento de señas.
+    Interactuarán con la aplicación ejecutando señas frente a la cámara y evaluarán la
+    respuesta del sistema y la claridad de la interfaz.
+    \item \textbf{Personas con dominio del \acrshort{lesho}:} participarán en la construcción del
+    conjunto de datos ejecutando el vocabulario definido frente a la cámara, y también en
+    las sesiones de validación evaluando la adecuación de las señas reconocidas y mostradas
+    por el sistema.
+    \item \textbf{Personas oyentes:} usuarios del módulo de texto a seña. Escribirán frases
+    en español y evaluarán la representación visual generada por el sistema.
+\end{itemize}
+
+Los criterios de inclusión serán los siguientes: para el primer grupo, ser persona
+sorda con uso activo del \acrshort{lesho}; para el segundo, tener dominio reconocido de la
+lengua; para el tercero, ser persona oyente sin conocimiento previo del \acrshort{lesho}. No se
+establecerá restricción por edad, género ni nivel de escolaridad, dado que la aplicación
+se diseñará para entornos de uso variados.
+
+\section{Técnicas e Instrumentos de Recolección de Datos}
+
+La recolección de datos abarcará dos procesos diferenciados: la construcción del conjunto
+de datos de landmarks para el entrenamiento de los modelos, y la validación del sistema
+con usuarios reales. Cada proceso empleará técnicas e instrumentos distintos según sus
+objetivos.
+
+Para la construcción del conjunto de datos se utilizará la técnica de grabación controlada
+de señas. Cada participante se ubicará frente a la cámara del dispositivo a una distancia
+de entre 60 y 100 centímetros, con iluminación natural o interior estándar. El
+instrumento principal será un script de captura desarrollado en Python que automatizará
+todo el proceso: mostrará en pantalla la seña a ejecutar junto con una imagen de
+referencia, presentará una cuenta regresiva de tres segundos, registrará la ejecución
+durante dos a tres segundos y avanzará automáticamente a la siguiente seña sin
+intervención manual. MediaPipe Hands se integrará directamente en
+el script para extraer, en tiempo real, las coordenadas tridimensionales de los 21
+landmarks de la mano detectada por cada frame. Dichas coordenadas se normalizarán
+restando la posición de la muñeca a todos los demás puntos y se almacenarán en archivos
+CSV etiquetados por clase. Los videos no se conservarán.
+
+Para la validación del sistema con usuarios de la Fundación CasAyuda se
+aplicará un cuestionario. El instrumento recogerá la percepción de los participantes
+sobre la comprensión de la interfaz, la facilidad de interacción con la aplicación y la
+adecuación de las señas reconocidas y mostradas por el sistema. Las respuestas
+permitirán identificar aspectos de la experiencia de uso que no son evidentes a partir
+de las métricas técnicas de los modelos.
+
+\section{Procedimiento}
+
+El desarrollo del sistema seguirá cinco fases secuenciales. Cada una producirá entregables
+concretos que servirán como insumo para la siguiente etapa.
+
+\subsection{Definición del vocabulario}
+
+La primera fase consistirá en establecer con precisión las señas que el sistema
+reconocerá y mostrará. En coordinación con personas con conocimiento del \acrshort{lesho}
+vinculadas a la Fundación CasAyuda, se seleccionarán las 50 señas
+dinámicas que conformarán el vocabulario del Modelo B. Los criterios de selección
+priorizarán señas de uso cotidiano para niños, representativas de categorías como
+emociones, familia, necesidades básicas, números y colores. En la misma etapa se definirán
+dos señas de control, concebidas inicialmente para delimitar el inicio y el final de una
+seña dinámica sin tocar la pantalla, que deberán ser visualmente distintas entre sí y de
+cualquier letra del alfabeto dactilológico. Las 30 letras del alfabeto dactilológico,
+incluidos los dígrafos CH, LL y RR, completarán el vocabulario del alfabeto, junto con una
+clase de reposo. Al concluir esta fase, el vocabulario total del sistema quedará cerrado:
+33 clases para el Modelo A y 50 señas dinámicas para el Modelo B.
+
+\subsection{Construcción del conjunto de datos}
+
+Con el vocabulario definido se realizaron las sesiones de grabación con cuatro
+participantes, utilizando el script de captura descrito en la sección anterior.
+
+El conjunto de datos del Modelo A abarca las 33 clases: las 30 letras del alfabeto
+dactilológico, la clase REPOSO y las dos señas de control. Cada participante grabó 20
+tomas de cada clase estática y 40 tomas de cada una de las cinco letras que se ejecutan con
+movimiento (J, Ñ, Z, LL y RR), cuya trayectoria requiere más ejemplos. De cada toma se
+extraen ventanas de 20 fotogramas, que constituyen la entrada del modelo; cada fotograma se
+representa con 126 valores, correspondientes a las coordenadas $x$, $y$ y $z$ de los 21
+landmarks de las dos manos, normalizadas respecto a la posición de la muñeca.
+
+Para el conjunto de datos del Modelo B, cada participante grabó 25 tomas de cada una de
+las 50 señas dinámicas, lo que conformó un total de 5\,000 secuencias con los
+cuatro participantes. Cada secuencia comprende entre 30 y 60 fotogramas según la duración
+natural de la seña, que se remuestrean a una longitud fija de 40. A diferencia del Modelo A,
+cada fotograma del Modelo B combina la configuración de las manos (126 valores) con la
+ubicación de estas respecto al cuerpo, obtenida con MediaPipe Pose (18 valores); con los
+rasgos relativos que se derivan en el preprocesamiento, la entrada final al modelo es de 152
+valores. Ambos conjuntos se almacenarán en formato CSV sin incluir video crudo. Como técnicas de aumento de datos se aplicarán variación de velocidad
+mediante submuestreo y sobremuestreo temporal, y ruido gaussiano leve sobre las
+coordenadas de los landmarks para simular la variación natural en la ejecución de cada
+seña.
+
+\subsection{Entrenamiento y exportación de los modelos}
+
+Los conjuntos de datos se dividirán en subconjuntos de entrenamiento y evaluación para
+el ajuste y validación de cada modelo.
+
+El Modelo A se implementará como una red neuronal convolucional en una dimensión
+(\acrshort{cnn} 1D) sobre el eje temporal de la ventana, con activación \acrshort{relu} y regularización
+mediante dropout. La capa de salida utiliza la función softmax sobre 33 neuronas. El modelo se entrenará con el optimizador Adam y la
+función de pérdida de entropía cruzada categórica, con detención temprana sobre el
+conjunto de validación para prevenir el sobreajuste.
+
+El Modelo B se implementará como una red \acrshort{lstm} en configuración many-to-one: la red
+procesa la secuencia completa de frames y emite una única clasificación al final,
+utilizando el estado oculto del último paso temporal como entrada a una capa densa de
+salida softmax sobre 50 neuronas. Una vez entrenado cada modelo, se exportará al formato
+\acrshort{tflite} mediante el conversor de TensorFlow Lite, con cuantización posterior al
+entrenamiento para reducir el tamaño de los archivos y acelerar la inferencia en la
+CPU del dispositivo.
+
+\subsection{Desarrollo de la aplicación móvil}
+
+Con los modelos exportados se procederá al desarrollo de la aplicación en Flutter. La
+aplicación integra cuatro componentes principales: el módulo de cámara, el canal de
+procesamiento de MediaPipe Hands, los intérpretes de los modelos \acrshort{tflite} y la
+interfaz de usuario.
+
+El módulo de reconocimiento de señas implementa el siguiente pipeline: cada frame
+capturado por la cámara frontal se procesa con MediaPipe Hands para extraer los
+landmarks, que se normalizan y se pasan al Modelo A. Las predicciones se filtran
+mediante un mecanismo de persistencia temporal, que exige que la misma clase aparezca
+durante al menos 5 ventanas consecutivas con una confianza igual o superior al 60\,\%,
+y un período de enfriamiento de 1200 milisegundos tras cada detección confirmada. Cuando
+la persona usuaria pulsa el botón de grabación, el sistema activa la captura de la
+secuencia dinámica, que incorpora la ubicación en el cuerpo mediante MediaPipe Pose, y la
+envía al Modelo B al pulsar de nuevo para detener. La extracción de landmarks con
+MediaPipe se ejecuta en un hilo nativo en segundo plano, comunicado con la aplicación
+mediante un canal de plataforma, para no bloquear el hilo principal de la interfaz.
+
+El módulo de texto a seña implementa un buscador sobre un diccionario de clips de señas.
+El usuario escribe en español y la aplicación reproduce la seña correspondiente a cada
+palabra sobre un muñeco animado, dibujado en pantalla a partir de los landmarks del clip.
+Para las palabras sin seña registrada, el sistema recurre al deletreo letra por letra con
+los clips del alfabeto dactilológico.
+
+\subsection{Validación con usuarios}
+
+La validación del sistema se realizará en sesiones con usuarios de la Fundación CasAyuda.
+Durante cada sesión, los participantes interactuarán con la
+aplicación en ambas direcciones de comunicación. Al finalizar, se aplicará el
+cuestionario descrito en la sección anterior. Los resultados, combinados con las
+observaciones recogidas durante las sesiones, permitirán identificar aspectos de mejora
+en la interfaz y confirmar la pertinencia del vocabulario incluido en el sistema.
+
+\section{Herramientas Tecnológicas}
+
+El desarrollo del proyecto requerirá dos conjuntos de herramientas diferenciados: uno
+orientado a la captura del conjunto de datos y el entrenamiento de los modelos, y otro
+orientado al desarrollo de la aplicación móvil.
+
+\subsection{Herramientas para la captura de datos y el entrenamiento}
+
+El script de captura y el pipeline de entrenamiento se desarrollarán en Python 3.10.
+Las bibliotecas principales que se utilizarán son las siguientes:
+
+\begin{itemize}
+    \item \textbf{MediaPipe Hands}: para la extracción en tiempo real de los 21
+    landmarks de la mano durante las sesiones de grabación.
+    \item \textbf{TensorFlow y Keras}: para la definición, el entrenamiento y la
+    exportación de los modelos convolucional 1D y \acrshort{lstm}, así como para la conversión al
+    formato \acrshort{tflite} mediante el conversor incluido en el paquete.
+    \item \textbf{NumPy}: para las operaciones matemáticas sobre los vectores de
+    landmarks, incluyendo la normalización de coordenadas y la aplicación del aumento
+    de datos.
+    \item \textbf{Pandas}: para la lectura, organización y manipulación de los
+    archivos CSV que componen el conjunto de datos.
+    \item \textbf{Matplotlib}: para la generación de gráficos de entrenamiento y
+    las matrices de confusión utilizadas en la evaluación de los modelos.
+\end{itemize}
+
+\subsection{Herramientas para el desarrollo de la aplicación}
+
+La aplicación móvil se desarrollará con Flutter 3 en lenguaje Dart. Los paquetes
+principales que se emplearán son los siguientes:
+
+\begin{itemize}
+    \item \textbf{camera}: para el acceso a la cámara frontal del dispositivo y la
+    obtención del flujo de frames en tiempo real.
+    \item \textbf{tflite\_flutter}: para cargar y ejecutar los modelos \acrshort{tflite}
+    directamente en el dispositivo a través de la \acrshort{ffi}.
+    \item \textbf{MediaPipe Hands y MediaPipe Pose}: integrados en la capa nativa de la
+    aplicación para extraer los landmarks de las manos y, en las señas dinámicas, la
+    ubicación en el cuerpo.
+\end{itemize}
+
+\subsection{Entorno de desarrollo y control de versiones}
+
+Todo el desarrollo se realizará en Visual Studio Code con las extensiones oficiales de
+Flutter y Python. El control de versiones se gestionará con Git, y el repositorio se
+publicará en GitHub para documentar el progreso del proyecto y hacer accesible tanto el
+código fuente como el conjunto de datos de landmarks.
+
+\section{Métodos de Validación}
+
+La validación del sistema se abordará desde dos dimensiones complementarias: la
+evaluación técnica del desempeño de los modelos de clasificación y la evaluación de
+la experiencia de uso con personas reales.
+
+\subsection{Validación técnica de los modelos}
+
+Ambos modelos se evaluarán sobre un subconjunto de datos reservado exclusivamente
+para prueba, no utilizado durante el entrenamiento ni durante el ajuste de
+hiperparámetros. El instrumento central de evaluación será la matriz de confusión, que
+permite visualizar de forma detallada qué clases el modelo identifica correctamente y
+con cuáles tiende a confundirse. A partir de la matriz de confusión se calcularán las
+métricas estándar de clasificación: exactitud, precisión, sensibilidad y puntuación
+F1. Dado que ambos modelos manejan múltiples clases con igual relevancia comunicativa,
+se utilizará el macro-promedio para obtener una medida global que trate a todas las
+clases por igual, independientemente de su frecuencia en el conjunto de datos. Las
+métricas del Modelo A y el Modelo B se reportarán de forma independiente, ya que cada
+uno resuelve un subproblema distinto del sistema.
+
+\subsection{Validación con usuarios}
+
+La validación con usuarios tendrá como objetivo evaluar aspectos del sistema que las
+métricas técnicas no pueden capturar: la claridad de la interfaz, la facilidad de
+interacción y la adecuación del vocabulario incluido. Para esto se realizarán sesiones
+con usuarios de la Fundación CasAyuda, durante las cuales los
+participantes interactuarán con la aplicación en ambas direcciones de comunicación.
+
+Al finalizar cada sesión se aplicará el cuestionario descrito anteriormente. Las
+respuestas se analizarán para identificar patrones en la percepción del sistema y
+detectar aspectos que requieran ajuste antes de la versión final. Los resultados de
+esta validación se presentarán junto con los de la evaluación técnica en el capítulo de
+análisis de resultados.

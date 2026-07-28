@@ -1,0 +1,42 @@
+\pagenumbering{gobble} % Prevent page numbering.
+
+\vspace*{\fill}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.3\linewidth]{Figures/by-nc-sa.png}
+    \label{fig:figure-cc-by-nc-sa}
+\end{figure}
+
+\ifthenelse{\equal{\LanguageOption}{spanish}}{%
+    \noindent \textbf{\GetTitle}
+    
+    \noindent Copyright \textcopyright~\the\year{} - \GetFirstAuthor, \GetSchool.
+    
+    \vspace{.575em}
+    
+    \noindent Esta tesis es un trabajo original, escrito exclusivamente para este fin, y todos los autores cuyos estudios y publicaciones han contribuido a ella han sido debidamente citados. Se permite la reproducción parcial con el reconocimiento del autor y la referencia al título, año académico, institución ---\textit{Universidad Nacional Autónoma de Honduras}--- y fecha de defensa pública.
+
+
+    \vspace{1.395em}
+    
+    \noindent\psvectorian[scale=.25,opacity=.80]{2}
+    
+    \vspace{.935em}
+}{%
+    \noindent \textbf{\GetTitle}
+    
+    \noindent Copyright \textcopyright~\the\year{} - \GetFirstAuthor, \GetSchool.
+    
+    \vspace{.575em}
+    
+    \noindent This dissertation is original work, written solely for this purpose, and all the authors whose studies and publications contributed to it have been duly cited. Partial reproduction is allowed with acknowledgment of the author and reference to the degree, academic year, institution---\textit{Polytechnic University of Leiria}---and public defense date.
+
+    \vspace{1.395em}
+    
+    \noindent\psvectorian[scale=.25,opacity=.80]{2}
+    
+}
+
+\vspace*{\fill}
+\MediaOptionLogic

@@ -1,0 +1,29 @@
+{
+  "modelo_a": {
+    "exactitud": 0.995417048579285,
+    "f1_macro": 0.995109497250359,
+    "num_clases": 33,
+    "n_muestras": 26184,
+    "n_test": 4364,
+    "personas": [
+      "datos1",
+      "datos2",
+      "datos3"
+    ],
+    "params": 24929
+  },
+  "modelo_b": {
+    "exactitud": 0.988009592326139,
+    "f1_macro": 0.9876961318251641,
+    "num_clases": 50,
+    "n_muestras": 5000,
+    "n_test": 834,
+    "personas": [
+      "arleth",
+      "jose"
+    ],
+    "params": 61122
+  },
+  "tam_a_kb": 33.9,
+  "tam_b_kb": 78.1
+}

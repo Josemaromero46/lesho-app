@@ -1,0 +1,94 @@
+<svg viewBox="0 0 1000 900" role="img" xmlns="http://www.w3.org/2000/svg" font-family="'Segoe UI','Helvetica Neue',system-ui,Arial,sans-serif">
+<title>Diagrama de arquitectura del sistema LESHO</title>
+<desc>Arquitectura on-device con dos pipelines: Direccion 1 (sena a texto) con MediaPipe, Modelo A CNN 1D, control y Modelo B LSTM; Direccion 2 (texto a sena) con tokenizador, diccionario de senas y muneco de capsulas; ambos convergen en la interfaz Flutter.</desc>
+<rect x="0" y="0" width="1000" height="900" fill="#FFFFFF"/>
+
+<text x="252" y="72" font-size="17" font-weight="700" fill="#55606E" text-anchor="middle" letter-spacing="0.4">DIRECCIÓN 1 · seña → texto</text>
+<text x="748" y="72" font-size="17" font-weight="700" fill="#55606E" text-anchor="middle" letter-spacing="0.4">DIRECCIÓN 2 · texto → seña</text>
+
+<defs>
+<marker id="ah4" viewBox="0 0 10 10" markerWidth="8" markerHeight="8" refX="8" refY="5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#5F6B7A"/></marker>
+</defs>
+
+<g stroke="#5F6B7A" stroke-width="2">
+<line x1="252" y1="160" x2="252" y2="192" marker-end="url(#ah4)"/>
+<line x1="252" y1="266" x2="252" y2="298" marker-end="url(#ah4)"/>
+<line x1="252" y1="372" x2="252" y2="404" marker-end="url(#ah4)"/>
+<line x1="252" y1="478" x2="252" y2="510" marker-end="url(#ah4)"/>
+<line x1="252" y1="584" x2="252" y2="616" marker-end="url(#ah4)"/>
+<line x1="252" y1="690" x2="252" y2="724" marker-end="url(#ah4)"/>
+</g>
+<g stroke="#5F6B7A" stroke-width="2">
+<line x1="748" y1="160" x2="748" y2="192" marker-end="url(#ah4)"/>
+<line x1="748" y1="266" x2="748" y2="298" marker-end="url(#ah4)"/>
+<line x1="748" y1="372" x2="748" y2="404" marker-end="url(#ah4)"/>
+<line x1="748" y1="478" x2="691" y2="510" marker-end="url(#ah4)"/>
+<line x1="748" y1="478" x2="807" y2="510" marker-end="url(#ah4)"/>
+<line x1="691" y1="574" x2="744" y2="616" marker-end="url(#ah4)"/>
+<line x1="807" y1="574" x2="752" y2="616" marker-end="url(#ah4)"/>
+<line x1="748" y1="690" x2="748" y2="724" marker-end="url(#ah4)"/>
+</g>
+<text x="664" y="502" font-size="13" font-style="italic" fill="#667085" text-anchor="end">existe</text>
+<text x="834" y="502" font-size="13" font-style="italic" fill="#667085" text-anchor="start">no existe</text>
+
+<!-- LEFT COLUMN -->
+<rect x="102" y="88" width="300" height="72" rx="9" fill="#DAE8FC" stroke="#6C8EBF" stroke-width="2"/>
+<text x="252" y="131" font-size="22" font-weight="600" fill="#23415F" text-anchor="middle">Niño sordo</text>
+
+<rect x="102" y="194" width="300" height="72" rx="9" fill="#D5E8D4" stroke="#82B366" stroke-width="2"/>
+<text x="252" y="237" font-size="22" font-weight="600" fill="#3A5A38" text-anchor="middle">Cámara frontal</text>
+
+<rect x="102" y="300" width="300" height="72" rx="9" fill="#D5E8D4" stroke="#82B366" stroke-width="2"/>
+<text x="252" y="330" font-size="21" font-weight="600" fill="#3A5A38" text-anchor="middle">MediaPipe Hands + Pose</text>
+<text x="252" y="352" font-size="15" fill="#5E7A5C" text-anchor="middle">vector de 126 valores</text>
+
+<rect x="102" y="406" width="300" height="72" rx="9" fill="#FFE6CC" stroke="#D79B00" stroke-width="2"/>
+<text x="252" y="436" font-size="22" font-weight="600" fill="#7A4E00" text-anchor="middle">Modelo A · CNN 1D</text>
+<text x="252" y="458" font-size="15" fill="#9A6A1E" text-anchor="middle">ventana 20 · 33 clases</text>
+
+<rect x="102" y="512" width="300" height="72" rx="9" fill="#FFF2CC" stroke="#D6B656" stroke-width="2"/>
+<text x="252" y="542" font-size="22" font-weight="600" fill="#6B5A00" text-anchor="middle">Control y estados</text>
+<text x="252" y="564" font-size="15" fill="#8A7414" text-anchor="middle">5 ventanas · 60% · 1200 ms</text>
+
+<rect x="102" y="618" width="300" height="72" rx="9" fill="#FFE6CC" stroke="#D79B00" stroke-width="2"/>
+<text x="252" y="648" font-size="22" font-weight="600" fill="#7A4E00" text-anchor="middle">Modelo B · LSTM</text>
+<text x="252" y="670" font-size="15" fill="#9A6A1E" text-anchor="middle">activado por el botón · 50 señas</text>
+
+<!-- RIGHT COLUMN -->
+<rect x="598" y="88" width="300" height="72" rx="9" fill="#DAE8FC" stroke="#6C8EBF" stroke-width="2"/>
+<text x="748" y="131" font-size="22" font-weight="600" fill="#23415F" text-anchor="middle">Persona oyente</text>
+
+<rect x="598" y="194" width="300" height="72" rx="9" fill="#D5E8D4" stroke="#82B366" stroke-width="2"/>
+<text x="748" y="237" font-size="22" font-weight="600" fill="#3A5A38" text-anchor="middle">Entrada de texto</text>
+
+<rect x="598" y="300" width="300" height="72" rx="9" fill="#D5E8D4" stroke="#82B366" stroke-width="2"/>
+<text x="748" y="343" font-size="22" font-weight="600" fill="#3A5A38" text-anchor="middle">Tokenizador</text>
+
+<rect x="598" y="406" width="300" height="72" rx="9" fill="#F8CECC" stroke="#B85450" stroke-width="2"/>
+<text x="748" y="436" font-size="22" font-weight="600" fill="#6B2A28" text-anchor="middle">Diccionario de señas</text>
+<text x="748" y="458" font-size="15" fill="#96504E" text-anchor="middle">150 a 200 clips de landmarks</text>
+
+<rect x="600" y="512" width="142" height="62" rx="8" fill="#F8CECC" stroke="#B85450" stroke-width="1.8"/>
+<text x="671" y="549" font-size="18" font-weight="600" fill="#6B2A28" text-anchor="middle">Clip de seña</text>
+<rect x="756" y="512" width="142" height="62" rx="8" fill="#FFF2CC" stroke="#D6B656" stroke-width="1.8"/>
+<text x="827" y="540" font-size="18" font-weight="600" fill="#6B5A00" text-anchor="middle">Deletreo</text>
+<text x="827" y="559" font-size="13" fill="#8A7414" text-anchor="middle">(respaldo)</text>
+
+<rect x="598" y="618" width="300" height="72" rx="9" fill="#E1D5E7" stroke="#9673A6" stroke-width="2"/>
+<text x="748" y="648" font-size="22" font-weight="600" fill="#4A2C57" text-anchor="middle">Muñeco de cápsulas</text>
+<text x="748" y="670" font-size="15" fill="#6E5080" text-anchor="middle">CustomPainter dibuja los clips</text>
+
+<!-- SHARED UI -->
+<rect x="210" y="726" width="580" height="74" rx="11" fill="#E1D5E7" stroke="#9673A6" stroke-width="2.2"/>
+<text x="500" y="771" font-size="24" font-weight="700" fill="#4A2C57" text-anchor="middle">Interfaz de usuario · Flutter</text>
+
+<!-- LEGEND -->
+<g font-size="14" fill="#444B54">
+<rect x="70" y="856" width="15" height="15" rx="3" fill="#DAE8FC" stroke="#6C8EBF"/><text x="91" y="868">Actores</text>
+<rect x="159" y="856" width="15" height="15" rx="3" fill="#D5E8D4" stroke="#82B366"/><text x="180" y="868">Percepción y entrada</text>
+<rect x="343" y="856" width="15" height="15" rx="3" fill="#FFE6CC" stroke="#D79B00"/><text x="364" y="868">Modelos IA</text>
+<rect x="454" y="856" width="15" height="15" rx="3" fill="#FFF2CC" stroke="#D6B656"/><text x="475" y="868">Control / lógica</text>
+<rect x="609" y="856" width="15" height="15" rx="3" fill="#F8CECC" stroke="#B85450"/><text x="630" y="868">Datos / diccionario</text>
+<rect x="786" y="856" width="15" height="15" rx="3" fill="#E1D5E7" stroke="#9673A6"/><text x="807" y="868">Salida / interfaz</text>
+</g>
+</svg>

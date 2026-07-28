@@ -84,9 +84,42 @@ app/android/.kotlin/
 LESHO_captura_datos.zip
 
 # ===========================================================================
-# Fuera de este repo: solo app + dataset + training (decision del autor)
+# Documento de tesis: se versiona el fuente, no los productos de compilacion
 # ===========================================================================
-docs/
+docs/**/build/
+docs/**/_minted*/
+docs/**/compile_log.txt
+docs/**/*.aux
+docs/**/*.bbl
+docs/**/*.bbl-SAVE-ERROR
+docs/**/*.bcf
+docs/**/*.blg
+docs/**/*.fdb_latexmk
+docs/**/*.fls
+docs/**/*.glg
+docs/**/*.glo
+docs/**/*.gls
+docs/**/*.glsdefs
+docs/**/*.acn
+docs/**/*.acr
+docs/**/*.alg
+docs/**/*.ist
+docs/**/*.lof
+docs/**/*.log
+docs/**/*.lot
+docs/**/*.toc
+docs/**/*.out
+docs/**/*.maf
+docs/**/*.mtc
+docs/**/*.mtc[0-9]*
+docs/**/*.slg
+docs/**/*.slo
+docs/**/*.sls
+docs/**/*.run.xml
+docs/**/*.synctex.gz
+docs/**/*.xdv
+# archivos temporales de Word al editar los documentos de etica
+docs/**/~$*
 CLAUDE.md
 PLAN_CODIGO.md
 PLAN_DIRECCION2.md

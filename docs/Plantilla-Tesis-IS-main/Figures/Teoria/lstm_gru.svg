@@ -1,0 +1,98 @@
+<svg viewBox="0 0 1020 500" xmlns="http://www.w3.org/2000/svg" font-family="Helvetica, Arial, sans-serif">
+  <rect x="0" y="0" width="1020" height="500" fill="#ffffff"/>
+
+  <!-- ===================== PANEL A: CELDA LSTM ===================== -->
+  <text x="30" y="30" font-size="19" font-weight="bold" fill="#333333">a) Celda LSTM: tres compuertas</text>
+
+  <rect x="30" y="52" width="560" height="286" rx="12" fill="#FAFBFD" stroke="#B9C4D4" stroke-width="2"/>
+
+  <!-- estado de celda: la memoria que atraviesa el tiempo -->
+  <text x="300" y="80" font-size="15" font-weight="bold" fill="#9A6A1E" text-anchor="middle">estado de celda: la memoria que atraviesa el tiempo</text>
+  <line x1="44" y1="108" x2="562" y2="108" stroke="#D79B00" stroke-width="5"/>
+  <path d="M 578 108 l -16 -9 l 0 18 z" fill="#D79B00"/>
+
+  <!-- operadores que SI actuan sobre el estado de celda -->
+  <circle cx="138" cy="108" r="17" fill="#ffffff" stroke="#D79B00" stroke-width="2.5"/>
+  <text x="138" y="115" font-size="19" text-anchor="middle" fill="#9A6A1E">×</text>
+  <circle cx="294" cy="108" r="17" fill="#ffffff" stroke="#D79B00" stroke-width="2.5"/>
+  <text x="294" y="115" font-size="19" text-anchor="middle" fill="#9A6A1E">+</text>
+
+  <!-- compuerta de olvido: multiplica el estado -->
+  <rect x="84" y="176" width="108" height="72" rx="8" fill="#F8CECC" stroke="#B85450" stroke-width="2"/>
+  <text x="138" y="204" font-size="15" font-weight="bold" fill="#8A3A36" text-anchor="middle">Olvido</text>
+  <text x="138" y="226" font-size="14" fill="#8A3A36" text-anchor="middle">qué se descarta</text>
+  <line x1="138" y1="176" x2="138" y2="137" stroke="#B85450" stroke-width="2"/>
+  <path d="M 138 127 l -6 10 l 12 0 z" fill="#B85450"/>
+
+  <!-- compuerta de entrada: suma informacion nueva al estado -->
+  <rect x="240" y="176" width="108" height="72" rx="8" fill="#D5E8D4" stroke="#82B366" stroke-width="2"/>
+  <text x="294" y="204" font-size="15" font-weight="bold" fill="#3F6B2E" text-anchor="middle">Entrada</text>
+  <text x="294" y="226" font-size="14" fill="#3F6B2E" text-anchor="middle">qué se guarda</text>
+  <line x1="294" y1="176" x2="294" y2="137" stroke="#82B366" stroke-width="2"/>
+  <path d="M 294 127 l -6 10 l 12 0 z" fill="#82B366"/>
+
+  <!-- compuerta de salida: LEE el estado, no lo modifica -->
+  <rect x="396" y="176" width="108" height="72" rx="8" fill="#DAE8FC" stroke="#6C8EBF" stroke-width="2"/>
+  <text x="450" y="204" font-size="15" font-weight="bold" fill="#3A5A80" text-anchor="middle">Salida</text>
+  <text x="450" y="226" font-size="14" fill="#3A5A80" text-anchor="middle">qué se expone</text>
+
+  <!-- el estado se deriva hacia abajo: la compuerta de salida LO LEE -->
+  <line x1="546" y1="112" x2="546" y2="186" stroke="#D79B00" stroke-width="2"/>
+  <path d="M 546 196 l -6 -10 l 12 0 z" fill="#D79B00"/>
+  <circle cx="546" cy="212" r="15" fill="#ffffff" stroke="#6C8EBF" stroke-width="2.5"/>
+  <text x="546" y="218" font-size="17" text-anchor="middle" fill="#3A5A80">×</text>
+  <line x1="504" y1="212" x2="521" y2="212" stroke="#6C8EBF" stroke-width="2"/>
+  <path d="M 531 212 l -10 -6 l 0 12 z" fill="#6C8EBF"/>
+
+  <!-- salida de la celda: el estado oculto -->
+  <line x1="546" y1="227" x2="546" y2="266" stroke="#6C8EBF" stroke-width="2"/>
+  <path d="M 546 276 l -6 -10 l 12 0 z" fill="#6C8EBF"/>
+  <text x="546" y="298" font-size="14" fill="#3A5A80" text-anchor="middle">estado</text>
+  <text x="546" y="314" font-size="14" fill="#3A5A80" text-anchor="middle">oculto</text>
+
+  <!-- entradas comunes a las tres compuertas -->
+  <text x="52" y="292" font-size="14" fill="#666666">entrada del</text>
+  <text x="52" y="308" font-size="14" fill="#666666">paso actual</text>
+  <line x1="128" y1="304" x2="462" y2="304" stroke="#9AA3B0" stroke-width="2"/>
+  <line x1="138" y1="304" x2="138" y2="252" stroke="#9AA3B0" stroke-width="2"/>
+  <line x1="294" y1="304" x2="294" y2="252" stroke="#9AA3B0" stroke-width="2"/>
+  <line x1="450" y1="304" x2="450" y2="252" stroke="#9AA3B0" stroke-width="2"/>
+  <text x="300" y="324" font-size="14" fill="#666666" text-anchor="middle">+ estado oculto anterior</text>
+
+  <!-- ===================== PANEL B: GRU ===================== -->
+  <text x="660" y="30" font-size="19" font-weight="bold" fill="#333333">b) Celda GRU: dos compuertas</text>
+
+  <rect x="660" y="52" width="330" height="286" rx="12" fill="#FAFBFD" stroke="#B9C4D4" stroke-width="2"/>
+
+  <text x="825" y="80" font-size="15" font-weight="bold" fill="#6B4C7F" text-anchor="middle">un solo estado oculto</text>
+  <line x1="674" y1="108" x2="952" y2="108" stroke="#9673A6" stroke-width="5"/>
+  <path d="M 968 108 l -16 -9 l 0 18 z" fill="#9673A6"/>
+
+  <!-- las dos compuertas determinan juntas el nuevo estado -->
+  <line x1="825" y1="150" x2="825" y2="137" stroke="#9673A6" stroke-width="2"/>
+  <path d="M 825 127 l -6 10 l 12 0 z" fill="#9673A6"/>
+  <line x1="748" y1="150" x2="902" y2="150" stroke="#9673A6" stroke-width="2"/>
+  <line x1="748" y1="150" x2="748" y2="176" stroke="#9673A6" stroke-width="2"/>
+  <line x1="902" y1="150" x2="902" y2="176" stroke="#9673A6" stroke-width="2"/>
+
+  <rect x="683" y="176" width="130" height="72" rx="8" fill="#E1D5E7" stroke="#9673A6" stroke-width="2"/>
+  <text x="748" y="202" font-size="15" font-weight="bold" fill="#6B4C7F" text-anchor="middle">Reinicio</text>
+  <text x="748" y="222" font-size="14" fill="#6B4C7F" text-anchor="middle">cuánto del estado</text>
+  <text x="748" y="238" font-size="14" fill="#6B4C7F" text-anchor="middle">anterior se ignora</text>
+
+  <rect x="837" y="176" width="130" height="72" rx="8" fill="#E1D5E7" stroke="#9673A6" stroke-width="2"/>
+  <text x="902" y="202" font-size="15" font-weight="bold" fill="#6B4C7F" text-anchor="middle">Actualización</text>
+  <text x="902" y="222" font-size="14" fill="#6B4C7F" text-anchor="middle">cuánto del estado</text>
+  <text x="902" y="238" font-size="14" fill="#6B4C7F" text-anchor="middle">se reemplaza</text>
+
+  <line x1="694" y1="304" x2="956" y2="304" stroke="#9AA3B0" stroke-width="2"/>
+  <line x1="748" y1="304" x2="748" y2="252" stroke="#9AA3B0" stroke-width="2"/>
+  <line x1="902" y1="304" x2="902" y2="252" stroke="#9AA3B0" stroke-width="2"/>
+  <text x="825" y="324" font-size="14" fill="#666666" text-anchor="middle">entrada + estado anterior</text>
+
+  <!-- ===================== POR QUE LSTM ===================== -->
+  <rect x="30" y="380" width="960" height="90" rx="10" fill="#F7F4EE" stroke="#E3DDD2" stroke-width="2"/>
+  <text x="510" y="410" font-size="16" font-weight="bold" fill="#333333" text-anchor="middle">Por qué el sistema usa LSTM y no GRU</text>
+  <text x="510" y="436" font-size="15" fill="#5C6472" text-anchor="middle">La GRU tiene menos parámetros y un rendimiento comparable, pero la LSTM cuenta con una operación</text>
+  <text x="510" y="456" font-size="15" fill="#5C6472" text-anchor="middle">fusionada en el marco de inferencia móvil, lo que permite ejecutarla de forma eficiente en el teléfono.</text>
+</svg>

@@ -1,0 +1,61 @@
+<svg viewBox="0 0 1400 620" xmlns="http://www.w3.org/2000/svg" font-family="Georgia, 'Times New Roman', serif">
+  <rect x="0" y="0" width="1400" height="620" fill="#ffffff"/>
+
+  <!-- ======================= CIFRAS PRINCIPALES ======================= -->
+  <g id="cifras">
+    <g id="cifra-exactitud">
+      <text x="233" y="96" font-size="76" font-weight="bold" fill="#2E7D46" text-anchor="middle">98.80 %</text>
+      <text x="233" y="134" font-size="21" fill="#5C6472" text-anchor="middle">exactitud</text>
+      <line x1="60" y1="168" x2="406" y2="168" stroke="#E3DDD2" stroke-width="2"/>
+    </g>
+    <g id="cifra-senas">
+      <text x="700" y="96" font-size="76" font-weight="bold" fill="#2E7D46" text-anchor="middle">50</text>
+      <text x="700" y="134" font-size="21" fill="#5C6472" text-anchor="middle">señas dinámicas</text>
+      <line x1="527" y1="168" x2="873" y2="168" stroke="#E3DDD2" stroke-width="2"/>
+    </g>
+    <g id="cifra-tamano">
+      <text x="1167" y="96" font-size="76" font-weight="bold" fill="#2E7D46" text-anchor="middle">78.1 KB</text>
+      <text x="1167" y="134" font-size="21" fill="#5C6472" text-anchor="middle">tamaño del modelo</text>
+      <line x1="994" y1="168" x2="1340" y2="168" stroke="#E3DDD2" stroke-width="2"/>
+    </g>
+  </g>
+
+  <!-- ======================= EL RETO TECNICO ======================= -->
+  <g id="reto">
+    <text x="700" y="228" font-size="27" font-weight="bold" fill="#1A1D24" text-anchor="middle">Muchas señas se distinguen por DÓNDE se hacen</text>
+    <text x="700" y="262" font-size="20" fill="#5C6472" text-anchor="middle">La forma de la mano es casi la misma; lo que cambia es el lugar del cuerpo</text>
+
+    <!-- Figura: cabeza con dos zonas marcadas -->
+    <g id="figura" transform="translate(560,292)">
+      <!-- cabeza (basta la cabeza: las dos señas se distinguen en la cara) -->
+      <ellipse cx="100" cy="130" rx="76" ry="92" fill="#F7F4EE" stroke="#9AA3B0" stroke-width="5"/>
+      <!-- ojos -->
+      <circle cx="74" cy="126" r="7" fill="#5C6472"/>
+      <circle cx="126" cy="126" r="7" fill="#5C6472"/>
+      <!-- punto frente -->
+      <circle cx="100" cy="66" r="15" fill="#1F3A5F"/>
+      <!-- punto boca -->
+      <circle cx="100" cy="182" r="15" fill="#E8A13A"/>
+    </g>
+
+    <!-- Etiqueta HOLA (frente) -->
+    <g id="etiqueta-hola">
+      <line x1="676" y1="358" x2="516" y2="358" stroke="#1F3A5F" stroke-width="3"/>
+      <text x="500" y="350" font-size="40" font-weight="bold" fill="#1F3A5F" text-anchor="end">HOLA</text>
+      <text x="500" y="380" font-size="19" fill="#5C6472" text-anchor="end">en la frente</text>
+    </g>
+
+    <!-- Etiqueta AGUA (boca) -->
+    <g id="etiqueta-agua">
+      <line x1="684" y1="474" x2="884" y2="474" stroke="#E8A13A" stroke-width="3"/>
+      <text x="900" y="466" font-size="40" font-weight="bold" fill="#B57C1E">AGUA</text>
+      <text x="900" y="496" font-size="19" fill="#5C6472">en la boca</text>
+    </g>
+  </g>
+
+  <!-- ======================= SOLUCION ======================= -->
+  <g id="solucion">
+    <rect x="118" y="530" width="1164" height="72" rx="10" fill="#2E7D46"/>
+    <text x="700" y="576" font-size="25" fill="#ffffff" text-anchor="middle">Por eso el modelo recibe la ubicación de la mano en el cuerpo, no solo su forma</text>
+  </g>
+</svg>

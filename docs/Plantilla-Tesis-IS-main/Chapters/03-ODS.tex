@@ -1,0 +1,141 @@
+\chapter{Lengua de Señas Hondureña (LESHO)}
+\label{cp:lesho}
+
+\insertminitoc
+\parindent0pt
+
+El capítulo anterior estableció que las personas sordas conforman una comunidad
+lingüística cuya lengua materna es la lengua de señas. En Honduras, esa lengua es el
+Lenguaje de Señas Hondureño (\acrshort{lesho}), que constituye a la vez el objeto de reconocimiento
+y el medio de comunicación que esta investigación busca apoyar. Este capítulo describe sus
+características fundamentales: su historia y reconocimiento oficial, los parámetros que
+componen las señas, la distinción entre señas estáticas y dinámicas, el alfabeto
+dactilológico y su gramática en relación con el español.
+
+\section{Origen, Evolución y Reconocimiento Oficial}
+
+El Lenguaje de Señas Hondureño (\acrshort{lesho}) es la lengua natural de la comunidad sorda de
+Honduras. Su proceso de documentación formal se inició en 1983 con la publicación del
+primer diccionario impreso de lengua de señas en el país, denominado ``Las Manos Hablan'',
+elaborado en el seno de la Asociación de Sordos de Honduras (\acrshort{ash}). A esta obra le
+sucedieron una segunda edición en 2005, titulada ``Comuniquemos Mejor'', y una tercera
+en 2019, denominada ``Diccionario de \acrshort{lesho} Tomo I, Primera Edición'', que documenta más
+de 900 señas \cite{ash_diccionario_2019}.
+
+El reconocimiento oficial del \acrshort{lesho} se concretó mediante el Decreto Legislativo
+No. 321-2013, aprobado por el Congreso Nacional de Honduras, que estableció la Ley de la
+Lengua de Señas Hondureña. Esta ley reconoce el \acrshort{lesho} como un derecho en beneficio de
+las personas sordas, con discapacidad auditiva y sordociegas que libremente decidan
+utilizarla como medio o sistema lingüístico para comunicarse, y obliga al Estado a promover
+su uso en los ámbitos educativo, institucional y social \cite{congreso_decreto_2013}.
+
+Williams y Parks documentaron en su encuesta sociolingüística que el \acrshort{lesho} presenta
+variaciones regionales, especialmente entre ciudades como Tegucigalpa, San Pedro Sula y
+La Ceiba. A pesar de estas variaciones, el estudio determinó que existe un alto grado de
+similitud léxica entre las distintas regiones, con coincidencias superiores al 74\,\% en
+comparaciones entre diccionarios. La estandarización de la lengua ha sido impulsada
+principalmente por la \acrshort{ash} y por los cursos de \acrshort{lesho} ofrecidos en instituciones educativas
+del país \cite{williams_encuesta_2015}.
+
+\section{Parámetros Formacionales de las Señas}
+
+Al igual que las lenguas orales se descomponen en unidades mínimas sin significado propio
+llamadas fonemas, las lenguas de señas también poseen una estructura fonológica
+compuesta por unidades formacionales. Esta noción fue establecida por William Stokoe en
+1960, cuyo trabajo demostró que las señas no son gestos holísticos e indivisibles, sino que
+se componen de un conjunto finito de elementos sin significado que se combinan y
+recombinan para formar el léxico de la lengua. Este principio, conocido como doble
+articulación, es una propiedad fundamental que las lenguas de señas comparten con las
+lenguas orales \cite{stokoe_structure_1960}.
+
+Stokoe identificó tres parámetros formacionales básicos: la configuración de la mano
+(handshape), la ubicación o lugar donde se realiza la seña (location), y el movimiento
+(movement). Posteriormente, la investigación lingüística incorporó un cuarto parámetro,
+la orientación de la palma (orientation), y reconoció la existencia de componentes no
+manuales como las expresiones faciales y los movimientos del cuerpo \cite{sandler_universals_2006}.
+
+Una característica distintiva de las lenguas de señas, señalada por Sandler y Lillo-Martin,
+es que estos parámetros se realizan de forma simultánea y no secuencial. Mientras que en
+una lengua oral los fonemas se suceden uno tras otro en el tiempo, en una seña la
+configuración de la mano, la ubicación, el movimiento y la orientación ocurren al mismo
+tiempo. Esta simultaneidad es consecuencia directa de la modalidad visual-gestual de la
+lengua y representa una diferencia estructural fundamental respecto a las lenguas orales \cite{sandler_universals_2006}.
+
+El cambio en cualquiera de estos parámetros puede modificar por completo el significado de
+una seña, de modo que existen pares mínimos análogos a los de las lenguas orales, donde
+dos señas se diferencian únicamente por un parámetro \cite{sandler_universals_2006}. Esta propiedad es de particular
+relevancia para el reconocimiento automático, dado que el sistema debe ser capaz de
+distinguir variaciones sutiles en la configuración y posición de la mano.
+
+\section{Señas Estáticas y Señas Dinámicas}
+
+Desde la perspectiva del reconocimiento automático, las señas pueden clasificarse según la
+presencia o ausencia de movimiento en su ejecución. Las señas estáticas son aquellas que
+se definen por una configuración y orientación de la mano fijas en una ubicación
+determinada, sin que el movimiento sea un componente esencial de su significado. Un
+ejemplo característico de señas estáticas es el alfabeto dactilológico, en el cual cada letra
+corresponde a una configuración manual específica que se mantiene durante su
+articulación.
+
+Las señas dinámicas, por el contrario, incorporan el movimiento como un parámetro
+formacional indispensable. En estas señas, la trayectoria, dirección y velocidad del
+movimiento de las manos forman parte integral del significado, por lo que no pueden
+representarse adecuadamente mediante una única configuración estática. La mayoría del
+vocabulario conversacional del \acrshort{lesho} corresponde a señas dinámicas \cite{stokoe_structure_1960}, \cite{sandler_universals_2006}.
+
+Esta distinción tiene implicaciones técnicas directas en el diseño de sistemas de
+reconocimiento. Las señas estáticas pueden clasificarse a partir del análisis de un único
+fotograma, ya que toda la información relevante está contenida en una sola pose. Las señas
+dinámicas, en cambio, requieren el análisis de una secuencia temporal de fotogramas para
+capturar la evolución del movimiento, lo que demanda modelos capaces de procesar
+información secuencial.
+
+\section{Alfabeto Dactilológico Hondureño}
+
+El alfabeto dactilológico, también conocido como deletreo manual o dactilología, es un
+sistema en el cual cada letra del alfabeto escrito se representa mediante una configuración
+manual específica. En el \acrshort{lesho}, el alfabeto dactilológico permite deletrear palabras que
+no cuentan con una seña propia, como nombres propios, términos técnicos o palabras
+nuevas que aún no se han incorporado al léxico de la lengua \cite{ash_diccionario_2019}.
+
+El alfabeto dactilológico cumple una función complementaria dentro de la comunicación en
+lengua de señas. No sustituye al vocabulario de señas, sino que actúa como recurso de
+apoyo cuando no existe una seña establecida para un concepto determinado. Williams y
+Parks señalaron que la comunidad sorda hondureña recurre al deletreo manual
+principalmente para nombres propios y para términos sin seña conocida, mientras que la
+comunicación cotidiana se realiza fundamentalmente mediante señas léxicas \cite{williams_encuesta_2015}.
+
+Desde el punto de vista del reconocimiento automático, el alfabeto dactilológico hondureño
+está compuesto mayoritariamente por configuraciones manuales estáticas que se ejecutan
+con una sola mano, lo que lo convierte en un punto de partida adecuado para sistemas de
+reconocimiento basados en la clasificación de poses. Cabe señalar que algunas letras del
+alfabeto, como aquellas que representan dígrafos o caracteres específicos del español,
+pueden incorporar un componente de movimiento.
+
+\section{Estructura Gramatical de LESHO frente al Español}
+
+El \acrshort{lesho} es una lengua con una gramática propia e independiente del español, y no
+constituye una representación manual de este. Esta independencia gramatical es una
+característica compartida por todas las lenguas de señas, las cuales, según han demostrado
+Sandler y Lillo-Martin, poseen estructuras morfológicas y sintácticas autónomas que no
+derivan de las lenguas orales con las que coexisten \cite{sandler_universals_2006}.
+
+Una de las diferencias más relevantes entre el \acrshort{lesho} y el español radica en la organización
+de la información. Mientras que el español es una lengua de modalidad auditiva-vocal que
+organiza el discurso de forma predominantemente secuencial, el \acrshort{lesho} utiliza el espacio
+tridimensional frente al cuerpo del hablante como un recurso gramatical. La ubicación de
+las señas en el espacio, la dirección de los movimientos y el uso de referencias espaciales
+cumplen funciones gramaticales que en español se expresan mediante palabras o
+flexiones \cite{sandler_universals_2006}.
+
+Otra diferencia significativa es el uso de componentes no manuales con valor gramatical.
+Las expresiones faciales, la dirección de la mirada y los movimientos de la cabeza y el
+cuerpo no son meros acompañamientos expresivos, sino que pueden modificar el significado
+de una oración, marcar preguntas, negaciones o condiciones, y cumplir funciones similares
+a las de la entonación en las lenguas orales \cite{sandler_universals_2006}.
+
+Estas diferencias estructurales implican que una traducción directa palabra por palabra
+entre el español y el \acrshort{lesho} no produce una comunicación gramaticalmente correcta. El
+reconocimiento de señas aisladas, como el que aborda el presente trabajo, constituye un
+primer nivel de procesamiento que no contempla la totalidad de la complejidad gramatical
+de la lengua, aspecto que se reconoce explícitamente dentro de las limitaciones del estudio.

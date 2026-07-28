@@ -1,0 +1,54 @@
+%%% Minitoc Configuration %%%
+
+% Define colors for minitoc
+\definecolor{minitocbg}{RGB}{230, 240, 250}      % Light blue background
+\definecolor{minitocborder}{RGB}{100, 150, 220}  % Border color
+\definecolor{minitoctitle}{RGB}{40, 80, 150}     % Title color
+
+% Set the depth of minitoc (2 = show sections and subsections)
+\setcounter{minitocdepth}{2}
+
+% Customize minitoc fonts
+\renewcommand{\mtcfont}{\small}
+\renewcommand{\mtcSfont}{\small\bfseries}
+\renewcommand{\mtcSSfont}{\footnotesize}
+\renewcommand{\mtcSSSfont}{\footnotesize}
+
+% Remove default title (we'll add our own in the box)
+\renewcommand{\mtctitle}{}
+
+% Remove rules (lines) above and below minitoc
+\mtcsetrules{minitoc}{off}
+
+% Custom command to insert minitoc with elegant design and page break
+\newcommand{\insertminitoc}{%
+    \vspace{1em}
+    \begin{tcolorbox}[
+        enhanced,
+        colback=minitocbg,
+        colframe=minitocborder,
+        boxrule=1.5pt,
+        arc=4pt,
+        left=10pt,
+        right=10pt,
+        top=8pt,
+        bottom=8pt,
+        title={\textbf{Contenido del Capítulo}},
+        fonttitle=\bfseries\large,
+        coltitle=minitoctitle,
+        colbacktitle=minitocbg!50,
+        attach boxed title to top left={yshift=-2mm, xshift=5mm},
+        boxed title style={
+            enhanced,
+            colback=minitocbg!50,
+            colframe=minitocborder,
+            boxrule=1pt,
+            arc=3pt,
+        },
+        drop fuzzy shadow,
+    ]
+    \minitoc
+    \end{tcolorbox}
+    \vspace{1em}
+    \newpage
+}

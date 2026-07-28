@@ -1,0 +1,25 @@
+\thispagestyle{plain}
+\chapter*{Resumen}
+
+La comunicación entre niños sordos y personas oyentes en Honduras presenta una brecha significativa, dado que el Lenguaje de Señas Hondureño (LESHO) es la lengua materna de la comunidad sorda y la mayoría de la población oyente no la conoce. Esta situación limita la capacidad de expresión y comprensión de los niños sordos en entornos cotidianos, sin que existan herramientas tecnológicas locales que aborden esta problemática de forma bidireccional.
+
+La presente tesis propone el desarrollo de una aplicación móvil multiplataforma con dos módulos complementarios para la comunicación en tiempo real entre niños sordos y personas oyentes. El primero captura los gestos del niño a través de la cámara del dispositivo, extrae landmarks de las manos con MediaPipe Hands y los clasifica mediante dos modelos de aprendizaje profundo ejecutados en el dispositivo: una red neuronal convolucional en una dimensión para el reconocimiento del alfabeto dactilológico, y una red LSTM para el reconocimiento de señas dinámicas. El segundo módulo permite al oyente escribir en español y obtener la representación visual de la seña correspondiente mediante un muñeco animado que la reproduce, con un mecanismo de respaldo basado en el alfabeto dactilológico para palabras sin seña registrada. Para el entrenamiento se construyó un conjunto de datos propio de LESHO con la participación de personas con conocimiento de la lengua, que abarca el alfabeto completo y un vocabulario de señas dinámicas, almacenando únicamente coordenadas de landmarks.
+
+Los resultados evidencian la viabilidad técnica de implementar un sistema de reconocimiento de señas on-device en aplicaciones móviles de bajo costo, sin dependencia de conectividad a internet, y con un diseño de interfaz orientado a usuarios infantiles. Este trabajo representa además un esfuerzo de construcción de un conjunto de datos de señas LESHO orientado al entrenamiento de modelos de inteligencia artificial, para el cual no se encontraron antecedentes documentados durante la revisión bibliográfica realizada.
+
+\keywordses{Lengua de Señas Hondureña, LESHO, reconocimiento de gestos, MediaPipe, aprendizaje profundo, red neuronal convolucional, LSTM, aplicación móvil, Flutter, comunicación inclusiva, personas sordas}
+
+\MediaOptionLogicBlank
+
+\pdfbookmark[1]{Abstract}{abstract}
+\chapter*{Abstract}
+
+Communication between deaf children and hearing individuals in Honduras faces a significant gap, as Honduran Sign Language (LESHO) is the native language of the deaf community while most hearing people have no knowledge of it. This situation restricts the expressive and receptive capacities of deaf children in everyday contexts, with no local technological tools addressing this challenge in a bidirectional manner.
+
+This thesis proposes a cross-platform mobile application with two complementary modules for real-time communication between deaf children and hearing individuals. The first captures the child's hand gestures via the device camera, extracts hand landmarks using MediaPipe Hands, and classifies them with two on-device deep learning models: a one-dimensional convolutional network for the dactylological alphabet, and an LSTM network for dynamic sign recognition. The second module allows hearing users to type in Spanish and receive a visual representation of the corresponding sign through an animated avatar that reproduces it, with a dactylological spelling fallback for words without a registered sign. A LESHO sign language dataset was built with the participation of individuals knowledgeable in the language, covering the full alphabet and a vocabulary of dynamic signs, storing only landmark coordinates.
+
+Results demonstrate the technical feasibility of implementing an on-device sign language recognition system in low-cost mobile applications, without dependence on internet connectivity, and with an interface designed for child users. This work also represents an effort to build a LESHO sign language dataset oriented toward artificial intelligence model training, for which no documented precedents were found during the literature review conducted.
+
+\keywordsen{Honduran Sign Language, LESHO, gesture recognition, MediaPipe, deep learning, convolutional neural network, LSTM, mobile application, Flutter, inclusive communication, deaf individuals}
+
+\MediaOptionLogicBlank

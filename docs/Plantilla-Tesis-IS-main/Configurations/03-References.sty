@@ -1,0 +1,24 @@
+%%% Bibliography %%%
+\usepackage[
+	backend=biber, % Use Biber for bibliography compilation.
+	style=ieee, % IEEE citation and bibliography style.
+	sorting=none, % Sort references by order of citation.
+    natbib=true, % Enable natbib compatibility.
+    urldate=iso, % Use ISO format for accessed dates in online sources.
+    seconds=true % Include seconds in date-time fields.
+]{biblatex}
+
+\setlength\bibitemsep{1.5\itemsep} % Increase spacing between bibliography items.
+\addbibresource{Bibliography/Bibliography.bib} % Load the bibliography file.
+
+% Hyperlink settings.
+\hypersetup{
+    bookmarksnumbered, % Enables the chapter and section numbers within the PDF bookmarks.
+	colorlinks=true, % Enable colored text for links.
+	urlcolor=maincolor, % Color for \url and \href links.
+	linkcolor=black, % Color for internal links (TOC, references) - NEGRO para índice
+	citecolor=maincolor, % Color for citation links.
+}
+
+% Add a "." after the number in the PDF bookmark.
+\def\Hy@numberline#1{\ifHy@bookmarksnumbered{#1.\hspace{0.3em}}\else#1\fi}

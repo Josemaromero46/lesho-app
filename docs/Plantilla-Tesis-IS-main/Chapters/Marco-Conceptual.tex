@@ -1,0 +1,154 @@
+\chapter[Marco Conceptual]{Marco Conceptual}
+\label{ch:marco-conceptual}
+
+\clearpage
+
+\section{Glosario Conceptual del Estudio}
+
+\begin{itemize}
+    \item[] \textbf{Ahead-of-time (AOT):} Estrategia de compilación en la que el código fuente se traduce a código de máquina nativo antes de la ejecución, en lugar de interpretarse en tiempo real. Flutter utiliza compilación AOT para generar binarios nativos de Android e iOS a partir de código Dart.\\
+
+    \item[] \textbf{Alfabeto dactilológico:} Sistema de representación manual de las letras de un alfabeto escrito. Cada letra se asocia a una configuración específica de la mano. En LESHO, el alfabeto dactilológico consta de 30 configuraciones: las 27 letras del alfabeto español y los tres dígrafos CH, LL y RR.\\
+
+    \item[] \textbf{Aprendizaje profundo:} Rama del aprendizaje automático que utiliza redes neuronales artificiales con múltiples capas ocultas para aprender representaciones jerárquicas de los datos. Incluye arquitecturas como el perceptrón multicapa, las redes convolucionales y las redes recurrentes.\\
+
+    \item[] \textbf{BlazePalm:} Modelo de detección de palmas desarrollado por Google como primer componente del pipeline de MediaPipe Hands. Detecta la palma de la mano como un objeto rígido mediante un cuadro delimitador orientado, alcanzando una precisión promedio cercana al 95.7\,\% en tiempo real.\\
+
+    \item[] \textbf{Clase REPOSO:} Categoría de clasificación asignada por el modelo del alfabeto cuando la mano está visible pero relajada, sin ejecutar una seña. Permite al sistema distinguir entre la ausencia de una seña intencional y una clasificación activa.\\
+
+    \item[] \textbf{Compuerta de entrada (input gate):} Componente de la celda LSTM que controla qué nueva información se almacena en el estado de celda. Su salida es un vector de valores entre 0 y 1 calculado mediante la función sigmoide.\\
+
+    \item[] \textbf{Compuerta de olvido (forget gate):} Componente de la celda LSTM que decide qué información del estado de celda anterior se descarta. Fue introducida por Gers, Schmidhuber y Cummins en el año 2000 como extensión de la arquitectura LSTM original.\\
+
+    \item[] \textbf{Compuerta de salida (output gate):} Componente de la celda LSTM que determina qué parte del estado de celda se expone como estado oculto de salida en un paso temporal dado.\\
+
+    \item[] \textbf{Comunicación aumentativa y alternativa (CAA):} Conjunto de herramientas, estrategias y dispositivos que complementan o sustituyen el habla oral para personas con dificultades de comunicación. Incluye desde tableros de imágenes y gestos hasta aplicaciones con generación de habla.\\
+
+    \item[] \textbf{Configuración manual:} Forma específica que adopta la mano al ejecutar una seña, definida por la posición de los dedos, la orientación de la palma y el punto de contacto. Es uno de los parámetros formacionales de las lenguas de señas.\\
+
+    \item[] \textbf{Cooldown:} Período de espera que el sistema aplica tras aceptar una predicción antes de aceptar la siguiente. En el presente sistema se configura en 1200 milisegundos para evitar la repetición involuntaria de una misma seña.\\
+
+    \item[] \textbf{Cuantización post-entrenamiento:} Técnica de optimización que reduce la precisión numérica de los pesos de un modelo ya entrenado, típicamente de punto flotante de 32 bits a enteros de 8 bits, con el objetivo de disminuir el tamaño del archivo y acelerar la inferencia en dispositivos con recursos limitados.\\
+
+    \item[] \textbf{Dactilología:} Práctica de representar las letras de un alfabeto escrito mediante configuraciones manuales. Se utiliza en las lenguas de señas para deletrear nombres propios, tecnicismos y palabras que carecen de una seña propia.\\
+
+    \item[] \textbf{Dart:} Lenguaje de programación desarrollado por Google, optimizado para la construcción de interfaces de usuario. Soporta compilación anticipada (AOT) a código nativo y compilación justo a tiempo (JIT) para recarga en caliente durante el desarrollo. Es el lenguaje base de Flutter.\\
+
+    \item[] \textbf{Dataset:} Conjunto de datos organizados y etiquetados que se utiliza para entrenar, validar y evaluar un modelo de aprendizaje automático. En este proyecto, cada muestra del dataset consiste en un vector de coordenadas de landmarks asociado a la etiqueta de la seña correspondiente.\\
+
+    \item[] \textbf{Deprivación lingüística:} Condición que se presenta cuando un niño no recibe exposición suficiente a una lengua accesible durante el período crítico de adquisición del lenguaje. Afecta frecuentemente a niños sordos que nacen en familias oyentes sin acceso temprano a una lengua de señas.\\
+
+    \item[] \textbf{Desvanecimiento del gradiente:} Problema que ocurre durante el entrenamiento de redes neuronales recurrentes cuando los gradientes se multiplican repetidamente por valores menores a uno a lo largo de muchos pasos temporales, lo que reduce su magnitud hasta hacerlos prácticamente nulos e impide que la red aprenda dependencias a largo plazo.\\
+
+    \item[] \textbf{Dispositivo generador de habla:} Equipo electrónico de comunicación aumentativa que produce voz sintetizada a partir de la selección de símbolos, palabras o frases por parte del usuario.\\
+
+    \item[] \textbf{Doble articulación:} Propiedad de las lenguas naturales por la cual los elementos significativos se componen de unidades mínimas sin significado propio. En las lenguas de señas, los parámetros formacionales cumplen la función de esas unidades mínimas.\\
+
+    \item[] \textbf{Dropout:} Técnica de regularización que desactiva aleatoriamente un porcentaje de neuronas durante cada paso de entrenamiento. Obliga a la red a distribuir la representación aprendida entre múltiples unidades, lo que reduce el sobreajuste.\\
+
+    \item[] \textbf{Early stopping:} Técnica de regularización que consiste en monitorear la pérdida sobre el conjunto de validación durante el entrenamiento y detener el proceso cuando dicha pérdida deja de mejorar durante un número predefinido de épocas consecutivas.\\
+
+    \item[] \textbf{Entropía cruzada categórica:} Función de pérdida utilizada en problemas de clasificación multiclase. Mide la diferencia entre la distribución de probabilidad predicha por el modelo y la distribución real representada por el vector one-hot de la clase verdadera.\\
+
+    \item[] \textbf{Época:} Una pasada completa del algoritmo de entrenamiento sobre la totalidad del conjunto de datos de entrenamiento. El proceso de entrenamiento típicamente requiere múltiples épocas para que los pesos de la red converjan a valores adecuados.\\
+
+    \item[] \textbf{Exactitud (accuracy):} Métrica de evaluación que expresa la proporción de predicciones correctas sobre el total de muestras evaluadas. Puede ser engañosa en conjuntos de datos con clases desbalanceadas.\\
+
+    \item[] \textbf{F1-score:} Métrica de evaluación que calcula la media armónica de la precisión y la sensibilidad. Es especialmente útil cuando se busca un equilibrio entre ambas métricas y las clases presentan distinta frecuencia.\\
+
+    \item[] \textbf{FFI (Foreign Function Interface):} Mecanismo que permite a un programa escrito en un lenguaje de alto nivel invocar funciones escritas en otro lenguaje, típicamente C o C++. El plugin tflite\_flutter utiliza FFI para comunicar el código Dart con el intérprete nativo de TensorFlow Lite.\\
+
+    \item[] \textbf{Flutter:} Framework de código abierto desarrollado por Google para la construcción de aplicaciones compiladas de forma nativa para Android, iOS, web y escritorio a partir de una base de código única en Dart. Utiliza un motor de renderizado propio y un sistema declarativo de widgets.\\
+
+    \item[] \textbf{Fotograma (frame):} Una imagen individual dentro de una secuencia de video. En el sistema propuesto, cada fotograma capturado por la cámara frontal se procesa para extraer los landmarks de la mano.\\
+
+    \item[] \textbf{Función de activación:} Función matemática no lineal que se aplica a la salida de cada neurona en una red neuronal. Las más comunes son ReLU, sigmoide, tanh y softmax. Su no linealidad permite a la red aprender relaciones complejas entre las entradas y las salidas.\\
+
+    \item[] \textbf{Gradiente:} Vector de derivadas parciales de la función de pérdida respecto a cada parámetro de la red. Indica la dirección y magnitud en la que debe ajustarse cada peso para reducir el error del modelo.\\
+
+    \item[] \textbf{GRU (Gated Recurrent Unit):} Arquitectura de red neuronal recurrente propuesta por Cho et al. en 2014 que utiliza dos compuertas (reinicio y actualización) para regular el flujo de información temporal. Es una alternativa más simple a la LSTM con menor número de parámetros.\\
+
+    \item[] \textbf{Hipoacusia:} Reducción parcial o total de la capacidad auditiva. Se clasifica en grados (leve, moderada, severa y profunda) según el umbral de audición medido en decibelios. La hipoacusia profunda bilateral corresponde a lo que comúnmente se denomina sordera.\\
+
+    \item[] \textbf{Inferencia:} Proceso de utilizar un modelo de aprendizaje automático ya entrenado para producir predicciones a partir de datos nuevos. En el contexto del sistema, la inferencia se ejecuta localmente en el dispositivo móvil mediante TensorFlow Lite.\\
+
+    \item[] \textbf{Invarianza espacial:} Propiedad de un sistema de clasificación que le permite reconocer un objeto o patrón con independencia de su posición, escala u orientación en la imagen. Se logra mediante técnicas de normalización de las coordenadas de entrada.\\
+
+    \item[] \textbf{Landmark:} Punto de referencia anatómico detectado sobre la mano por el modelo de MediaPipe Hands. Cada mano se representa con 21 landmarks, cada uno con coordenadas tridimensionales (x, y, z).\\
+
+    \item[] \textbf{LESHO:} Sigla de Lengua de Señas Hondureña. Es la lengua de señas utilizada por la comunidad sorda de Honduras, reconocida oficialmente mediante el Decreto 321-2013 del Congreso Nacional.\\
+
+    \item[] \textbf{LSTM (Long Short-Term Memory):} Arquitectura de red neuronal recurrente propuesta por Hochreiter y Schmidhuber en 1997. Utiliza tres compuertas multiplicativas y un estado de celda para retener información relevante durante secuencias largas, lo que resuelve el problema del desvanecimiento del gradiente.\\
+
+    \item[] \textbf{Macro-promedio (macro-average):} Estrategia de consolidación de métricas en problemas multiclase que calcula cada métrica de forma independiente por clase y luego promedia los valores, tratando a todas las clases con igual importancia.\\
+
+    \item[] \textbf{Many-to-one:} Configuración de una red recurrente en la que la entrada es una secuencia de múltiples pasos temporales y la salida es una única predicción emitida al final de la secuencia. Es la configuración utilizada por el clasificador LSTM del sistema.\\
+
+    \item[] \textbf{Matriz de confusión:} Tabla de $C \times C$ (donde $C$ es el número de clases) que muestra la relación entre las clases reales y las clases predichas por un modelo clasificador. Los elementos de la diagonal representan las predicciones correctas.\\
+
+    \item[] \textbf{MediaPipe Hands:} Solución de código abierto desarrollada por Google que implementa un pipeline de detección de manos y extracción de 21 landmarks tridimensionales por mano, diseñado para operar en tiempo real en dispositivos móviles.\\
+
+    \item[] \textbf{MediaPipe Pose:} Solución de código abierto de Google que estima la postura del cuerpo e identifica 33 puntos de referencia corporales, entre ellos los hombros y las anclas del rostro (nariz, ojos, orejas y boca). En el sistema se utiliza para ubicar las manos respecto al cuerpo en el reconocimiento de señas dinámicas.\\
+
+    \item[] \textbf{Mini-batch:} Subconjunto del conjunto de datos de entrenamiento que se utiliza en un paso del algoritmo de optimización. El uso de mini-batches permite actualizar los pesos de la red con mayor frecuencia que el procesamiento del conjunto completo, lo que acelera la convergencia.\\
+
+    \item[] \textbf{Modalidad visual-gestual:} Canal de comunicación propio de las lenguas de señas, donde la producción se realiza mediante gestos manuales, expresiones faciales y movimientos corporales, y la recepción se realiza a través del canal visual.\\
+
+    \item[] \textbf{Modelo dinámico:} En el contexto del sistema, se refiere al clasificador LSTM entrenado para reconocer señas que involucran movimiento a lo largo de una secuencia temporal de cuadros.\\
+
+    \item[] \textbf{Modelo estático:} En el contexto del sistema, se refiere al clasificador del alfabeto, una red convolucional 1D que evalúa una ventana temporal corta para reconocer las letras del alfabeto dactilológico, tanto las estáticas como las cinco que llevan movimiento (J, Ñ, Z, LL y RR), además de la clase REPOSO y las dos señas de control que la versión final no utiliza.\\
+
+    \item[] \textbf{Normalización de coordenadas:} Proceso de transformación de las coordenadas brutas de los landmarks para eliminar la dependencia de la posición y la escala de la mano en el encuadre. Típicamente involucra centrar los puntos respecto a la muñeca y escalar por la distancia máxima.\\
+
+    \item[] \textbf{On-device:} Calificativo que indica que un proceso se ejecuta íntegramente en el dispositivo del usuario, sin enviar datos a un servidor externo. En el presente sistema, toda la inferencia opera on-device para garantizar privacidad y disponibilidad sin conexión a internet.\\
+
+    \item[] \textbf{Optimizador Adam:} Algoritmo de optimización propuesto por Kingma y Ba en 2015 que adapta la tasa de aprendizaje de cada parámetro de forma individual a partir de estimaciones del primer y segundo momento de los gradientes. Es ampliamente utilizado en el entrenamiento de redes neuronales.\\
+
+    \item[] \textbf{Parámetro formacional:} Cada uno de los componentes que definen la estructura de una seña en una lengua de señas: configuración manual, orientación de la palma, ubicación, movimiento y componente no manual (expresión facial).\\
+
+    \item[] \textbf{Perceptrón multicapa (MLP):} Arquitectura de red neuronal compuesta por una capa de entrada, una o más capas ocultas totalmente conectadas y una capa de salida. Es la arquitectura más simple de red profunda.\\
+
+    \item[] \textbf{Persistencia temporal:} Filtro de postprocesamiento que acepta una predicción del modelo solo si este produce la misma clase durante un número mínimo de cuadros consecutivos con confianza superior a un umbral definido. Evita clasificaciones espurias causadas por cuadros de transición.\\
+
+    \item[] \textbf{Pipeline:} Secuencia ordenada de etapas de procesamiento donde la salida de una etapa alimenta la entrada de la siguiente. En el sistema, el pipeline de reconocimiento consta de captura de video, extracción de landmarks, normalización, clasificación y presentación del resultado.\\
+
+    \item[] \textbf{Precisión (precision):} Métrica de evaluación que, para una clase dada, expresa la proporción de muestras predichas como pertenecientes a esa clase que realmente le pertenecen. Una precisión alta indica pocos falsos positivos.\\
+
+    \item[] \textbf{Red neuronal artificial:} Modelo computacional inspirado en la estructura del cerebro biológico, compuesto por capas de neuronas artificiales interconectadas mediante pesos ajustables que se optimizan durante el entrenamiento.\\
+
+    \item[] \textbf{Red neuronal recurrente (RNN):} Tipo de red neuronal que incorpora conexiones cíclicas, lo que le permite procesar secuencias de datos al mantener un estado oculto que resume la información de pasos temporales anteriores.\\
+
+    \item[] \textbf{ReLU (Rectified Linear Unit):} Función de activación definida como $f(x) = \max(0, x)$. Es la función de activación más utilizada en redes profundas por su simplicidad computacional y por mitigar el problema del desvanecimiento del gradiente.\\
+
+    \item[] \textbf{Renderizado:} Proceso mediante el cual un framework o motor gráfico genera la representación visual de una interfaz de usuario en la pantalla del dispositivo. Flutter utiliza su propio motor de renderizado en lugar de depender de los componentes nativos del sistema operativo.\\
+
+    \item[] \textbf{Retropropagación del error (backpropagation):} Algoritmo que calcula el gradiente de la función de pérdida respecto a cada peso de la red mediante la aplicación recursiva de la regla de la cadena. Es el mecanismo fundamental de entrenamiento de las redes neuronales.\\
+
+    \item[] \textbf{Segmentación temporal:} Tarea de determinar los instantes de inicio y fin de cada seña dentro de un flujo continuo de video. En el sistema, se resuelve mediante un control de grabación en pantalla que la persona usuaria acciona para delimitar la seña.\\
+
+    \item[] \textbf{Sensibilidad (recall):} Métrica de evaluación que, para una clase dada, expresa la proporción de muestras que realmente pertenecen a esa clase y que el modelo identificó correctamente. Una sensibilidad alta indica pocos falsos negativos.\\
+
+    \item[] \textbf{Seña dinámica:} Seña cuyo significado depende del movimiento de la mano a lo largo del tiempo. Se clasifica mediante el modelo LSTM a partir de la secuencia de landmarks capturados mientras la grabación permanece abierta.\\
+
+    \item[] \textbf{Seña estática:} Seña cuyo significado se determina por la configuración de la mano en un instante dado, sin depender de movimiento. Las letras del alfabeto dactilológico son señas estáticas.\\
+
+    \item[] \textbf{Señas de control:} Par de gestos incluidos en el vocabulario del modelo del alfabeto, concebidos para delimitar el comienzo y el final de una seña dinámica sin tocar la pantalla. Se descartaron durante el desarrollo por falsos positivos y la versión final del sistema no los utiliza, aunque permanecen entre las clases con que el modelo fue entrenado.\\
+
+    \item[] \textbf{Sobreajuste (overfitting):} Situación en la que un modelo aprende a reproducir con alta fidelidad los datos de entrenamiento, incluyendo su ruido, pero pierde capacidad de generalización ante datos nuevos. Se mitiga con técnicas como dropout y early stopping.\\
+
+    \item[] \textbf{Softmax:} Función que transforma un vector de valores reales en una distribución de probabilidad sobre $C$ clases, donde la suma de todas las probabilidades es igual a 1. Se utiliza como función de activación de la capa de salida en clasificación multiclase.\\
+
+    \item[] \textbf{Stream:} Flujo continuo de datos que se produce y consume de forma asíncrona. En Flutter, el plugin de cámara proporciona un stream de fotogramas que el sistema procesa en tiempo real.\\
+
+    \item[] \textbf{Tasa de aprendizaje (learning rate):} Hiperparámetro que controla la magnitud del ajuste de los pesos de la red en cada paso de optimización. Una tasa demasiado alta causa inestabilidad; una demasiado baja ralentiza la convergencia.\\
+
+    \item[] \textbf{TensorFlow Lite (TFLite):} Framework de inferencia desarrollado por Google para ejecutar modelos de aprendizaje automático en dispositivos móviles, microcontroladores y otros dispositivos con recursos limitados. Utiliza un formato binario FlatBuffer con extensión \texttt{.tflite}.\\
+
+    \item[] \textbf{Umbral de audición:} Nivel mínimo de intensidad sonora, medido en decibelios (dB HL), que una persona puede percibir. Se utiliza como base para clasificar los grados de hipoacusia.\\
+
+    \item[] \textbf{Verdadero positivo (VP), falso positivo (FP) y falso negativo (FN):} Categorías derivadas de la matriz de confusión. VP es una muestra correctamente clasificada como perteneciente a una clase. FP es una muestra incorrectamente asignada a una clase. FN es una muestra de una clase que el modelo no identificó correctamente.\\
+
+    \item[] \textbf{Visión por computadora:} Disciplina de la inteligencia artificial que tiene como objetivo dotar a las máquinas de la capacidad de interpretar y comprender el contenido de imágenes y videos digitales.\\
+
+    \item[] \textbf{Widget:} Unidad fundamental de construcción de la interfaz de usuario en Flutter. Cada elemento visual, desde un texto hasta la distribución de la pantalla, es un widget que se combina de forma declarativa con otros widgets.
+\end{itemize}

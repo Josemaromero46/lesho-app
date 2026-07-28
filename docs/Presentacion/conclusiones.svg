@@ -1,0 +1,39 @@
+<svg viewBox="0 0 1400 620" xmlns="http://www.w3.org/2000/svg" font-family="Georgia, 'Times New Roman', serif">
+  <rect x="0" y="0" width="1400" height="620" fill="#ffffff"/>
+
+  <!-- ======================= FILA 1: LA APLICACION ======================= -->
+  <g id="fila-app">
+    <text x="430" y="96" font-size="30" font-weight="bold" fill="#1F3A5F" text-anchor="end">LA APLICACIÓN</text>
+    <line x1="470" y1="46" x2="470" y2="128" stroke="#E3DDD2" stroke-width="3"/>
+    <text x="516" y="80" font-size="25" fill="#1A1D24">Traduce en los dos sentidos: el niño firma y aparece el texto,</text>
+    <text x="516" y="114" font-size="25" fill="#1A1D24">la persona oyente escribe y el muñeco hace la seña.</text>
+    <text x="516" y="150" font-size="22" fill="#2E7D46">Funciona por completo en el teléfono, sin internet.</text>
+  </g>
+
+  <line x1="96" y1="212" x2="1342" y2="212" stroke="#EFEAE0" stroke-width="2"/>
+
+  <!-- ======================= FILA 2: LOS DATOS ======================= -->
+  <g id="fila-datos">
+    <text x="430" y="296" font-size="30" font-weight="bold" fill="#1F3A5F" text-anchor="end">LOS DATOS</text>
+    <line x1="470" y1="246" x2="470" y2="328" stroke="#E3DDD2" stroke-width="3"/>
+    <text x="516" y="280" font-size="25" fill="#1A1D24">Un conjunto propio del LESHO: el alfabeto completo y 50 señas</text>
+    <text x="516" y="314" font-size="25" fill="#1A1D24">dinámicas, guardadas solo como coordenadas.</text>
+    <text x="516" y="350" font-size="22" fill="#2E7D46">No se hallaron antecedentes de un recurso así.</text>
+  </g>
+
+  <line x1="96" y1="412" x2="1342" y2="412" stroke="#EFEAE0" stroke-width="2"/>
+
+  <!-- ======================= FILA 3: LOS MODELOS ======================= -->
+  <g id="fila-modelos">
+    <text x="430" y="496" font-size="30" font-weight="bold" fill="#1F3A5F" text-anchor="end">LOS MODELOS</text>
+    <line x1="470" y1="446" x2="470" y2="528" stroke="#E3DDD2" stroke-width="3"/>
+    <text x="516" y="486" font-size="25" fill="#1A1D24">
+      <tspan font-size="34" font-weight="bold" fill="#1F3A5F">99.54 %</tspan>
+      <tspan> en el alfabeto y </tspan>
+      <tspan font-size="34" font-weight="bold" fill="#1F3A5F">98.80 %</tspan>
+      <tspan> en las señas.</tspan>
+    </text>
+    <text x="516" y="524" font-size="25" fill="#1A1D24">Menos de 100 KB cada uno.</text>
+    <text x="516" y="560" font-size="22" fill="#2E7D46">Viables en un teléfono de gama baja.</text>
+  </g>
+</svg>

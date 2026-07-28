@@ -1,0 +1,61 @@
+\newcommand\BackgroundPicAutoridades{%
+    \put(0,0){%
+    \parbox[b][\paperheight]{\paperwidth}{%
+    \vfill
+    \centering
+    \includegraphics[width=\paperwidth]{Figures/Theme/Front-Page-E}%
+    \vfill
+}}}
+\AddToShipoutPictureBG*{\BackgroundPicAutoridades}
+
+\pagenumbering{gobble}
+\newgeometry{left=3cm, right=3cm, top=4cm, bottom=4cm}
+
+\begin{titlepage}
+    \thispagestyle{empty}
+    \latofont
+
+    % Título centrado
+    \begin{center}
+        {\bfseries\fontsize{20}{24}\selectfont AUTORIDADES UNIVERSITARIAS\par}
+        \vspace{1.5cm}
+        \vfill
+    \end{center}
+
+    % Lista vertical centrada
+    \begin{center}
+        {\fontsize{18}{22}\selectfont\MakeUppercase{\GetRector}}\par
+        {\fontsize{13}{15}\selectfont\MakeUppercase{Rector}}\par
+        \vspace{1.5cm}
+        \vfill
+
+        {\fontsize{18}{22}\selectfont\MakeUppercase{\GetSecretarioGeneral}}\par
+        {\fontsize{13}{15}\selectfont\MakeUppercase{Secretario General}}\par
+        \vspace{1.5cm}
+        \vfill
+        
+        {\fontsize{18}{22}\selectfont\MakeUppercase{\GetVicerrectorAcademico}}\par
+        {\fontsize{13}{15}\selectfont\MakeUppercase{Vicerrectora Académica}}\par
+        \vspace{1.5cm}
+        \vfill
+
+        {\fontsize{18}{22}\selectfont\MakeUppercase{\GetDirectorCentro}}\par
+        {\fontsize{13}{15}\selectfont\MakeUppercase{Director del Centro}}\par
+        \vspace{1.5cm}
+
+        \vfill
+        {\fontsize{18}{22}\selectfont\MakeUppercase{\GetSecretarioAcademico}}\par
+        {\fontsize{13}{15}\selectfont\MakeUppercase{Secretario Académico}}\par
+        \vspace{1.5cm}
+
+        \vfill
+        {\fontsize{18}{22}\selectfont\MakeUppercase{\GetJefeDepartamento}}\par
+        {\fontsize{13}{15}\selectfont\MakeUppercase{Jefe de Departamento}}\par
+        {\fontsize{13}{15}\selectfont\MakeUppercase{de Ingeniería en Sistemas Computacionales}}\par
+
+    \end{center}
+
+\end{titlepage}
+
+\restoregeometry
+\MediaOptionLogic

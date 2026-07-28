@@ -1,0 +1,144 @@
+% Author Name: José Areia 
+% Author Contact: jose.apareia@gmail.com
+% Version: 2.2.11 - 2025-08-28
+% Public Repository: https://github.com/joseareia/ipleiria-thesis
+% Wiki/Getting Help: https://github.com/joseareia/ipleiria-thesis/wiki
+
+%%% Document Options %%%
+\documentclass[
+    language=spanish,
+    docstage=final,
+    media=paper,
+    bookprint=false,
+    linkcolor=blue!45!black,
+    chapterstyle=classic,
+    coverstyle=classic,
+    aiacknowledgement=false,
+    listprefix=false
+]{ThesisUNAH}
+
+%%% Colocación de figuras flotantes: se relajan las fracciones por defecto para que
+%%% LaTeX empaque las figuras junto al texto y evite páginas casi vacías (menos huecos).
+\renewcommand{\topfraction}{0.92}
+\renewcommand{\bottomfraction}{0.88}
+\renewcommand{\textfraction}{0.06}
+\renewcommand{\floatpagefraction}{0.75}
+\setcounter{topnumber}{2}
+\setcounter{bottomnumber}{2}
+\setcounter{totalnumber}{4}
+
+%%% Document Version %%%
+\DocumentVersion{1.0.0} 
+
+%%% Document Metadata %%%
+%\input{Metadata/Metadata}
+\input{Metadata/Metadata}
+
+%%% Loading of Glossary and Acronyms %%%
+\makeglossaries
+\loadglsentries{Matter/06-Glossary}
+\loadglsentries[\acronymtype]{Matter/07-Acronyms}
+\loadglsentries[\symboltype]{Matter/08-Symbols}
+
+\begin{document}
+
+%%% Front Matter %%%
+\include{Matter/00-Cover}
+\include{Matter/01-Front-Page}
+\include{Matter/01a-Autoridades}
+\include{Matter/About}
+
+%%% Copyright Statement %%%
+\include{Matter/02-Copyright}
+
+%%% Inspirational Quote %%%
+\include{Matter/03-Quote}
+
+%%% Dedication %%%
+\include{Matter/04-Dedication}
+
+%%% Roman Numeration %%%
+\pagenumbering{roman}
+
+%%% Motivation %%%
+\include{Matter/Motivation}
+
+%%% Acknowledgements %%%
+\include{Matter/05-Acknowledgements}
+
+%%% Abstract %%%
+\include{Chapters/00-Abstract}
+
+%%% AI Acknowledgement %%%
+%\include{Matter/08-AI}
+
+%%% Table of Contents, List of Figures and List of Tables %%%
+\dominitoc % Initialize minitoc
+\bookmarktocentry\tableofcontents
+\listoffigures
+\listoftables
+
+%%% Print: Glossary and Acronyms %%%
+%%% \glossarytoc\printnormalglossary
+\acronymtoc\printacronymglossary
+%%% \symboltoc\printsymbolglossary
+
+%%% Arabic Numeration %%%
+\pagenumbering{arabic}
+
+%%% Part 1: Presentación %%%
+\include{Matter/Part-01}
+\include{Chapters/01-Presentacion}
+
+%%% Part 2: Marco Teórico %%%
+\include{Matter/Part-02}
+\include{Chapters/Investigaciones-Previas}
+\include{Chapters/02-Conceptualizacion-General}
+\include{Chapters/03-ODS}
+\include{Chapters/04-Movilidad-Inteligente}
+\include{Chapters/05-Teoria-Grafos}
+%\include{Chapters/05-Inteligencia-Artificial}
+\include{Chapters/06-Contexto-Especifico}
+\include{Chapters/Marco-Conceptual}
+\include{Chapters/Marco-Legal}
+
+%%% Part 3: Marco Metodológico %%%
+\include{Matter/Part-03}
+\include{Chapters/07-Metodologia}
+
+%%% Part 4: Implementación %%%
+\include{Matter/Part-04}
+\include{Chapters/08-Implementacion}
+
+%%% Part 5: Análisis de Resultados %%%
+\include{Matter/Part-05}
+\include{Chapters/09-Resultados}
+
+%%% Part 6: Conclusiones y Recomendaciones %%%
+\include{Matter/Part-06}
+\include{Chapters/10-Conclusiones}
+
+%%% Bibliography %%%
+\include{Matter/Part-Ref}
+\renewcommand{\refname}{Bibliografía}
+\markboth{\refname}{\refname}
+\printbibliography[title={\refname},heading=bibintoc]
+
+%%% Anexes %%%
+\include{Matter/Part-Anexos}
+\include{Chapters/11-Anexos}
+
+%%% Appendices: Work that *YOU* Developed %%%
+\appendix
+%\input{Matter/08-Appendices}
+%\input{Chapters/Appendices/00-AppendixA}
+%\input{Chapters/Appendices/01-AppendixB}
+
+%%% Annexes: Work that *YOU DID NOT* Develop %%%
+%\input{Matter/11-Annexes}
+%\input{Chapters/Annexes/00-AnnexA}
+
+%%% Back Page %%%
+\include{Matter/12-Back-Page}
+
+\end{document}

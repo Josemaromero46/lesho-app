@@ -1,0 +1,67 @@
+\chapter[Conclusiones y recomendaciones]{Conclusiones y recomendaciones}
+\label{chap:conclusiones}
+
+\insertminitoc
+\parindent0pt
+
+\section{Conclusiones generales}
+
+El presente proyecto desarrolló una aplicación móvil de inteligencia artificial para la comunicación entre niños sordos y personas oyentes mediante el reconocimiento del Lenguaje de Señas Hondureño, ejecutada por completo en el dispositivo y sin conexión a internet. El sistema construye un puente bidireccional en tiempo real: en un sentido traduce las señas del niño a texto en español, y en el otro representa el español escrito como señas visibles para el niño. Con ello se cumplió el objetivo general de la investigación.
+
+Respecto al primer objetivo específico, se construyó un conjunto de datos propio del \Acrshort{lesho} que abarca el alfabeto dactilológico completo, incluidos los dígrafos, y un vocabulario de cincuenta señas dinámicas de uso cotidiano. La captura siguió un protocolo documentado y reproducible, y se almacenaron únicamente las coordenadas de los landmarks, nunca el video crudo, lo que protege la privacidad de las personas y mantiene el conjunto de datos liviano. Durante la revisión bibliográfica no se hallaron antecedentes de un recurso de este tipo para el \Acrshort{lesho}, por lo que este conjunto de datos constituye un aporte en sí mismo.
+
+Respecto al segundo objetivo, se diseñaron e implementaron dos modelos de clasificación optimizados para teléfonos de recursos limitados. El Modelo A, una red convolucional en una dimensión, reconoce el alfabeto dactilológico completo con una exactitud global de 99.54\%. El Modelo B, una red \Acrshort{lstm}, reconoce las cincuenta señas dinámicas con una exactitud de 98.80\%. Ambos modelos, exportados a \Acrshort{tflite}, ocupan menos de cien kilobytes, lo que confirma que un reconocimiento preciso del \Acrshort{lesho} es viable dentro de las restricciones de un dispositivo de gama baja.
+
+Respecto al tercer objetivo, se desarrolló una aplicación en \textit{Flutter} que integra ambas direcciones de comunicación sin depender de servicios en la nube. La dirección de reconocimiento capta las señas con la cámara, extrae los landmarks con MediaPipe y los clasifica en el propio dispositivo. La dirección inversa toma el texto de la persona oyente, lo descompone en señas y las reproduce mediante un muñeco animado, con un mecanismo de respaldo por deletreo para las palabras que aún no tienen seña registrada. Todo el procesamiento ocurre de forma local, lo que hace al sistema pertinente para las zonas de Honduras con cobertura de datos móviles limitada.
+
+Respecto al cuarto objetivo, se evaluó el desempeño técnico del sistema con datos reales. Además de la alta exactitud de los dos modelos, la latencia de inferencia es del orden de milisegundos y el costo de recursos sobre el dispositivo se midió de forma directa. Para la usabilidad se diseñaron dos instrumentos de evaluación apropiados para cada tipo de participante: uno basado en la Escala de Usabilidad del Sistema para las personas adultas, y otro visual, con caritas, para los niños sordos, ambos listos para su aplicación con usuarios de la fundación colaboradora.
+
+\section{Aportes tecnológicos y prácticos de la investigación}
+
+Más allá de la aplicación funcional, la investigación deja aportes que pueden reutilizarse y ampliarse en trabajos posteriores.
+
+\begin{itemize}
+    \item \textbf{Un conjunto de datos de landmarks del \Acrshort{lesho}:} es el aporte académico principal. Reúne el alfabeto dactilológico y cincuenta señas dinámicas en forma de coordenadas de landmarks etiquetadas, con un protocolo de captura reproducible. Al no haberse encontrado antecedentes documentados de un recurso similar para esta lengua, constituye una base que otros proyectos pueden extender.
+    \item \textbf{Una arquitectura de dos modelos ejecutada en el dispositivo:} la combinación de una red convolucional en una dimensión para el alfabeto y de una red \Acrshort{lstm} para las señas dinámicas demuestra que se puede reconocer el \Acrshort{lesho} con precisión sin recurrir a servidores externos, con modelos que caben con holgura en un teléfono de gama baja.
+    \item \textbf{Una solución práctica a la segmentación temporal:} delimitar la seña dinámica con un control explícito en pantalla resuelve, sin necesidad de modelos adicionales, uno de los problemas más difíciles del reconocimiento de señas continuas. Durante el desarrollo se evaluó una alternativa basada en dos señas de control que evitaba tocar la pantalla, y se descartó porque varias señas del vocabulario se confundían con el gesto de cierre e interrumpían la grabación. Documentar ese resultado negativo tiene valor propio: advierte a quien retome la idea que primero debe resolver esa ambigüedad.
+    \item \textbf{La incorporación del lugar de articulación mediante la punta del índice:} agregar la ubicación de la mano en el cuerpo, y en particular la posición de la punta del índice, permitió distinguir señas que se hacen en zonas distintas de la cara, como HOLA en la frente y AGUA en la boca, que de otro modo se confundían.
+    \item \textbf{Un muñeco de cápsulas para la representación visual:} la dirección de texto a seña se resuelve con un muñeco animado dibujado en el propio dispositivo a partir de clips de landmarks, lo que evita el peso y la dependencia de un banco de videos y mantiene la aplicación liviana y sin conexión.
+\end{itemize}
+
+\section{Limitaciones encontradas durante la implementación}
+
+El proyecto alcanzó sus metas, pero durante su desarrollo se identificaron limitaciones que conviene declarar con honestidad y que orientan el trabajo pendiente.
+
+\begin{itemize}
+    \item \textbf{Tamaño del conjunto de personas:} aunque la evaluación se realizó sobre tomas que el modelo no vio durante el entrenamiento, el número de personas que aportaron datos es todavía reducido. Por eso el desempeño reportado, aun siendo alto, debe confirmarse con una población más amplia antes de afirmar que el sistema generaliza a personas nuevas.
+    \item \textbf{Sensibilidad de las señas con movimiento:} las señas dinámicas y las cinco letras que se ejecutan con movimiento dependen de la trayectoria completa, que varía más entre personas que una pose fija. Son, por lo tanto, las más sensibles a la variación y las que más se benefician de contar con más datos.
+    \item \textbf{Rendimiento del dispositivo de gama baja:} en el teléfono de prueba, un Samsung Galaxy A13, el reconocimiento de señas dinámicas procesa alrededor de cinco cuadros por segundo y exige cerca del 78\% de la capacidad del procesador, porque debe detectar las dos manos y el cuerpo en cada fotograma. Esto obliga al usuario a capturar la seña con cuidado y a sostener la posición inicial, restricción que se documenta en el manual de uso.
+    \item \textbf{Alcance del vocabulario:} el sistema reconoce el alfabeto dactilológico y cincuenta señas dinámicas, un subconjunto acotado frente a la totalidad del \Acrshort{lesho}, y no contempla los componentes no manuales de la lengua, como las expresiones faciales.
+\end{itemize}
+
+\section{Recomendaciones}
+
+A partir de los resultados obtenidos y de las limitaciones anteriores, se plantean las siguientes recomendaciones para dar continuidad al trabajo.
+
+\begin{itemize}
+    \item \textbf{Ampliar el conjunto de datos con más personas:} es la acción de mayor impacto. Incorporar grabaciones de más personas, con distintas manos y estilos, reforzará la capacidad del sistema de reconocer las señas de usuarios que no participaron en el entrenamiento.
+    \item \textbf{Mantener condiciones de captura consistentes:} grabar con iluminación adecuada, encuadre estable y la misma relación de aspecto reduce la variabilidad no deseada y mejora la calidad del conjunto de datos.
+    \item \textbf{Aplicar la evaluación de usabilidad con la fundación:} llevar a cabo las sesiones con personas adultas y con niños sordos, usando los instrumentos ya diseñados, para complementar la evaluación técnica con la percepción de los usuarios finales.
+    \item \textbf{Considerar un dispositivo de gama media:} un teléfono con mayor capacidad de procesamiento elevaría los cuadros por segundo del reconocimiento de señas dinámicas y haría más fluida esa dirección de la comunicación.
+    \item \textbf{Publicar y mantener el conjunto de datos como recurso abierto:} al versionarlo y publicarlo, el conjunto de datos del \Acrshort{lesho} queda disponible para que la comunidad académica y las organizaciones de personas sordas lo reutilicen y lo amplíen.
+    \item \textbf{Continuar con asesoría en \Acrshort{lesho}:} validar las señas y ampliar el vocabulario junto a personas con dominio de la lengua asegura que el sistema respete el uso real del \Acrshort{lesho}.
+\end{itemize}
+
+\section{Trabajos Futuros}
+
+La investigación deja una base funcional sobre la cual se pueden desarrollar varias líneas de continuación, que quedaron fuera del alcance de este trabajo.
+
+\begin{itemize}
+    \item \textbf{Ampliación del vocabulario:} extender el reconocimiento más allá de las cincuenta señas actuales hacia un vocabulario mayor del \Acrshort{lesho}, priorizando las señas de uso más frecuente en los entornos del niño.
+    \item \textbf{Incorporación de los componentes no manuales:} integrar las expresiones faciales y el lenguaje corporal, que forman parte de la gramática del \Acrshort{lesho} y que el sistema actual no considera.
+    \item \textbf{Reconocimiento de señas continuas:} avanzar hacia el reconocimiento de secuencias de señas sin necesidad de las marcas explícitas de inicio y fin, para una comunicación más natural y fluida.
+    \item \textbf{Representación con un avatar tridimensional:} sustituir el muñeco de cápsulas por un avatar en tres dimensiones que reproduzca las señas con mayor realismo en la dirección de texto a seña.
+    \item \textbf{Extensión a otras plataformas:} aprovechar la naturaleza multiplataforma de \textit{Flutter} para llevar la aplicación a iOS y a la web, más allá del objetivo principal en Android.
+    \item \textbf{Soporte para variantes regionales:} contemplar las diferencias del \Acrshort{lesho} entre distintas regiones del país, de modo que el sistema se adapte a la forma en que cada comunidad ejecuta las señas.
+    \item \textbf{Pruebas de campo a mayor escala:} evaluar el sistema en entornos reales de uso, con más niños sordos y sus familias, para medir su impacto en la comunicación cotidiana.
+\end{itemize}
