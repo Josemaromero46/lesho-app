@@ -11,7 +11,6 @@ dependencies:
     sdk: flutter
   camera: ^0.10.5+9
   tflite_flutter: ^0.12.1
-  video_player: ^2.8.3
   permission_handler: ^11.3.1
 
 dev_dependencies:
@@ -27,3 +26,4 @@ flutter:
     - assets/labels/
     - assets/videos/
     - assets/clips/piloto/
+    - assets/clips/letras/

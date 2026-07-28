@@ -1,0 +1,33 @@
+# Alfabeto dactilologico del LESHO: 30 letras, con los digrafos CH, LL y RR.
+# Cinco se ejecutan CON MOVIMIENTO: J, N con virgulilla, Z, LL y RR.
+# Se graban igual que las demas; solo cambia lo que hace la mano.
+A
+B
+C
+CH
+D
+E
+F
+G
+H
+I
+J
+K
+L
+LL
+M
+N
+Ñ
+O
+P
+Q
+R
+RR
+S
+T
+U
+V
+W
+X
+Y
+Z
