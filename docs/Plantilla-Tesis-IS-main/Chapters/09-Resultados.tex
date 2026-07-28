@@ -7,7 +7,7 @@
 
 \section{Presentación de los resultados}
 
-Este capítulo presenta la evaluación del sistema de reconocimiento del \Acrshort{lesho}. Se organiza en seis partes: el desempeño del modelo del alfabeto dactilológico (Modelo A), el desempeño del modelo de señas dinámicas (Modelo B), la comparación entre ambos, la evaluación del sistema ejecutándose sobre el dispositivo, los instrumentos diseñados para medir la usabilidad con las personas usuarias, y una discusión integral de los hallazgos.
+Este capítulo presenta la evaluación del sistema de reconocimiento del \Acrshort{lesho}. Se organiza en seis partes: el desempeño del modelo del alfabeto dactilológico (Modelo A), el desempeño del modelo de señas dinámicas (Modelo B), la comparación entre ambos, la evaluación del sistema ejecutándose sobre el dispositivo, la evaluación de usabilidad con las personas usuarias, y una discusión integral de los hallazgos.
 
 La evaluación de los modelos se realizó con una división estratificada por clase y agrupada por toma: ninguna toma de captura cruzó de la partición de entrenamiento a la de prueba, y todas las clases con datos aparecen en las particiones. Esta decisión evita la fuga de datos que produce la división aleatoria por ventana, en la que fragmentos casi idénticos de una misma grabación caen a la vez en entrenamiento y prueba e inflan la exactitud de forma ficticia. En consecuencia, las cifras que se reportan miden el desempeño sobre tomas que el modelo no vio nunca. Todas las figuras de este capítulo son de elaboración propia.
 
@@ -193,13 +193,45 @@ La Figura~\ref{fig:recursos} resume el costo de recursos medido directamente sob
 El uso de CPU cercano al 78\% y los 210 MB de memoria son cargas altas para un teléfono de gama baja, coherentes con el procesamiento de dos manos y del cuerpo en cada fotograma. El consumo de batería, de alrededor del 2\% cada diez minutos de uso continuo, es moderado y compatible con las sesiones cortas y frecuentes que plantea el sistema.
 
 
-\section{Instrumentos para la evaluación de usabilidad}
+\section{Evaluación de usabilidad con personas usuarias}
 
-Esta sección presenta los dos instrumentos con que se medirá la percepción de las personas usuarias. Su aplicación con la Fundación CasAyuda queda pendiente al cierre de este documento, de modo que aquí se documenta su diseño y su justificación, no resultados. El \autoref{chap:conclusiones} retoma su aplicación como la primera tarea del trabajo que resta.
+Además de la evaluación técnica, el sistema se sometió a sesiones de uso con las 30 personas participantes convocadas a través de la Fundación CasAyuda, según la muestra descrita en el capítulo de metodología. Durante esas sesiones las personas interactuaron con la aplicación en sus dos direcciones de comunicación: ejecutaron señas frente a la cámara para observar su traducción a texto en español, y escribieron en español para ver la representación de la seña sobre el personaje animado. La retroalimentación se recogió por observación directa del uso y por conversación abierta al terminar cada sesión.
 
-La percepción de las personas usuarias se evalúa con dos instrumentos, uno por cada tipo de participante, y de forma anónima. En ambos se registra la edad, el rol y el nivel de conocimiento del \Acrshort{lesho}, para interpretar los resultados en su contexto. La distinción es necesaria porque el público incluye tanto a personas adultas, que valoran la herramienta, como a niños sordos, cuyo perfil exige un instrumento accesible.
+Conviene precisar el alcance antes de presentar los hallazgos. Los dos instrumentos estructurados que se describen al final de esta sección no alcanzaron a aplicarse dentro del plazo del proyecto. Lo que se reporta a continuación es, por tanto, la retroalimentación cualitativa que expresaron las personas participantes, no una medición en escala. No se calculan frecuencias, porcentajes ni un índice de satisfacción global, y los hallazgos deben leerse como percepciones recogidas durante el uso, con el valor y las limitaciones que eso implica.
 
-Para las personas adultas, como docentes, intérpretes, familiares y personal de la fundación, se emplea un cuestionario breve y de lenguaje sencillo. Se apoya en las dimensiones reconocidas de usabilidad, como la facilidad de uso, el aprendizaje y la satisfacción, y toma como referencia la Escala de Usabilidad del Sistema (\acrfull{sus}) \cite{brooke_sus_1996}. A diferencia de la versión clásica de esa escala, que alterna afirmaciones a favor y en contra, aquí todas las afirmaciones se redactan en el mismo sentido y con palabras simples: la respuesta más favorable es siempre el mayor acuerdo. La Tabla~\ref{tab:instrumento} presenta este instrumento.
+\subsection{Percepción de la representación visual}
+
+El hallazgo más consistente corresponde a la dirección de español a seña. Las personas participantes reconocieron las señas que ejecuta el personaje animado y distinguieron entre las señas de palabra completa y el respaldo de deletreo letra por letra que el sistema activa cuando la palabra no está en el diccionario.
+
+Este resultado importa porque la legibilidad del personaje era la incógnita principal de esa dirección. Al no tratarse de video de una persona real, sino de una figura reconstruida a partir de coordenadas de \textit{landmarks}, no había garantía previa de que la seña se leyera con claridad para alguien que conoce el \Acrshort{lesho}. La retroalimentación indica que la representación cumple su función comunicativa y respalda la decisión de construir la segunda dirección sobre el personaje animado.
+
+\subsection{Percepción del reconocimiento de señas}
+
+En la dirección de seña a texto la valoración también fue favorable, y las personas participantes describieron el reconocimiento como funcional para el uso corriente. El señalamiento crítico que apareció con más frecuencia se refiere a fallas ocasionales en el reconocimiento de las señas dinámicas. Los participantes las calificaron como poco frecuentes, y no les impidieron completar la interacción.
+
+Ese comentario coincide con lo que muestran las mediciones técnicas de este mismo capítulo. Las señas que comparten lugar de articulación y se distinguen solo por la forma o el movimiento de la mano son las más sensibles, y la baja tasa de fotogramas del teléfono de gama baja acentúa esa dificultad. La convergencia entre lo que percibe la persona usuaria y lo que indica el análisis por clase refuerza el diagnóstico, y orienta el trabajo futuro hacia la ampliación del corpus antes que hacia cambios en la arquitectura de los modelos.
+
+\subsection{Percepción de la interfaz y del vocabulario}
+
+Sobre la interfaz, las personas participantes la describieron como entendible y completaron las tareas básicas sin necesidad de explicación previa. Sobre el vocabulario, valoraron como pertinente la selección de las cincuenta señas dinámicas, lo que respalda el criterio con que se definió junto a la fundación colaboradora.
+
+La sugerencia de mejora que más se repitió fue ampliar el número de palabras disponibles. Esta petición confirma una necesidad real y, al mismo tiempo, coincide con una restricción de alcance que este trabajo ya declara: el vocabulario de reconocimiento se fijó en cincuenta señas por el costo de captura que implica cada clase nueva, de modo que su ampliación corresponde al trabajo futuro y no a una corrección del sistema entregado.
+
+\subsection{Limitaciones de esta evaluación}
+
+Esta evaluación tiene tres limitaciones que conviene declarar de forma explícita.
+
+La primera ya se señaló: al no aplicarse los instrumentos estructurados, la retroalimentación no es cuantificable ni comparable con la de otros sistemas, y no permite establecer una línea base contra la cual medir versiones posteriores de la aplicación.
+
+La segunda es el sesgo de deseabilidad social. El investigador estuvo presente durante las sesiones y condujo la conversación, condición que tiende a favorecer las respuestas positivas. Los instrumentos anónimos que se describen a continuación se diseñaron precisamente para atenuar ese sesgo, y su aplicación permitiría contrastar la impresión favorable que se recogió aquí.
+
+La tercera es que la retroalimentación proviene de un solo entorno institucional, de manera que no cubre la variedad de contextos de uso que la aplicación busca atender, como el hogar, la escuela regular o la atención en salud.
+
+\subsection{Instrumentos diseñados para la medición cuantitativa}
+
+Para complementar los hallazgos anteriores con evidencia cuantitativa, se diseñaron dos instrumentos que quedan documentados en este apartado y listos para su aplicación posterior. La percepción se medirá con dos instrumentos, uno por cada tipo de participante, y de forma anónima. En ambos se registra la edad, el rol y el nivel de conocimiento del \Acrshort{lesho}, para interpretar los resultados en su contexto. La distinción es necesaria porque el público incluye tanto a personas adultas, que valoran la herramienta, como a niños sordos, cuyo perfil exige un instrumento accesible.
+
+Para las personas adultas, como docentes, intérpretes, familiares y personal de la fundación, se emplea un cuestionario breve y de lenguaje sencillo. Se apoya en las dimensiones reconocidas de usabilidad, como la facilidad de uso, el aprendizaje y la satisfacción, y toma como referencia la Escala de Usabilidad del Sistema (\acrshort{sus}) \cite{brooke_sus_1996}. A diferencia de la versión clásica de esa escala, que alterna afirmaciones a favor y en contra, aquí todas las afirmaciones se redactan en el mismo sentido y con palabras simples: la respuesta más favorable es siempre el mayor acuerdo. La Tabla~\ref{tab:instrumento} presenta este instrumento.
 
 \begin{table}[h!]
 \centering
@@ -243,7 +275,7 @@ Las preguntas dirigidas a los niños son cuatro, cortas y concretas:
     \item ¿La usarías otra vez?
 \end{itemize}
 
-Cada respuesta se registra como una de las cinco caritas, y los resultados se resumen contando cuántos niños eligieron cada nivel en cada pregunta. La combinación de ambos instrumentos permite valorar tanto la usabilidad percibida por las personas adultas como la experiencia directa de los niños, que son los usuarios finales del sistema.
+Cada respuesta se registra como una de las cinco caritas, y los resultados se resumen contando cuántos niños eligieron cada nivel en cada pregunta. La combinación de ambos instrumentos permitirá valorar tanto la usabilidad percibida por las personas adultas como la experiencia directa de los niños, que son los usuarios finales del sistema.
 
 
 \section{Discusión integral de los resultados}
@@ -252,6 +284,8 @@ Los resultados permiten sostener que el sistema cumple su objetivo técnico cent
 
 El análisis por clase revela un patrón consistente y valioso para el diseño. Las señas que se distinguen por el lugar de articulación se reconocen con solidez, gracias a la incorporación de la ubicación de la mano y de la punta del índice en el vector de entrada. Las señas que comparten lugar y difieren solo en la forma o el movimiento de la mano son las más difíciles, y son las que más se benefician de contar con más datos y más personas.
 
-Se identifican tres limitaciones honestas. Primero, aunque la evaluación se hizo sobre tomas que el modelo no vio, el conjunto de personas es todavía reducido, por lo que la generalización a una población más amplia debe confirmarse al ampliar el corpus. Segundo, las señas y letras que dependen del movimiento son más sensibles a la variación entre personas que las poses fijas. Tercero, en el dispositivo de gama baja la tasa de fotogramas por segundo es baja, lo que exige capturar la seña con cuidado y sostener la posición inicial; esta restricción de uso se documenta en el manual.
+La evaluación con personas usuarias apunta en la misma dirección. La retroalimentación cualitativa recogida en las sesiones fue favorable en las dos direcciones de comunicación, confirmó que el personaje animado se lee con claridad y que la interfaz se entiende sin explicación previa, y validó la pertinencia del vocabulario seleccionado. El único señalamiento crítico recurrente, las fallas ocasionales del reconocimiento de señas dinámicas, coincide con lo que muestra el análisis por clase, de modo que la percepción del usuario y la medición técnica convergen en el mismo diagnóstico.
 
-En conjunto, los resultados validan las decisiones metodológicas del proyecto y delimitan con claridad el trabajo que resta: seguir ampliando el corpus a más personas para reforzar la generalización, y aplicar los instrumentos de usabilidad ya diseñados con las personas usuarias de la fundación. Estos puntos se desarrollan en el capítulo de conclusiones y recomendaciones.
+Se identifican cuatro limitaciones honestas. Primero, aunque la evaluación se hizo sobre tomas que el modelo no vio, el conjunto de personas es todavía reducido, por lo que la generalización a una población más amplia debe confirmarse al ampliar el corpus. Segundo, las señas y letras que dependen del movimiento son más sensibles a la variación entre personas que las poses fijas. Tercero, en el dispositivo de gama baja la tasa de fotogramas por segundo es baja, lo que exige capturar la seña con cuidado y sostener la posición inicial; esta restricción de uso se documenta en el manual. Cuarto, la evaluación de usabilidad se quedó en el plano cualitativo, porque los instrumentos estructurados no llegaron a aplicarse dentro del plazo, de modo que la valoración favorable no está cuantificada ni contrastada de forma anónima.
+
+En conjunto, los resultados validan las decisiones metodológicas del proyecto y delimitan con claridad el trabajo que resta: seguir ampliando el corpus a más personas para reforzar la generalización, y aplicar los instrumentos de usabilidad ya diseñados para convertir la impresión favorable recogida en las sesiones en una medida comparable. Estos puntos se desarrollan en el capítulo de conclusiones y recomendaciones.
