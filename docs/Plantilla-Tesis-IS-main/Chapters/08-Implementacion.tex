@@ -305,10 +305,18 @@ aplicando así el mecanismo de respaldo por deletreo descrito en el diseño del 
 Una vez procesadas todas las palabras, el muñeco reproduce la cola de clips de forma
 secuencial, mostrando cada seña de forma ordenada en pantalla.
 
-El diccionario de señas tiene como objetivo entre 150 y 200 entradas, que incluyen
-las 30 letras del alfabeto dactilológico, las 50 señas dinámicas del vocabulario del
-Modelo B, y señas adicionales de vocabulario común agrupadas por categorías: números,
-colores, vínculos familiares, emociones, entorno escolar y necesidades básicas.
+El diccionario de señas se dimensionó para alojar entre 150 y 200 entradas: las 30 letras
+del alfabeto dactilológico, las 50 señas dinámicas del vocabulario del Modelo B, y señas
+adicionales de vocabulario común agrupadas por categorías, como números, colores,
+vínculos familiares, emociones, entorno escolar y necesidades básicas.
+
+La versión entregada incorpora el alfabeto dactilológico completo, que es lo que habilita
+el respaldo de deletreo y permite representar cualquier palabra, junto con un conjunto
+inicial de señas de palabra completa. Grabar las entradas restantes es un trabajo de
+captura que no exige cambios en el sistema, porque el formato del clip y el mecanismo de
+consulta ya están definidos y en funcionamiento: cada entrada nueva se agrega al índice
+del diccionario sin tocar el código de reproducción. La ampliación del diccionario se
+plantea, por tanto, como parte del trabajo futuro.
 
 % ---------------------------------------------------------------------------
 \subsection{Interfaz de Usuario}
