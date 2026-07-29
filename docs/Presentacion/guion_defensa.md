@@ -9,7 +9,7 @@ José Manuel Romero Martínez · UNAH Campus Comayagua
 
 **Cómo usar este guión.** Los tiempos son acumulativos: indican el minuto en que
 deberías estar terminando cada diapositiva. El guión completo suma unos 14 minutos
-y medio, así que hay margen. Lo que va *en cursiva* son indicaciones para vos, no
+y 45 segundos, así que hay margen. Lo que va *en cursiva* son indicaciones para vos, no
 se dice en voz alta.
 
 ---
@@ -270,7 +270,25 @@ cuerpo en cada fotograma. Y aun así, funciona.
 
 ---
 
-## 15 · Resumen de resultados — 30 s · *(12:55)*
+## 15 · Evaluación con personas usuarias — 45 s · *(13:10)*
+
+Los números dicen que funciona. Falta saber si la gente lo entiende.
+
+Hice sesiones con las treinta personas en la fundación, en las dos direcciones. Lo
+que más me importaba era si el muñeco se entiende, porque no es video: es una
+figura reconstruida de coordenadas. Y sí: lo reconocen, y distinguen cuándo hace
+una palabra y cuándo deletrea.
+
+La interfaz se usa sin que nadie la explique, y las cincuenta palabras son las que
+sirven. La crítica que se repitió: a veces falla el reconocimiento dinámico, que es
+justo lo que muestran las métricas.
+
+*(Con calma, sin excusarte)* Esto es retroalimentación cualitativa. Los
+instrumentos para medirla no alcancé a aplicarlos, y así está declarado.
+
+---
+
+## 16 · Resumen de resultados — 20 s · *(13:30)*
 
 *(Rápido. No releas la diapositiva.)*
 
@@ -279,27 +297,26 @@ funcionando sin internet en un teléfono de gama baja.
 
 ---
 
-## 16 · Conclusiones — 65 s · *(14:00)*
+## 17 · Conclusiones — 45 s · *(14:15)*
 
 Cierro con tres cosas.
 
 **La aplicación** traduce en los dos sentidos y funciona por completo en el
 teléfono, sin internet.
 
-**Los datos** son un conjunto propio del LESHO, guardado solo como coordenadas, sin
-antecedentes hallados. Es el aporte que queda disponible para que otros lo amplíen.
+**Los datos** son un conjunto propio del LESHO, sin antecedentes hallados, que queda
+disponible para que otros lo amplíen.
 
 **Los modelos** alcanzan esa precisión ocupando menos de cien kilobytes cada uno.
 
-Y quiero decir algo con claridad: la exactitud es alta sobre grabaciones que el
-modelo nunca vio, pero el conjunto de personas que aportaron datos todavía es
-reducido. Para afirmar que funciona con cualquier persona hace falta ampliar el
-corpus. Esa es la recomendación principal de este trabajo, y no la escondo porque
-es lo que dice el dato.
+Y lo digo con claridad: la exactitud es alta sobre grabaciones que el modelo nunca
+vio, pero el conjunto de personas que aportaron datos todavía es reducido. Para
+afirmar que funciona con cualquiera hace falta ampliar el corpus. Esa es la
+recomendación principal, y no la escondo porque es lo que dice el dato.
 
 ---
 
-## 17 · ¡Gracias! — 30 s · *(14:30)*
+## 18 · ¡Gracias! — 30 s · *(14:45)*
 
 *(Bajá el ritmo. Volvé al principio.)*
 
@@ -314,7 +331,7 @@ posible este trabajo. Quedo atento a sus preguntas.
 
 ---
 
-## 18 · Bibliografía
+## 19 · Bibliografía
 
 *(No se lee. Queda proyectada durante las preguntas.)*
 
@@ -335,7 +352,7 @@ Son los cuatro puntos que deciden cómo te recuerdan.
 
 ## Ritmo
 
-El guión suma unos 14 minutos y medio con las pausas. Si vas atrasado, la única
+El guión suma unos 14 minutos y 45 segundos con las pausas. Si vas atrasado, la única
 parte que podés comprimir es Conclusiones, porque los números ya los dijiste. Nunca
 apures la demostración ni el cierre.
 
