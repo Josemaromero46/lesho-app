@@ -1,5 +1,5 @@
-<svg viewBox="0 0 1400 620" xmlns="http://www.w3.org/2000/svg" font-family="Georgia, 'Times New Roman', serif">
-  <rect x="0" y="0" width="1400" height="620" fill="#ffffff"/>
+<svg viewBox="0 0 1400 490" xmlns="http://www.w3.org/2000/svg" font-family="Georgia, 'Times New Roman', serif">
+  <rect x="0" y="0" width="1400" height="490" fill="#ffffff"/>
 
   <!-- ======================= CIFRAS PRINCIPALES ======================= -->
   <g id="cifras">
@@ -45,9 +45,4 @@
     </g>
   </g>
 
-  <!-- ======================= ALCANCE ======================= -->
-  <g id="alcance">
-    <rect x="96" y="514" width="1240" height="72" rx="10" fill="#1F3A5F"/>
-    <text x="716" y="560" font-size="25" fill="#ffffff" text-anchor="middle">Retroalimentación cualitativa: esta valoración todavía no está cuantificada</text>
-  </g>
 </svg>
