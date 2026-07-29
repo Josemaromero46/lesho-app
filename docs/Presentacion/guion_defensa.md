@@ -146,19 +146,22 @@ teléfono que una familia hondureña realmente tiene.
 
 ## 8 · Arquitectura general del sistema — 60 s · *(6:30)*
 
-El sistema tiene dos caminos que conviven en una sola aplicación.
+Este es el sistema por dentro.
 
-El primero va del niño hacia la persona oyente: la cámara capta la seña, MediaPipe
-extrae los puntos de las manos y del cuerpo, y dos modelos de inteligencia
-artificial la convierten en texto.
+Lo primero, la línea punteada de afuera. Todo lo que está adentro corre en el
+teléfono: no hay servidor, no hay nube, no hay conexión. Y eso no es una
+configuración que se pueda cambiar: ningún componente abre una conexión de red. La
+privacidad y el que funcione sin internet son consecuencia de esa decisión
+estructural.
 
-El segundo va en sentido inverso: la persona escribe, y la aplicación representa
-esa palabra como seña mediante un muñeco animado.
+Adentro, la aplicación está en capas, y las flechas del costado van en un solo
+sentido: ninguna capa de abajo conoce a las de arriba. Por eso pude rediseñar toda
+la interfaz sin tocar un solo modelo.
 
-Y quiero que se fijen en lo que **no** aparece en este diagrama: no hay servidor,
-no hay nube, no hay conexión. Todo ocurre dentro del teléfono. Eso vuelve al
-sistema utilizable donde no hay señal, y además protege la privacidad: la cámara
-enfoca a un niño y esa imagen nunca sale del aparato.
+*(Señalar la caja de la derecha)* Y acá está la decisión de diseño más importante.
+MediaPipe tarda unos 250 milisegundos por fotograma. En el hilo de la interfaz, la
+aplicación se congelaría. Por eso vive en un hilo nativo aparte, y los dos se
+comunican por un canal de métodos.
 
 ---
 
@@ -343,8 +346,11 @@ Decí el número real. Tu fortaleza no es el tamaño del corpus, es que vos mism
 señalás el límite antes de que te lo señalen.
 
 **"¿Y los resultados de usabilidad?"**
-"El instrumento está diseñado y listo para aplicarse con la fundación." Nunca
-insinúes que ya tenés datos.
+"Hice sesiones de uso con las treinta personas y recogí la retroalimentación de
+forma cualitativa, que está reportada en el capítulo de resultados. Lo que no
+alcancé a aplicar dentro del plazo son los dos instrumentos estructurados, así que
+esa valoración favorable no está cuantificada." Decilo en ese orden: primero lo que
+sí hiciste, después el límite. Nunca insinúes que tenés datos en escala.
 
 **"¿La latencia dónde la midió?"**
 "En la computadora de desarrollo, como referencia del costo del modelo. El
@@ -362,6 +368,37 @@ Por tres razones: representar los tres perfiles del problema, tener suficiencia
 para un análisis descriptivo con frecuencias y porcentajes, y la viabilidad real de
 acceso, porque la población con dominio del LESHO y afiliación institucional
 verificable en Honduras es reducida.
+
+## Sobre la arquitectura
+
+Es la diapositiva que más va a interrogar un ingeniero de sistemas. Estas cuatro
+cubren casi todo.
+
+**"¿Qué patrón arquitectónico siguió?"**
+Un monolito en capas, ejecutado sobre dos contextos de concurrencia. En capas
+porque la dependencia va en un solo sentido, de la interfaz hacia la percepción, y
+eso permite sustituir una capa sin tocar las de abajo. Monolito porque el sistema
+se despliega como una sola unidad: no hay nada distribuido que justifique separarlo.
+
+**"¿Por qué un monolito y no servicios separados?"**
+Porque no hay red. Separar en servicios tiene sentido cuando hay que escalar partes
+por separado o desplegarlas en máquinas distintas, y acá el requisito es el
+contrario: todo tiene que caber y correr en un teléfono de gama baja, sin conexión.
+Un monolito en capas da la separación de responsabilidades sin pagar el costo de
+comunicación entre procesos.
+
+**"¿Cómo se comunican Dart y Kotlin?"**
+Por un canal de métodos de Flutter, que es una interfaz asíncrona de mensajes
+serializados. Dart envía el fotograma y Kotlin devuelve las coordenadas de los
+puntos. Es la única frontera entre los dos lenguajes, y está en un solo lugar del
+código.
+
+**"¿Por qué MediaPipe en la GPU y Pose en el procesador?"**
+Porque los medí. Con el procesador, las manos tardaban 546 milisegundos por
+fotograma contra 250 en la tarjeta gráfica, y las manos corren en vivo. La pose, en
+cambio, solo corre fuera de línea, pero en la tarjeta gráfica tardaba 16 segundos
+en inicializarse contra 2.8 en el procesador. Cada una está donde le conviene, y la
+decisión salió de la medición, no de la intuición.
 
 ## Otras preguntas probables
 
