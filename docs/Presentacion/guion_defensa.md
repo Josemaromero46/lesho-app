@@ -9,7 +9,7 @@ José Manuel Romero Martínez · UNAH Campus Comayagua
 
 **Cómo usar este guión.** Los tiempos son acumulativos: indican el minuto en que
 deberías estar terminando cada diapositiva. El guión completo suma unos 14 minutos
-y 45 segundos, así que hay margen. Lo que va *en cursiva* son indicaciones para vos, no
+y 35 segundos, así que hay margen. Lo que va *en cursiva* son indicaciones para vos, no
 se dice en voz alta.
 
 ---
@@ -270,7 +270,7 @@ cuerpo en cada fotograma. Y aun así, funciona.
 
 ---
 
-## 15 · Evaluación con personas usuarias — 45 s · *(13:10)*
+## 15 · Evaluación con personas usuarias — 35 s · *(13:00)*
 
 Los números dicen que funciona. Falta saber si la gente lo entiende.
 
@@ -283,12 +283,9 @@ La interfaz se usa sin que nadie la explique, y las cincuenta palabras son las q
 sirven. La crítica que se repitió: a veces falla el reconocimiento dinámico, que es
 justo lo que muestran las métricas.
 
-*(Con calma, sin excusarte)* Esto es retroalimentación cualitativa. Los
-instrumentos para medirla no alcancé a aplicarlos, y así está declarado.
-
 ---
 
-## 16 · Resumen de resultados — 20 s · *(13:30)*
+## 16 · Resumen de resultados — 20 s · *(13:20)*
 
 *(Rápido. No releas la diapositiva.)*
 
@@ -297,7 +294,7 @@ funcionando sin internet en un teléfono de gama baja.
 
 ---
 
-## 17 · Conclusiones — 45 s · *(14:15)*
+## 17 · Conclusiones — 45 s · *(14:05)*
 
 Cierro con tres cosas.
 
@@ -316,7 +313,7 @@ recomendación principal, y no la escondo porque es lo que dice el dato.
 
 ---
 
-## 18 · ¡Gracias! — 30 s · *(14:45)*
+## 18 · ¡Gracias! — 30 s · *(14:35)*
 
 *(Bajá el ritmo. Volvé al principio.)*
 
@@ -352,7 +349,7 @@ Son los cuatro puntos que deciden cómo te recuerdan.
 
 ## Ritmo
 
-El guión suma unos 14 minutos y 45 segundos con las pausas. Si vas atrasado, la única
+El guión suma unos 14 minutos y 35 segundos con las pausas. Si vas atrasado, la única
 parte que podés comprimir es Conclusiones, porque los números ya los dijiste. Nunca
 apures la demostración ni el cierre.
 
