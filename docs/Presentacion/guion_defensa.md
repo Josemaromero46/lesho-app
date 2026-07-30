@@ -9,12 +9,12 @@ José Manuel Romero Martínez · UNAH Campus Comayagua
 
 **Cómo usar este guión.** Los tiempos son acumulativos: indican el minuto en que
 deberías estar terminando cada diapositiva. El guión completo suma unos 14 minutos
-y 35 segundos, así que hay margen. Lo que va *en cursiva* son indicaciones para vos, no
+y 30 segundos, así que hay margen. Lo que va *en cursiva* son indicaciones para vos, no
 se dice en voz alta.
 
 ---
 
-## 1 · Portada — 60 s · *(termina en 1:00)*
+## 1 · Portada — 60 s · *(1:00)*
 
 Buenos días. Mi nombre es José Manuel Romero Martínez, estudiante de la carrera de
 Ingeniería en Sistemas Computacionales de la Universidad Nacional Autónoma de
@@ -52,7 +52,7 @@ En el camino les voy a mostrar la aplicación funcionando.
 
 ---
 
-## 3 · Planteamiento del problema — 80 s · *(2:35)*
+## 3 · Planteamiento del problema — 85 s · *(2:40)*
 
 Pongamos números a esa situación.
 
@@ -63,9 +63,13 @@ Ese uno por ciento no es un dato administrativo. Es la medida de cuánto sabe el
 Estado de su propia gente.
 
 El LESHO es su lengua natural, reconocida por ley desde 2013. Pero la mayoría de
-los niños sordos nacen en hogares oyentes, en familias que no conocen la lengua. Y
-fuera de las escuelas especializadas, sobre todo en el interior del país, casi no
-hay intérpretes.
+los niños sordos nacen en hogares oyentes que no conocen la lengua, y fuera de las
+escuelas especializadas casi no hay intérpretes.
+
+Y esto no pasa solo en la casa. Pasa en el aula, cuando el maestro no sabe LESHO y
+el niño se queda afuera de la clase. Pasa en el centro de salud, cuando el niño no
+puede decir dónde le duele y quien lo atiende no puede preguntarle. Pasa en una
+tienda, en la calle, en cualquier trámite. Es la vida cotidiana completa.
 
 El acceso tardío a una lengua completa afecta el desarrollo del niño. No es un
 problema de comodidad, es un problema de desarrollo.
@@ -78,7 +82,7 @@ no encontré ninguna que funcione en tiempo real.
 
 ---
 
-## 4 · Objetivos — 50 s · *(3:25)*
+## 4 · Objetivos — 40 s · *(3:20)*
 
 El objetivo general fue desarrollar una aplicación de inteligencia artificial para
 la comunicación entre niños sordos y personas oyentes, que funcione **por completo
@@ -94,7 +98,7 @@ sistema.
 
 ---
 
-## 5 · Objetivos de Desarrollo Sostenible — 35 s · *(4:00)*
+## 5 · Objetivos de Desarrollo Sostenible — 30 s · *(3:50)*
 
 El trabajo se conecta con tres Objetivos de Desarrollo Sostenible.
 
@@ -105,7 +109,7 @@ porque atiende a una población que el propio Estado apenas registra.
 
 ---
 
-## 6 · Metodología — 60 s · *(5:00)*
+## 6 · Metodología — 80 s · *(5:10)*
 
 La investigación es aplicada, porque no busca conocimiento teórico nuevo sino
 resolver un problema concreto. El enfoque es mixto: las métricas miden el
@@ -113,10 +117,9 @@ desempeño técnico y la observación con usuarios evalúa si la aplicación de 
 sirve. Y su alcance es exploratorio y descriptivo, porque no había antecedentes de
 reconocimiento del LESHO con aprendizaje profundo.
 
-La muestra son 30 personas seleccionadas de forma intencional, con criterios de
-inclusión definidos, distribuidas en tres grupos: personas sordas, personas con
-dominio del LESHO y personas oyentes. Hacen falta los tres porque la aplicación
-tiene dos direcciones y cada grupo evalúa una parte distinta.
+La muestra son 30 personas seleccionadas de forma intencional, en tres grupos:
+personas sordas, personas con dominio del LESHO y personas oyentes. Hacen falta los
+tres porque cada grupo evalúa una parte distinta del sistema.
 
 El método tuvo cuatro etapas, en orden.
 
@@ -130,9 +133,14 @@ Tercero, entrenar los modelos y llevarlos al teléfono.
 Y cuarto, evaluar: exactitud, puntaje F1, el costo de recursos en el dispositivo, y
 la usabilidad percibida.
 
+*(Adelantate a la pregunta)* Dije cien mil personas sordas y trabajé con treinta.
+Esa diferencia es el alcance declarado del estudio: se sitúa en el municipio de
+Comayagua, con quienes CasAyuda pudo convocar. Y ese uno por ciento con carné es la
+prueba de que no existe una lista de la cual sortear al azar.
+
 ---
 
-## 7 · Herramientas utilizadas — 30 s · *(5:30)*
+## 7 · Herramientas utilizadas — 30 s · *(5:40)*
 
 En software: Flutter para la aplicación, MediaPipe para extraer los puntos de las
 manos y del cuerpo, y TensorFlow Lite para ejecutar los modelos dentro del
@@ -144,7 +152,7 @@ teléfono que una familia hondureña realmente tiene.
 
 ---
 
-## 8 · Arquitectura general del sistema — 60 s · *(6:30)*
+## 8 · Arquitectura general del sistema — 60 s · *(6:40)*
 
 Este es el sistema por dentro.
 
@@ -165,21 +173,24 @@ comunican por un canal de métodos.
 
 ---
 
-## 9 · Vista funcional — 40 s · *(7:10)*
+## 9 · Vista funcional — 40 s · *(7:20)*
 
-Visto desde quien la usa, es más simple.
+Visto desde quien la usa, es más simple. Y quiero que se fijen en los carriles,
+porque cada actividad está en el carril de quien la ejecuta.
 
-El niño firma y el texto aparece en pantalla. La persona oyente escribe y el muñeco
-hace la seña.
+Arriba: el niño firma, la aplicación detecta los puntos, clasifica y muestra el
+texto, y la persona oyente lee.
 
-Y si escribe una palabra que todavía no tiene seña registrada, el sistema la
-deletrea con el alfabeto. La aplicación nunca se queda callada.
+Abajo es al revés. La persona escribe, y la aplicación separa la frase en palabras.
+Ahí está la decisión: si la palabra tiene seña, la reproduce; si no la tiene, la
+deletrea. Las dos ramas terminan en lo mismo, el niño ve la seña. La aplicación
+nunca se queda callada.
 
 *(Transición, con energía)* Y esto no es una maqueta. Se los voy a mostrar.
 
 ---
 
-## 10 · Demostración de la aplicación — 90 s · *(8:40)*
+## 10 · Demostración de la aplicación — 70 s · *(8:30)*
 
 *(Este es el momento de la defensa. No lo apures ni lo narres encima. Dejá que se
 vea.)*
@@ -205,7 +216,7 @@ video.)*
 
 ---
 
-## 11 · Resultados: Modelo A (alfabeto) — 60 s · *(9:40)*
+## 11 · Resultados: Modelo A (alfabeto) — 55 s · *(9:25)*
 
 Detrás de esa demostración hay dos modelos. El primero reconoce el alfabeto:
 99.54 % de exactitud, en 33.9 kilobytes.
@@ -221,7 +232,7 @@ pose.
 
 ---
 
-## 12 · Resultados: Modelo B (señas dinámicas) — 70 s · *(10:50)*
+## 12 · Resultados: Modelo B (señas dinámicas) — 60 s · *(10:25)*
 
 El segundo modelo reconoce cincuenta señas dinámicas: 98.80 % de exactitud, en 78
 kilobytes.
@@ -241,7 +252,7 @@ resolvieron.
 
 ---
 
-## 13 · Resultados del dataset — 50 s · *(11:40)*
+## 13 · Resultados del dataset — 45 s · *(11:10)*
 
 Ahora, si algo de este trabajo sobrevive al trabajo mismo, es esto.
 
@@ -257,7 +268,7 @@ a nadie. En mi revisión no encontré antecedentes de un recurso así para el LE
 
 ---
 
-## 14 · Resultados: desempeño en el dispositivo — 45 s · *(12:25)*
+## 14 · Resultados: desempeño en el dispositivo — 40 s · *(11:50)*
 
 Un modelo preciso que no corre en un teléfono real no sirve de nada. Así que lo
 medí directamente sobre el Galaxy A13, mientras la aplicación reconocía señas.
@@ -270,7 +281,7 @@ cuerpo en cada fotograma. Y aun así, funciona.
 
 ---
 
-## 15 · Evaluación con personas usuarias — 35 s · *(13:00)*
+## 15 · Evaluación con personas usuarias — 40 s · *(12:30)*
 
 Los números dicen que funciona. Falta saber si la gente lo entiende.
 
@@ -285,7 +296,7 @@ justo lo que muestran las métricas.
 
 ---
 
-## 16 · Resumen de resultados — 20 s · *(13:20)*
+## 16 · Resumen de resultados — 20 s · *(12:50)*
 
 *(Rápido. No releas la diapositiva.)*
 
@@ -294,26 +305,33 @@ funcionando sin internet en un teléfono de gama baja.
 
 ---
 
-## 17 · Conclusiones — 45 s · *(14:05)*
+## 17 · Conclusiones — 70 s · *(14:00)*
 
-Cierro con tres cosas.
+Cierro con tres conclusiones y una salida.
 
-**La aplicación** traduce en los dos sentidos y funciona por completo en el
-teléfono, sin internet.
+**La viabilidad.** Reconocer el LESHO en tiempo real es alcanzable sin servidor y
+sobre hardware de gama baja. Lo que limitaba no era el aparato: era que no existían
+datos del LESHO.
 
-**Los datos** son un conjunto propio del LESHO, sin antecedentes hallados, que queda
-disponible para que otros lo amplíen.
+**La asimetría.** Las dos direcciones no cuestan lo mismo. Reconocer una seña exige
+grabar un corpus con varias personas; mostrarla exige un solo clip. Por eso el
+vocabulario que el sistema muestra puede crecer mucho más rápido que el que
+reconoce.
 
-**Los modelos** alcanzan esa precisión ocupando menos de cien kilobytes cada uno.
+**El alcance.** La exactitud se midió sobre tomas que el modelo nunca vio, pero con
+un número reducido de personas. Queda demostrada la viabilidad, no todavía la
+generalización.
 
-Y lo digo con claridad: la exactitud es alta sobre grabaciones que el modelo nunca
-vio, pero el conjunto de personas que aportaron datos todavía es reducido. Para
-afirmar que funciona con cualquiera hace falta ampliar el corpus. Esa es la
-recomendación principal, y no la escondo porque es lo que dice el dato.
+*(Y acá la salida, con energía. Es tu cierre real.)* Pero ese límite tiene camino, y
+ya está construido. El sistema de captura es independiente de la aplicación: quedó
+empaquetado para que un colaborador lo corra en su computadora sin tocar código.
+Para hacer crecer los modelos no hay que reprogramar nada, hay que grabar con más
+gente. El cuello de botella es el corpus, no la arquitectura, y eso es lo que hace
+replicable a este trabajo.
 
 ---
 
-## 18 · ¡Gracias! — 30 s · *(14:35)*
+## 18 · ¡Gracias! — 30 s · *(14:30)*
 
 *(Bajá el ritmo. Volvé al principio.)*
 
@@ -349,7 +367,7 @@ Son los cuatro puntos que deciden cómo te recuerdan.
 
 ## Ritmo
 
-El guión suma unos 14 minutos y 35 segundos con las pausas. Si vas atrasado, la única
+El guión suma unos 14 minutos y 30 segundos con las pausas. Si vas atrasado, la única
 parte que podés comprimir es Conclusiones, porque los números ya los dijiste. Nunca
 apures la demostración ni el cierre.
 
@@ -377,11 +395,37 @@ personas sordas de Honduras. El propio dato del uno por ciento con carné oficia
 demuestra. Por eso el muestreo es intencional, con criterios de inclusión
 definidos: no se tomó a quien estuviera a mano, se eligió a quien cumple el perfil.
 
-**"¿Por qué 30 personas?"**
-Por tres razones: representar los tres perfiles del problema, tener suficiencia
-para un análisis descriptivo con frecuencias y porcentajes, y la viabilidad real de
-acceso, porque la población con dominio del LESHO y afiliación institucional
-verificable en Honduras es reducida.
+**"¿Por qué 30 personas, si dijo que hay cien mil?"**
+Es la pregunta que más te conviene tener memorizada. Va en tres patas, y en ese
+orden.
+
+Primero, **el alcance**: el estudio no es nacional, se sitúa en el municipio de
+Comayagua. El Censo de Población y Vivienda de 2013 registra 6,017 personas con
+discapacidad en el municipio. Y las personas con dominio del LESHO y afiliación
+institucional verificable son un subconjunto mucho menor de esas, concentrado en
+organizaciones como CasAyuda.
+
+Segundo, **no existe marco muestral**. Ese uno por ciento con carné, que son 1,044
+personas en todo el país, es literalmente la prueba: no hay un registro del cual
+sortear al azar. Un muestreo probabilístico requiere una lista, y esa lista no
+existe. Por eso el muestreo es intencional, con criterios de inclusión definidos.
+
+Tercero, **el objetivo no es generalizar**, es validar que un sistema funciona.
+Y eso es exactamente lo que dice tu conclusión sobre el alcance: queda demostrada
+la viabilidad, no la generalización.
+
+*(Ojo con un dato: el censo no publica el desglose de discapacidad auditiva por
+municipio, solo el total de discapacidad. A nivel nacional el censo de 2013 registra
+38,893 personas con discapacidad auditiva. No inventes una cifra municipal de
+sordera, no está publicada.)*
+
+**"¿Y esto cómo crece? ¿Es replicable?"**
+Sí, y esa es la parte que más conviene defender. El sistema de captura es
+independiente de la aplicación: son scripts en Python documentados, empaquetados
+para que un colaborador los corra en su propia computadora sin tocar código. Para
+ampliar el vocabulario o mejorar la generalización no hay que reprogramar nada, hay
+que grabar con más personas. El cuello de botella está en el corpus, no en la
+arquitectura, y eso es justamente lo que hace replicable al trabajo.
 
 ## Sobre la arquitectura
 
